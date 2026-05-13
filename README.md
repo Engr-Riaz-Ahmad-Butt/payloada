@@ -1,35 +1,44 @@
-# Nebula Flux - Premium Next.js Application
+# JSONLens
 
-A high-end, visually stunning web application built with Next.js and Tailwind CSS, featuring modern design principles like glassmorphism, vibrant gradients, and dynamic animations.
+JSONLens is a privacy-first JSON debugging workspace built with Next.js, TypeScript, and Tailwind CSS. The product is being structured around a production-ready frontend architecture before feature implementation scales up.
 
-## Technical Stack
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Fonts**: Outfit (Headings), Inter (Body)
+## Current direction
 
-## Branch Strategy
-We follow a structured branching model to ensure stability and smooth development:
+The app is being organized for the MVP defined in the product specification:
 
-- **`main`**: The production-ready branch. Only stable, tested code is merged here.
-- **`dev`**: The primary integration branch. All feature branches are merged here for testing before moving to `main`.
-- **`feature/*`**: Individual feature branches. Created from `dev` and merged back into `dev` upon completion.
+- JSON editor
+- Formatter and minifier
+- Validator with friendly errors
+- Tree viewer with JSONPath support
+- Search, file import, and download
+- Stats, theme support, and privacy-first messaging
 
-## Getting Started
+## Project structure
 
-First, run the development server:
+```text
+src/
+  app/                 Next.js App Router entry points
+  components/ui/       Shared UI primitives
+  constants/           App metadata and static configuration
+  features/            Product-facing feature modules
+  hooks/               Reusable client hooks
+  lib/                 Domain utilities and helpers
+  store/               Shared Zustand stores
+  types/               Shared TypeScript types
+  workers/             Background workers for heavy JSON tasks
+```
+
+## Scripts
 
 ```bash
 npm run dev
+npm run lint
+npm run type-check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Notes
 
-## Development Workflow
-1. Create a new feature branch from `dev`: `git checkout -b feature/your-feature-name`
-2. Implement your changes.
-3. Push and create a Pull Request to `dev`.
-4. Once merged and verified, `dev` will be merged into `main` for release.
-
----
-Built with ❤️ by [Riaz Ahmad Butt](mailto:engr.riazahmadbutt@gmail.com)
+- Keep product logic inside `src/features` or focused `src/lib` modules.
+- Keep `src/components/ui` limited to reusable presentation primitives.
+- Prefer adding new domain types in `src/types` before spreading inline types across components.
+- Use background workers for expensive parsing or transformation tasks once large JSON support is implemented.
