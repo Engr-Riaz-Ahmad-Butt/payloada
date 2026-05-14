@@ -8,6 +8,11 @@ export function getJsonStats(value: JsonValue, source: string): JsonStats {
     arrays: 0,
     primitives: 0,
     maxDepth: 0,
+    strings: 0,
+    numbers: 0,
+    booleans: 0,
+    nulls: 0,
+    sensitiveFields: 0,
   };
 
   walk(value, 1, stats);
@@ -27,9 +32,38 @@ function walk(value: JsonValue, depth: number, stats: JsonStats) {
     stats.objects += 1;
     const entries = Object.entries(value);
     stats.keys += entries.length;
-    entries.forEach(([, child]) => walk(child, depth + 1, stats));
+    entries.forEach(([key, child]) => {
+      if (isSensitiveKey(key)) {
+        stats.sensitiveFields += 1;
+      }
+
+      walk(child, depth + 1, stats);
+    });
     return;
   }
 
   stats.primitives += 1;
+
+  if (value === null) {
+    stats.nulls += 1;
+    return;
+  }
+
+  switch (typeof value) {
+    case "string":
+      stats.strings += 1;
+      break;
+    case "number":
+      stats.numbers += 1;
+      break;
+    case "boolean":
+      stats.booleans += 1;
+      break;
+    default:
+      break;
+  }
+}
+
+function isSensitiveKey(key: string) {
+  return /(password|token|secret|api[_-]?key|authorization|session|cookie)/i.test(key);
 }

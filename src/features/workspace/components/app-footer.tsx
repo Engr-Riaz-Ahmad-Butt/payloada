@@ -109,7 +109,10 @@ export function AppFooter() {
             <span>No signup required</span>
             <span>Built for developers</span>
           </div>
-          <p>© 2026 {APP_NAME}. All rights reserved.</p>
+          <p>
+            {"© 2026 "}
+            {APP_NAME}. All rights reserved.
+          </p>
         </div>
       </div>
     </footer>

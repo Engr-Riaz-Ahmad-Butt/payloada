@@ -25,4 +25,9 @@ export type JsonStats = {
   arrays: number;
   primitives: number;
   maxDepth: number;
+  strings: number;
+  numbers: number;
+  booleans: number;
+  nulls: number;
+  sensitiveFields: number;
 };

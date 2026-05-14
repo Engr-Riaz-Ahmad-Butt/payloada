@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "JSONLens",
-    template: "%s | JSONLens",
-  },
+  title: "JSONKit — The JSON workspace for serious developers",
   description:
-    "A privacy-first JSON debugging workspace for formatting, validating, exploring, and understanding JSON faster.",
+    "Experience unparalleled speed and precision in a terminal-inspired environment. JSONKit provides the tools you need to build, decode, and diff with absolute control.",
+  keywords: ["JSON", "editor", "formatter", "JWT decoder", "JSON diff", "developer tools"],
+  authors: [{ name: "Riaz Ahmad Butt" }],
+  openGraph: {
+    title: "JSONKit — The JSON workspace for serious developers",
+    description:
+      "Build, decode, and diff JSON with absolute control. Terminal-inspired, developer-focused.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -27,8 +28,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full bg-background font-sans text-foreground">{children}</body>
+    <html lang="en" className="dark">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        />
+      </head>
+      <body className={`${inter.variable} antialiased`}>{children}</body>
     </html>
   );
 }
