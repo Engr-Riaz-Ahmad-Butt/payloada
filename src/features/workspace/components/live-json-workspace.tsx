@@ -1132,15 +1132,17 @@ function EditorWorkspace({
                 <p className="text-sm text-[#a89589]">
                   Click any node to reveal its JSONPath and copy its value.
                 </p>
-                <div className="rounded-sm border border-[#262626] bg-[#0a0a0a] p-3">
-                  <TreeNode
-                    label="root"
-                    path="$"
-                    value={parseResult.data}
-                    selectedPath={selectedNode?.path ?? null}
-                    onSelect={setSelectedPath}
-                    onCopy={onCopy}
-                  />
+                <div className="overflow-x-auto rounded-sm border border-[#262626] bg-[#0a0a0a] p-3">
+                  <div className="min-w-max">
+                    <TreeNode
+                      label="root"
+                      path="$"
+                      value={parseResult.data}
+                      selectedPath={selectedNode?.path ?? null}
+                      onSelect={setSelectedPath}
+                      onCopy={onCopy}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
@@ -1753,7 +1755,7 @@ function TreeNode({
     <div className="space-y-1">
       <div
         className={cn(
-          "group flex items-start gap-2 rounded-sm px-2 py-1.5 transition-colors",
+          "group flex min-w-0 items-start gap-2 rounded-sm px-2 py-1.5 transition-colors",
           isSelected ? "bg-[#1f1f1f]" : "hover:bg-[#111111]",
         )}
       >
@@ -1761,18 +1763,18 @@ function TreeNode({
           <button
             type="button"
             onClick={() => setOpen((current) => !current)}
-            className="mt-0.5 text-[#a89589]"
+            className="mt-0.5 shrink-0 text-[#a89589]"
           >
             {open ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
           </button>
         ) : (
-          <span className="inline-flex w-3.5" />
+          <span className="inline-flex w-3.5 shrink-0" />
         )}
 
         <button
           type="button"
           onClick={() => onSelect(path)}
-          className="flex-1 text-left font-mono text-xs leading-6"
+          className="min-w-0 flex-1 whitespace-nowrap text-left font-mono text-xs leading-6"
         >
           <span className="text-[#d69463]">{label}</span>
           <span className="text-[#6d655f]">: </span>
@@ -1782,14 +1784,14 @@ function TreeNode({
         <button
           type="button"
           onClick={() => onCopy(path, "Copied JSONPath")}
-          className="hidden text-[#7f766f] group-hover:block"
+          className="hidden shrink-0 text-[#7f766f] group-hover:block"
         >
           <Copy className="size-3.5" />
         </button>
       </div>
 
       {isContainer && open ? (
-        <div className="ml-4 border-l border-[#262626] pl-3">
+        <div className="ml-4 min-w-0 border-l border-[#262626] pl-3">
           {children.map(([key, child]) => (
             <TreeNode
               key={`${path}-${key}`}
