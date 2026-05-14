@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { jwtDecode } from "jwt-decode";
+import { useState, useCallback, useMemo } from "react";
+import { decodeJwtToken } from "@/lib/jwt/decode";
+import { copyToClipboard } from "@/lib/clipboard";
+import type { DecodedJwt, JwtDecodeResult } from "@/types/jwt";
 
 // ── Sample token (the classic jwt.io demo token) ──────────────────────────────
 const SAMPLE_TOKEN =
@@ -9,45 +11,14 @@ const SAMPLE_TOKEN =
   ".eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ" +
   ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-type DecodedJwt = {
-  header: Record<string, unknown>;
-  payload: Record<string, unknown>;
-  signature: string;
-};
-
-type DecodeResult =
-  | { ok: true; data: DecodedJwt }
-  | { ok: false; error: string };
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function decodeToken(token: string): DecodeResult {
-  const trimmed = token.trim();
-  if (!trimmed) return { ok: false, error: "Enter a JWT token to decode." };
-
-  const parts = trimmed.split(".");
-  if (parts.length !== 3)
-    return { ok: false, error: "Invalid JWT: must have exactly 3 parts separated by dots." };
-
-  try {
-    const header = jwtDecode<Record<string, unknown>>(trimmed, { header: true });
-    const payload = jwtDecode<Record<string, unknown>>(trimmed);
-    const signature = parts[2];
-    return { ok: true, data: { header, payload, signature } };
-  } catch {
-    return { ok: false, error: "Failed to decode token. Make sure it is a valid Base64-encoded JWT." };
-  }
-}
+// ... logic continued below ...
 
 /** Render a JSON value with colour-coded spans */
 function renderValue(v: unknown): React.ReactNode {
   if (v === null) return <span style={{ color: "#C07040", fontStyle: "italic" }}>null</span>;
-  if (typeof v === "boolean")
-    return <span style={{ color: "#D4B483" }}>{String(v)}</span>;
-  if (typeof v === "number")
-    return <span style={{ color: "#D4B483" }}>{String(v)}</span>;
-  if (typeof v === "string")
-    return <span style={{ color: "#7DB87D" }}>&quot;{v}&quot;</span>;
+  if (typeof v === "boolean") return <span style={{ color: "#D4B483" }}>{String(v)}</span>;
+  if (typeof v === "number") return <span style={{ color: "#D4B483" }}>{String(v)}</span>;
+  if (typeof v === "string") return <span style={{ color: "#7DB87D" }}>&quot;{v}&quot;</span>;
   return <span style={{ color: "#F5F1EA" }}>{JSON.stringify(v)}</span>;
 }
 
@@ -78,9 +49,7 @@ function PrettyJson({ data }: { data: Record<string, unknown> }) {
               padding: "0 2px",
               transition: "background 0.15s",
             }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLElement).style.background = "#353534")
-            }
+            onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "#353534")}
             onMouseLeave={(e) =>
               ((e.currentTarget as HTMLElement).style.background = "transparent")
             }
@@ -178,12 +147,12 @@ export default function JwtDecoder() {
   const [verifyEnabled, setVerifyEnabled] = useState(true);
   const [secretCopied, setSecretCopied] = useState(false);
 
-  const result = decodeToken(token);
+  const result: JwtDecodeResult = useMemo(() => decodeJwtToken(token), [token]);
 
   const handleClear = useCallback(() => setToken(""), []);
 
-  const handleCopySecret = () => {
-    navigator.clipboard.writeText(secret);
+  const handleCopySecret = async () => {
+    await copyToClipboard(secret, "Secret copied to clipboard");
     setSecretCopied(true);
     setTimeout(() => setSecretCopied(false), 2000);
   };
@@ -218,7 +187,13 @@ export default function JwtDecoder() {
           <button
             onClick={handleClear}
             className="px-3 py-1 rounded transition-colors"
-            style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: "#d9c2b6" }}
+            style={{
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+              color: "#d9c2b6",
+            }}
             onMouseEnter={(e) => {
               (e.currentTarget as HTMLButtonElement).style.color = "#F5F1EA";
               (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#201f1f";
@@ -403,10 +378,7 @@ export default function JwtDecoder() {
               className="flex flex-col items-center justify-center h-full gap-4 text-center"
               style={{ minHeight: "300px" }}
             >
-              <span
-                className="material-symbols-outlined text-[48px]"
-                style={{ color: "#353534" }}
-              >
+              <span className="material-symbols-outlined text-[48px]" style={{ color: "#353534" }}>
                 lock
               </span>
               <p style={{ fontSize: "14px", color: "#d9c2b6", maxWidth: "300px" }}>
@@ -447,11 +419,7 @@ export default function JwtDecoder() {
               </DecodedSection>
 
               {/* ── SIGNATURE card ── */}
-              <DecodedSection
-                label="Signature"
-                subtitle=""
-                accentColor="#ffb68e"
-              >
+              <DecodedSection label="Signature" subtitle="" accentColor="#ffb68e">
                 {/* Badge in the header is rendered via the subtitle slot — override with children */}
                 <div
                   className="absolute top-2 right-4 flex items-center gap-1 px-2 py-0.5 rounded"
@@ -479,10 +447,9 @@ export default function JwtDecoder() {
                   {[
                     {
                       label: "Algorithm:",
-                      value:
-                        algorithm.startsWith("HS")
-                          ? `HMACSHA${algorithm.slice(2)}`
-                          : algorithm,
+                      value: algorithm.startsWith("HS")
+                        ? `HMACSHA${algorithm.slice(2)}`
+                        : algorithm,
                     },
                     {
                       label: "Data:",
@@ -496,7 +463,13 @@ export default function JwtDecoder() {
                     <p key={label} className="flex gap-3">
                       <span style={{ color: "#ffb68e", minWidth: "80px" }}>{label}</span>
                       <span
-                        style={{ color: "#F5F1EA", opacity: 0.75, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                        style={{
+                          color: "#F5F1EA",
+                          opacity: 0.75,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
                         title={value}
                       >
                         {value}

@@ -27,8 +27,7 @@ export default function Home() {
               color: "#F5F1EA",
             }}
           >
-            The JSON workspace for{" "}
-            <span style={{ color: "#C07040" }}>serious developers.</span>
+            The JSON workspace for <span style={{ color: "#C07040" }}>serious developers.</span>
           </h1>
 
           {/* Subheadline */}
@@ -41,8 +40,8 @@ export default function Home() {
               color: "#d9c2b6",
             }}
           >
-            Experience unparalleled speed and precision in a terminal-inspired environment.
-            JSONKit provides the tools you need to build, decode, and diff with absolute control.
+            Experience unparalleled speed and precision in a terminal-inspired environment. JSONKit
+            provides the tools you need to build, decode, and diff with absolute control.
           </p>
 
           {/* CTA Buttons */}

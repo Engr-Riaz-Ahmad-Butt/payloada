@@ -22,9 +22,7 @@ export default function Footer() {
           <span className="font-bold" style={{ color: "#C07040" }}>
             JSONKit
           </span>
-          <span style={{ color: "#d9c2b6" }}>
-            © 2024 JSONKit Terminal. All rights reserved.
-          </span>
+          <span style={{ color: "#d9c2b6" }}>© 2024 JSONKit Terminal. All rights reserved.</span>
         </div>
 
         {/* Right */}

@@ -64,14 +64,10 @@ export default function Navbar() {
           Deploy
         </button>
         <div className="flex items-center gap-2 ml-2" style={{ color: "#d9c2b6" }}>
-          <span
-            className="material-symbols-outlined cursor-pointer transition-colors hover:text-[#ffb68e] text-[20px]"
-          >
+          <span className="material-symbols-outlined cursor-pointer transition-colors hover:text-[#ffb68e] text-[20px]">
             notifications
           </span>
-          <span
-            className="material-symbols-outlined cursor-pointer transition-colors hover:text-[#ffb68e] text-[20px]"
-          >
+          <span className="material-symbols-outlined cursor-pointer transition-colors hover:text-[#ffb68e] text-[20px]">
             account_circle
           </span>
         </div>

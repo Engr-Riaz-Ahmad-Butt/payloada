@@ -1,4 +1,4 @@
-export const APP_NAME = "JSONLens";
+export const APP_NAME = "JSONKit";
 export const APP_TAGLINE = "Privacy-first JSON debugging workspace";
 export const APP_DESCRIPTION =
   "Format, validate, inspect, and understand JSON with a workflow built for developers.";
@@ -9,4 +9,28 @@ export const MVP_FEATURES = [
   "Tree exploration with JSONPath",
   "Search, file import, and downloads",
   "Stats, theme controls, and privacy-first defaults",
+] as const;
+
+export const APP_ROUTES = {
+  HOME: "/",
+  WORKSPACE: "/routes/workspace",
+  JWT_DECODER: "/routes/workspace/jwt",
+  DIFF: "/routes/workspace/diff",
+  CONVERTERS: "/routes/workspace/convert",
+  HISTORY: "/routes/workspace/history",
+  SETTINGS: "/routes/workspace/settings",
+  SUPPORT: "/routes/workspace/support",
+} as const;
+
+export const MAIN_NAV_ITEMS = [
+  { icon: "code", label: "Editor", href: APP_ROUTES.WORKSPACE },
+  { icon: "lock_open", label: "JWT Decoder", href: APP_ROUTES.JWT_DECODER },
+  { icon: "difference", label: "JSON Diff", href: APP_ROUTES.DIFF },
+  { icon: "transform", label: "Converters", href: APP_ROUTES.CONVERTERS },
+  { icon: "history", label: "History", href: APP_ROUTES.HISTORY },
+] as const;
+
+export const FOOTER_NAV_ITEMS = [
+  { icon: "settings", label: "Settings", href: APP_ROUTES.SETTINGS },
+  { icon: "help_outline", label: "Support", href: APP_ROUTES.SUPPORT },
 ] as const;

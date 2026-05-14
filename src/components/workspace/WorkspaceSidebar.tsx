@@ -3,24 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
-type NavItem = {
-  icon: string;
-  label: string;
-  href: string;
-};
-
-const mainNav: NavItem[] = [
-  { icon: "code", label: "Editor", href: "/routes/workspace" },
-  { icon: "lock_open", label: "JWT Decoder", href: "/routes/workspace/jwt" },
-  { icon: "difference", label: "JSON Diff", href: "/routes/workspace/diff" },
-  { icon: "transform", label: "Converters", href: "/routes/workspace/convert" },
-  { icon: "history", label: "History", href: "/routes/workspace/history" },
-];
-
-const footerNav: NavItem[] = [
-  { icon: "settings", label: "Settings", href: "/routes/workspace/settings" },
-  { icon: "help_outline", label: "Support", href: "/routes/workspace/support" },
-];
+import { MAIN_NAV_ITEMS, FOOTER_NAV_ITEMS } from "@/constants/app";
 
 type SidebarProps = {
   active: string;
@@ -91,7 +74,7 @@ export default function WorkspaceSidebar({ active }: SidebarProps) {
 
       {/* Main Nav */}
       <ul className="flex flex-col gap-1 flex-grow">
-        {mainNav.map((item) => {
+        {MAIN_NAV_ITEMS.map((item) => {
           const isActive = item.label === active;
           return (
             <li key={item.label}>
@@ -119,11 +102,8 @@ export default function WorkspaceSidebar({ active }: SidebarProps) {
       </ul>
 
       {/* Footer Nav */}
-      <ul
-        className="flex flex-col gap-1 pt-4 mt-auto"
-        style={{ borderTop: "1px solid #262626" }}
-      >
-        {footerNav.map((item) => (
+      <ul className="flex flex-col gap-1 pt-4 mt-auto" style={{ borderTop: "1px solid #262626" }}>
+        {FOOTER_NAV_ITEMS.map((item) => (
           <li key={item.label}>
             <Link
               href={item.href}

@@ -19,7 +19,8 @@ const FULL_JSON_STRING = `{
 function highlight(text: string): React.ReactNode[] {
   const tokens: React.ReactNode[] = [];
   // Simple regex tokeniser: strings, numbers, booleans/null, braces/brackets, colons/commas
-  const regex = /("(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(true|false|null)|([{}[\]])|([,:])|([\s\S])/g;
+  const regex =
+    /("(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(true|false|null)|([{}[\]])|([,:])|([\s\S])/g;
   let match: RegExpExecArray | null;
   let i = 0;
   while ((match = regex.exec(text)) !== null) {
@@ -31,14 +32,26 @@ function highlight(text: string): React.ReactNode[] {
       tokens.push(
         <span key={i++} style={{ color: isKey ? "#C07040" : "#7DB87D" }}>
           {str}
-        </span>
+        </span>,
       );
     } else if (num) {
-      tokens.push(<span key={i++} style={{ color: "#D4B483" }}>{num}</span>);
+      tokens.push(
+        <span key={i++} style={{ color: "#D4B483" }}>
+          {num}
+        </span>,
+      );
     } else if (kw) {
-      tokens.push(<span key={i++} style={{ color: "#ffb68e" }}>{kw}</span>);
+      tokens.push(
+        <span key={i++} style={{ color: "#ffb68e" }}>
+          {kw}
+        </span>,
+      );
     } else if (brace || punct || other) {
-      tokens.push(<span key={i++} style={{ color: "#d9c2b6" }}>{brace ?? punct ?? other}</span>);
+      tokens.push(
+        <span key={i++} style={{ color: "#d9c2b6" }}>
+          {brace ?? punct ?? other}
+        </span>,
+      );
     }
   }
   return tokens;
@@ -47,7 +60,15 @@ function highlight(text: string): React.ReactNode[] {
 // ── Tiny tree renderer ───────────────────────────────────────────────────────
 type JsonValue = string | number | boolean | null | JsonValue[] | { [k: string]: JsonValue };
 
-function TreeNode({ label, value, depth }: { label: string | null; value: JsonValue; depth: number }) {
+function TreeNode({
+  label,
+  value,
+  depth,
+}: {
+  label: string | null;
+  value: JsonValue;
+  depth: number;
+}) {
   const [open, setOpen] = useState(true);
   const indent = depth * 16;
 
@@ -68,23 +89,29 @@ function TreeNode({ label, value, depth }: { label: string | null; value: JsonVa
           <span style={{ color: "#d9c2b6", fontSize: 11, width: 12, display: "inline-block" }}>
             {open ? "▾" : "▸"}
           </span>
-          {label !== null && (
-            <span style={{ color: "#C07040", fontWeight: 500 }}>{label}</span>
-          )}
+          {label !== null && <span style={{ color: "#C07040", fontWeight: 500 }}>{label}</span>}
           <span style={{ color: "#d9c2b6", marginLeft: label !== null ? 4 : 0 }}>{badge}</span>
         </div>
-        {open && entries.map(([k, v]) => (
-          <TreeNode key={k} label={isArr ? null : k} value={v} depth={depth + 1} />
-        ))}
+        {open &&
+          entries.map(([k, v]) => (
+            <TreeNode key={k} label={isArr ? null : k} value={v} depth={depth + 1} />
+          ))}
       </div>
     );
   }
 
   let valColor = "#d9c2b6";
   let valDisplay = String(value);
-  if (typeof value === "string") { valColor = "#7DB87D"; valDisplay = `"${value}"`; }
-  if (typeof value === "number") { valColor = "#D4B483"; }
-  if (typeof value === "boolean" || value === null) { valColor = "#ffb68e"; }
+  if (typeof value === "string") {
+    valColor = "#7DB87D";
+    valDisplay = `"${value}"`;
+  }
+  if (typeof value === "number") {
+    valColor = "#D4B483";
+  }
+  if (typeof value === "boolean" || value === null) {
+    valColor = "#ffb68e";
+  }
 
   return (
     <div className="flex items-center gap-1 py-[2px]" style={{ paddingLeft: indent + 16 }}>
@@ -158,7 +185,9 @@ export default function WorkspaceMockup() {
     };
 
     timerRef.current = setTimeout(tick, 400);
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
   }, []);
 
   const lineCount = typed.split("\n").length;
@@ -179,7 +208,6 @@ export default function WorkspaceMockup() {
     >
       {/* ── Split Panels ── */}
       <div className="flex flex-grow overflow-hidden" style={{ height: "100%" }}>
-
         {/* LEFT: Editor Panel */}
         <div className="flex flex-col border-r" style={{ flex: 1, borderColor: "#262626" }}>
           {/* Tab bar */}
@@ -302,7 +330,13 @@ export default function WorkspaceMockup() {
             style={{ backgroundColor: "#0a0a0a", textAlign: "left" }}
           >
             {parsedJson ? (
-              <div style={{ fontFamily: "JetBrains Mono, monospace", fontSize: 13, lineHeight: "22px" }}>
+              <div
+                style={{
+                  fontFamily: "JetBrains Mono, monospace",
+                  fontSize: 13,
+                  lineHeight: "22px",
+                }}
+              >
                 <TreeNode label={null} value={parsedJson} depth={0} />
               </div>
             ) : (

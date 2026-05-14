@@ -1,80 +1,40 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import Editor, { OnChange } from "@monaco-editor/react";
 import type { editor as MonacoEditor } from "monaco-editor";
+import { computeEditorStats, formatBytes } from "@/lib/json/compute-stats";
+import { copyToClipboard } from "@/lib/clipboard";
+import { downloadFile } from "@/lib/download";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import type { EditorStats } from "@/types/workspace";
+import { SAMPLE_USER_JSON } from "@/constants/workspace";
 
-const DEFAULT_JSON = `{
-  "project": {
-    "name": "JSONKit_Terminal",
-    "version": "2.1.4",
-    "status": "production"
-  },
-  "configuration": {
-    "port": 8080,
-    "max_connections": 1500,
-    "debug_mode": false,
-    "allowed_origins": [
-      "https://app.jsonkit.local",
-      "https://api.jsonkit.local"
-    ]
-  }
-}`;
-
-type EditorStats = {
-  size: string;
-  depth: number;
-  keys: number;
-  line: number;
-  col: number;
-  valid: boolean;
-};
-
-function computeStats(value: string): EditorStats {
-  const bytes = new TextEncoder().encode(value).length;
-  const size =
-    bytes < 1024 ? `${bytes} B` : `${(bytes / 1024).toFixed(1)} KB`;
-
-  let depth = 0;
-  let maxDepth = 0;
-  let keys = 0;
-  let valid = false;
-
-  try {
-    const parsed = JSON.parse(value);
-    valid = true;
-
-    const traverse = (node: unknown, d: number) => {
-      maxDepth = Math.max(maxDepth, d);
-      if (node && typeof node === "object") {
-        for (const k of Object.keys(node as Record<string, unknown>)) {
-          keys++;
-          traverse((node as Record<string, unknown>)[k], d + 1);
-        }
-      }
-      if (Array.isArray(node)) {
-        node.forEach((item) => traverse(item, d + 1));
-      }
-    };
-    traverse(parsed, 1);
-    depth = maxDepth;
-  } catch {
-    depth = 0;
-    keys = 0;
-  }
-
-  return { size, depth, keys, line: 1, col: 1, valid };
-}
+const DEFAULT_JSON = SAMPLE_USER_JSON;
 
 export default function JsonEditor() {
   const [value, setValue] = useState(DEFAULT_JSON);
-  const [stats, setStats] = useState<EditorStats>(() => computeStats(DEFAULT_JSON));
+  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
   const [copied, setCopied] = useState(false);
 
+  const debouncedValue = useDebouncedValue(value, 300);
+
+  const stats = useMemo(() => {
+    let parsed = undefined;
+    try {
+      parsed = JSON.parse(debouncedValue);
+    } catch {}
+    const baseStats = computeEditorStats(debouncedValue, parsed);
+    return {
+      ...baseStats,
+      line: cursorPos.line,
+      col: cursorPos.col,
+      valid: parsed !== undefined,
+    };
+  }, [debouncedValue, cursorPos]);
+
   const handleChange: OnChange = useCallback((val) => {
-    const v = val ?? "";
-    setValue(v);
-    setStats((prev) => ({ ...computeStats(v), line: prev.line, col: prev.col }));
+    setValue(val ?? "");
   }, []);
 
   const handleFormat = () => {
@@ -89,20 +49,18 @@ export default function JsonEditor() {
     } catch {}
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(value);
+  const handleCopy = async () => {
+    await copyToClipboard(value);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleExport = () => {
-    const blob = new Blob([value], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "MyProject.json";
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadFile(
+      value,
+      `jsonkit-export-${new Date().toISOString().split("T")[0]}.json`,
+      "application/json",
+    );
   };
 
   return (
@@ -216,11 +174,10 @@ export default function JsonEditor() {
               monaco.editor.setTheme("jsonkit-dark");
 
               editor.onDidChangeCursorPosition((e: MonacoEditor.ICursorPositionChangedEvent) => {
-                setStats((prev) => ({
-                  ...prev,
+                setCursorPos({
                   line: e.position.lineNumber,
                   col: e.position.column,
-                }));
+                });
               });
             }}
           />
@@ -243,9 +200,23 @@ export default function JsonEditor() {
               <span className="material-symbols-outlined text-[14px]">my_location</span>
               Ln {stats.line}, Col {stats.col}
             </span>
-            <span style={{ width: "1px", height: "12px", backgroundColor: "#262626", display: "inline-block" }} />
+            <span
+              style={{
+                width: "1px",
+                height: "12px",
+                backgroundColor: "#262626",
+                display: "inline-block",
+              }}
+            />
             <span>UTF-8</span>
-            <span style={{ width: "1px", height: "12px", backgroundColor: "#262626", display: "inline-block" }} />
+            <span
+              style={{
+                width: "1px",
+                height: "12px",
+                backgroundColor: "#262626",
+                display: "inline-block",
+              }}
+            />
             <span>2 Spaces</span>
           </div>
           <div className="flex items-center gap-2">
@@ -280,9 +251,7 @@ export default function JsonEditor() {
                 Invalid JSON
               </span>
             )}
-            <span style={{ color: "#d9c2b6", marginLeft: "8px" }}>
-              © 2024 JSONKit Terminal.
-            </span>
+            <span style={{ color: "#d9c2b6", marginLeft: "8px" }}>© 2024 JSONKit Terminal.</span>
           </div>
         </footer>
       </div>
@@ -342,7 +311,15 @@ export default function JsonEditor() {
                 >
                   {icon}
                 </span>
-                <span style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase", color: "inherit" }}>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 600,
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                    color: "inherit",
+                  }}
+                >
                   {label}
                 </span>
               </button>
@@ -366,8 +343,8 @@ export default function JsonEditor() {
           </h3>
           <div className="flex flex-col gap-2">
             {[
-              { label: "Size", value: stats.size },
-              { label: "Depth", value: `${stats.depth} Levels` },
+              { label: "Size", value: formatBytes(stats.bytes) },
+              { label: "Depth", value: `${stats.maxDepth} Levels` },
               { label: "Keys", value: String(stats.keys) },
             ].map(({ label, value }) => (
               <div
@@ -428,8 +405,8 @@ export default function JsonEditor() {
               }}
             />
             {[
-              { key: '"port"', msg: 'Updated', time: "2 mins ago", active: true },
-              { key: '"allowed_origins"', msg: 'Added array', time: "15 mins ago", active: false },
+              { key: '"port"', msg: "Updated", time: "2 mins ago", active: true },
+              { key: '"allowed_origins"', msg: "Added array", time: "15 mins ago", active: false },
             ].map(({ key, msg, time, active }) => (
               <div key={key} className="flex gap-2 items-start relative">
                 <div
@@ -472,7 +449,14 @@ export default function JsonEditor() {
                     </span>{" "}
                     value
                   </p>
-                  <p style={{ fontSize: "10px", color: "#d9c2b6", marginTop: "4px", letterSpacing: "0.05em" }}>
+                  <p
+                    style={{
+                      fontSize: "10px",
+                      color: "#d9c2b6",
+                      marginTop: "4px",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
                     {time}
                   </p>
                 </div>

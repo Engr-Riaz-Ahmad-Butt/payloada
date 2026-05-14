@@ -5,7 +5,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "JWT Decoder — JSONKit Pro Workspace",
-  description: "Decode, inspect, and verify JSON Web Tokens instantly in the JSONKit terminal-inspired workspace.",
+  description:
+    "Decode, inspect, and verify JSON Web Tokens instantly in the JSONKit terminal-inspired workspace.",
 };
 
 export default function JwtDecoderPage() {
