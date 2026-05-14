@@ -131,3 +131,19 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #c07040;
 }
+
+.jsonlens-diff-line-removed {
+  background: rgba(143, 54, 54, 0.22);
+}
+
+.jsonlens-diff-line-added {
+  background: rgba(86, 138, 93, 0.18);
+}
+
+.jsonlens-diff-gutter-removed {
+  border-left: 2px solid #efb0a8;
+}
+
+.jsonlens-diff-gutter-added {
+  border-left: 2px solid #9ad598;
+}
