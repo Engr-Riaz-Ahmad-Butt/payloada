@@ -20,9 +20,9 @@ export default function Footer() {
         {/* Left */}
         <div className="flex items-center gap-4">
           <span className="font-bold" style={{ color: "#C07040" }}>
-            JSONKit
+            jsonLines
           </span>
-          <span style={{ color: "#d9c2b6" }}>© 2024 JSONKit Terminal. All rights reserved.</span>
+          <span style={{ color: "#d9c2b6" }}>© 2024 jsonLines Terminal. All rights reserved.</span>
         </div>
 
         {/* Right */}

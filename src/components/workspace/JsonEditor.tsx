@@ -57,7 +57,7 @@ export default function JsonEditor() {
   const handleExport = () => {
     downloadFile(
       value,
-      `jsonkit-export-${new Date().toISOString().split("T")[0]}.json`,
+      `jsonlines-export-${new Date().toISOString().split("T")[0]}.json`,
       "application/json",
     );
   };
@@ -147,7 +147,7 @@ export default function JsonEditor() {
             }}
             onMount={(editor, monaco) => {
               // Custom JSON token colors
-              monaco.editor.defineTheme("jsonkit-dark", {
+              monaco.editor.defineTheme("jsonlines-dark", {
                 base: "vs-dark",
                 inherit: true,
                 rules: [
@@ -170,7 +170,7 @@ export default function JsonEditor() {
                   "editorIndentGuide.background1": "#262626",
                 },
               });
-              monaco.editor.setTheme("jsonkit-dark");
+              monaco.editor.setTheme("jsonlines-dark");
 
               editor.onDidChangeCursorPosition((e: MonacoEditor.ICursorPositionChangedEvent) => {
                 setCursorPos({
@@ -250,7 +250,7 @@ export default function JsonEditor() {
                 Invalid JSON
               </span>
             )}
-            <span style={{ color: "#d9c2b6", marginLeft: "8px" }}>© 2024 JSONKit Terminal.</span>
+            <span style={{ color: "#d9c2b6", marginLeft: "8px" }}>© 2024 jsonLines Terminal.</span>
           </div>
         </footer>
       </div>

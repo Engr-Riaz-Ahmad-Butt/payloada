@@ -135,7 +135,7 @@ const seoLinks = [
 
 const faqs = [
   {
-    question: "Is JSONLens only a formatter?",
+    question: "Is jsonLines only a formatter?",
     answer:
       "No. It is designed as a JSON workspace that combines formatting, validation, tree exploration, diffing, searching, and conversion in one flow.",
   },
@@ -147,7 +147,7 @@ const faqs = [
   {
     question: "Can I convert JSON to TypeScript or Zod?",
     answer:
-      "Yes. JSONLens includes integrated TypeScript, Zod, Schema, Prisma, Mongoose, CSV, YAML, and XML generation inside the workspace.",
+      "Yes. jsonLines includes integrated TypeScript, Zod, Schema, Prisma, Mongoose, CSV, YAML, and XML generation inside the workspace.",
   },
   {
     question: "Can I compare two JSON payloads?",
@@ -267,7 +267,7 @@ export function WorkspaceContent() {
                         {"\n"}
                         <span className="text-[#d6c3b5]">{`  "users": [`}</span>
                         {"\n"}
-                        <span className="text-[#7db87d]">{`    { "email": "aisha@jsonlens.dev" }`}</span>
+                        <span className="text-[#7db87d]">{`    { "email": "aisha@jsonlines.dev" }`}</span>
                         {"\n"}
                         <span className="text-[#d6c3b5]">{`  ],`}</span>
                         {"\n"}
@@ -331,7 +331,7 @@ export function WorkspaceContent() {
           <SectionFrame
             eyebrow="Workflow"
             title="Paste → Validate → Explore → Convert → Download"
-            description="JSONLens should feel like a compact control room for developer payload work."
+            description="jsonLines should feel like a compact control room for developer payload work."
           >
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
               {workflowSteps.map((step, index) => (
@@ -391,13 +391,13 @@ export function WorkspaceContent() {
 
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
           <SectionFrame
-            eyebrow="What Is JSONLens?"
+            eyebrow="What Is jsonLines?"
             title="A homepage that works like a product entry point"
             description="This should read like a trustworthy developer workspace, not a generic formatter landing page."
           >
             <div className="space-y-4 text-[15px] leading-7 text-[#b8a69a]">
               <p>
-                JSONLens is a modern developer workspace for formatting, validating, exploring,
+                jsonLines is a modern developer workspace for formatting, validating, exploring,
                 comparing, converting, and understanding JSON faster. The homepage keeps the live
                 tool above the fold so people can start working immediately.
               </p>

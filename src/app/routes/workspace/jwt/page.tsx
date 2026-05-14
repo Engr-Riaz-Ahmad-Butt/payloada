@@ -4,9 +4,9 @@ import JwtDecoder from "@/components/workspace/JwtDecoder";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "JWT Decoder — JSONKit Pro Workspace",
+  title: "JWT Decoder — jsonLines Pro Workspace",
   description:
-    "Decode, inspect, and verify JSON Web Tokens instantly in the JSONKit terminal-inspired workspace.",
+    "Decode, inspect, and verify JSON Web Tokens instantly in the jsonLines terminal-inspired workspace.",
 };
 
 export default function JwtDecoderPage() {

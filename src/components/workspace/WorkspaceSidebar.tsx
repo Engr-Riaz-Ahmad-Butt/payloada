@@ -32,7 +32,7 @@ export default function WorkspaceSidebar({ active }: SidebarProps) {
             className="font-bold leading-none"
             style={{ color: "#C07040", fontSize: "20px", fontWeight: 800 }}
           >
-            JSONKit
+            jsonLines
           </h1>
           <p
             style={{

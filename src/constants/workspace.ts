@@ -6,9 +6,9 @@ export const SAMPLE_USER_JSON = `{
     {
       "id": 1,
       "name": "Aisha Khan",
-      "email": "aisha@jsonlens.dev",
+      "email": "aisha@jsonlines.dev",
       "profile": {
-        "email": "aisha@jsonlens.dev",
+        "email": "aisha@jsonlines.dev",
         "age": "29",
         "role": "editor",
         "isAdmin": false
@@ -17,9 +17,9 @@ export const SAMPLE_USER_JSON = `{
     {
       "id": 2,
       "name": "Bilal Ahmed",
-      "email": "bilal@jsonlens.dev",
+      "email": "bilal@jsonlines.dev",
       "profile": {
-        "email": "bilal@jsonlens.dev",
+        "email": "bilal@jsonlines.dev",
         "age": 34,
         "role": "owner",
         "isAdmin": true

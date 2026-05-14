@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── JSONKit Design Tokens ── */
+/* ── jsonLines Design Tokens ── */
 @theme inline {
   /* Colors */
   --color-obsidian-base: #080808;
@@ -132,18 +132,18 @@
   background: #c07040;
 }
 
-.jsonlens-diff-line-removed {
+.jsonlines-diff-line-removed {
   background: rgba(143, 54, 54, 0.22);
 }
 
-.jsonlens-diff-line-added {
+.jsonlines-diff-line-added {
   background: rgba(86, 138, 93, 0.18);
 }
 
-.jsonlens-diff-gutter-removed {
+.jsonlines-diff-gutter-removed {
   border-left: 2px solid #efb0a8;
 }
 
-.jsonlens-diff-gutter-added {
+.jsonlines-diff-gutter-added {
   border-left: 2px solid #9ad598;
 }

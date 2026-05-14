@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 // ── The JSON we'll "type" ───────────────────────────────────────────────────
 const FULL_JSON_STRING = `{
   "project": {
-    "name": "JSONKit",
+    "name": "jsonLines",
     "version": "1.0.0",
     "features": [
       "Validation",

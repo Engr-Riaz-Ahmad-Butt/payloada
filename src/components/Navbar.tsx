@@ -22,7 +22,7 @@ export default function Navbar() {
           className="text-2xl font-black tracking-tight"
           style={{ color: "#C07040", fontFamily: "Inter, sans-serif" }}
         >
-          JSONKit
+          jsonLines
         </span>
 
         <div className="hidden md:flex items-center gap-6">

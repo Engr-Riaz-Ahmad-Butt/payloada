@@ -583,7 +583,7 @@ export function LiveJsonWorkspace() {
       case "download":
         handleDownload(
           workspaceView === "converters" ? converterOutput : formattedOutput || source,
-          "jsonlens-output.txt",
+          "jsonlines-output.txt",
         );
         break;
       default:
@@ -600,7 +600,7 @@ export function LiveJsonWorkspace() {
               <Braces className="size-5 text-[#c07040]" />
             </div>
             <div>
-              <h2 className="text-[17px] font-bold tracking-tight text-[#d3884e]">JSONLens</h2>
+              <h2 className="text-[17px] font-bold tracking-tight text-[#d3884e]">jsonLines</h2>
               <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-[#d6c3b5]">
                 Pro Workspace
               </p>
@@ -760,7 +760,7 @@ export function LiveJsonWorkspace() {
                         workspaceView === "converters"
                           ? converterOutput
                           : formattedOutput || source,
-                        "jsonlens-output.txt",
+                        "jsonlines-output.txt",
                       )
                     }
                     title="Download"
@@ -1328,7 +1328,7 @@ function ConverterWorkspace({
           />
           <SmallAction
             label="Download"
-            onClick={() => onDownload(output, `jsonlens-${converterTab}.txt`)}
+            onClick={() => onDownload(output, `jsonlines-${converterTab}.txt`)}
           />
           <SmallAction label="Regenerate" onClick={() => toast.success("Regenerated output")} />
           <SmallAction
@@ -1405,8 +1405,8 @@ function DiffWorkspace({
         },
         options: {
           isWholeLine: true,
-          className: "jsonlens-diff-line-removed",
-          linesDecorationsClassName: "jsonlens-diff-gutter-removed",
+          className: "jsonlines-diff-line-removed",
+          linesDecorationsClassName: "jsonlines-diff-gutter-removed",
         },
       })),
     );
@@ -1422,8 +1422,8 @@ function DiffWorkspace({
         },
         options: {
           isWholeLine: true,
-          className: "jsonlens-diff-line-added",
-          linesDecorationsClassName: "jsonlens-diff-gutter-added",
+          className: "jsonlines-diff-line-added",
+          linesDecorationsClassName: "jsonlines-diff-gutter-added",
         },
       })),
     );
@@ -1516,8 +1516,8 @@ function DiffWorkspace({
         </div>
       </div>
 
-      <div className="grid min-h-0 flex-1 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-h-0 border-r border-[#262626]">
+      <div className="grid min-h-0 flex-1 2xl:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-h-0 2xl:border-r 2xl:border-[#262626]">
           <div className="grid grid-cols-2 border-b border-[#262626] bg-[#111111] font-mono text-[12px] text-[#d6c3b5]">
             <div className="border-r border-[#262626] px-5 py-3">
               Original JSON (prod-config-v1.json)
@@ -1525,7 +1525,7 @@ function DiffWorkspace({
             <div className="px-5 py-3">Modified JSON (prod-config-v2.json)</div>
           </div>
 
-          <div className="h-full min-h-[520px] bg-[#050505]">
+          <div className="h-[420px] bg-[#050505] lg:h-[520px] xl:h-[620px] 2xl:h-[calc(100vh-240px)]">
             <MonacoDiffEditor
               height="100%"
               language="json"
@@ -1568,7 +1568,7 @@ function DiffWorkspace({
           </div>
         </div>
 
-        <aside className="min-h-0 overflow-y-auto bg-[#121212]">
+        <aside className="min-h-0 border-t border-[#262626] bg-[#121212] 2xl:border-t-0">
           <SidebarSection title="Diff Summary">
             {summary ? (
               <div className="space-y-4">
