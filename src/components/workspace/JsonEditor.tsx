@@ -96,13 +96,21 @@ export default function JsonEditor() {
   };
 
   const handleExport = () => {
-    const blob = new Blob([value], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "MyProject.json";
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      // Always export as pretty-printed, valid JSON with 2-space indentation
+      const formatted = JSON.stringify(JSON.parse(value), null, 2);
+      const blob = new Blob([formatted], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      // Timestamped filename: e.g. jsonkit-export-2024-05-14.json
+      const date = new Date().toISOString().slice(0, 10);
+      a.download = `jsonkit-export-${date}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // JSON is invalid — do nothing (status bar already shows "Invalid JSON")
+    }
   };
 
   return (
