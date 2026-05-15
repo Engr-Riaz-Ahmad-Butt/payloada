@@ -6,36 +6,19 @@ import { cn } from "@/lib/utils";
 
 import { ROLE_MODES } from "../core/constants";
 import { IconButton } from "../shared";
-import type { ConverterTab, InspectorView, RoleMode, WorkspaceView } from "../core/types";
+import type { InspectorView, RoleMode } from "../core/types";
 
 export function WorkspaceModeStrip({
   roleMode,
   setRoleMode,
   inspectorView,
   setInspectorView,
-  roleModeInfo,
-  handleRoleAction,
   onDownload,
 }: {
   roleMode: RoleMode;
   setRoleMode: (mode: RoleMode) => void;
   inspectorView: InspectorView;
   setInspectorView: (view: InspectorView) => void;
-  roleModeInfo: {
-    description: string;
-    actions: Array<{
-      label: string;
-      view: WorkspaceView;
-      inspector?: InspectorView;
-      converterTab?: ConverterTab;
-    }>;
-  };
-  handleRoleAction: (action: {
-    label: string;
-    view: WorkspaceView;
-    inspector?: InspectorView;
-    converterTab?: ConverterTab;
-  }) => void;
   onDownload: () => void;
 }) {
   return (
@@ -97,25 +80,6 @@ export function WorkspaceModeStrip({
             onClick={onDownload}
             title="Download"
           />
-        </div>
-      </div>
-
-      <div className="mt-3 flex flex-col gap-3 rounded-sm border border-[#262626] bg-[#101010] px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <p className="text-[12px] font-semibold text-[#f5f1ea]">{roleMode} mode</p>
-          <p className="mt-1 text-[13px] leading-6 text-[#a89589]">{roleModeInfo.description}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {roleModeInfo.actions.map((action) => (
-            <button
-              key={`${roleMode}-${action.label}`}
-              type="button"
-              onClick={() => handleRoleAction(action)}
-              className="rounded-sm border border-[#2a2a2a] bg-[#0a0a0a] px-3 py-1.5 text-xs font-semibold text-[#d6c3b5] transition-colors hover:border-[#c07040]"
-            >
-              {action.label}
-            </button>
-          ))}
         </div>
       </div>
     </div>

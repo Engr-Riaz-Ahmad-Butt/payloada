@@ -48,7 +48,6 @@ export function LiveJsonWorkspace() {
     diffSummary,
     decodedJwt,
     filteredCommands,
-    roleModeInfo,
   } = derived;
   const {
     setRoleMode,
@@ -68,7 +67,6 @@ export function LiveJsonWorkspace() {
     setJwtInput,
     openWorkspace,
     openConverterWorkspace,
-    handleRoleAction,
     handleCopy,
     handleDownload,
     handlePaste,
@@ -91,42 +89,40 @@ export function LiveJsonWorkspace() {
 
         <div className="flex min-w-0 flex-col">
           <WorkspaceTopbar
+            workspaceView={workspaceView}
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             activateSearch={activateSearch}
           />
 
           <div className="flex min-h-0 flex-1 flex-col bg-surface">
-            <WorkspaceModeStrip
-              roleMode={roleMode}
-              setRoleMode={setRoleMode}
-              inspectorView={inspectorView}
-              setInspectorView={setInspectorView}
-              roleModeInfo={roleModeInfo}
-              handleRoleAction={handleRoleAction}
-              onDownload={() =>
-                handleDownload(
-                  workspaceView === "converters" ? converterOutput : formattedOutput || source,
-                  "jsonlines-output.txt",
-                )
-              }
-            />
+            {workspaceView === "editor" ? (
+              <WorkspaceModeStrip
+                roleMode={roleMode}
+                setRoleMode={setRoleMode}
+                inspectorView={inspectorView}
+                setInspectorView={setInspectorView}
+                onDownload={() => handleDownload(formattedOutput || source, "jsonlines-output.txt")}
+              />
+            ) : null}
 
-            <WorkspaceActionToolbar
-              fileInputRef={fileInputRef}
-              onPaste={handlePaste}
-              onUploadClick={() => fileInputRef.current?.click()}
-              onLoadUrlToggle={() => setShowUrlInput((value) => !value)}
-              onTrySample={loadSampleJson}
-              onUpload={handleUpload}
-              onFormat={handleFormat}
-              onMinify={handleMinify}
-              onRepair={handleRepair}
-              onOpenConverters={() => openConverterWorkspace()}
-              onJsonPath={activateTreeInspector}
-            />
+            {workspaceView === "editor" ? (
+              <WorkspaceActionToolbar
+                fileInputRef={fileInputRef}
+                onPaste={handlePaste}
+                onUploadClick={() => fileInputRef.current?.click()}
+                onLoadUrlToggle={() => setShowUrlInput((value) => !value)}
+                onTrySample={loadSampleJson}
+                onUpload={handleUpload}
+                onFormat={handleFormat}
+                onMinify={handleMinify}
+                onRepair={handleRepair}
+                onOpenConverters={() => openConverterWorkspace()}
+                onJsonPath={activateTreeInspector}
+              />
+            ) : null}
 
-            {showUrlInput ? (
+            {workspaceView === "editor" && showUrlInput ? (
               <div className="flex flex-col gap-3 border-b border-ui-border bg-surface-elevated px-4 py-3 sm:flex-row sm:items-center sm:px-5">
                 <input
                   value={urlValue}
