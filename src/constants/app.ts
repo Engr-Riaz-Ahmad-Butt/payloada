@@ -13,13 +13,13 @@ export const MVP_FEATURES = [
 
 export const APP_ROUTES = {
   HOME: "/",
-  WORKSPACE: "/routes/workspace",
-  JWT_DECODER: "/routes/workspace/jwt",
-  DIFF: "/routes/workspace/diff",
-  CONVERTERS: "/routes/workspace/convert",
-  HISTORY: "/routes/workspace/history",
-  SETTINGS: "/routes/workspace/settings",
-  SUPPORT: "/routes/workspace/support",
+  WORKSPACE: "/workspace",
+  JWT_DECODER: "/workspace/jwt",
+  DIFF: "/workspace/diff",
+  CONVERTERS: "/workspace/convert",
+  HISTORY: "/workspace/history",
+  SETTINGS: "/workspace/settings",
+  SUPPORT: "/workspace/support",
 } as const;
 
 export const MAIN_NAV_ITEMS = [

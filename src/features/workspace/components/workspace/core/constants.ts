@@ -1,0 +1,106 @@
+import { Braces, FileDiff, FolderClock, LockKeyhole, WandSparkles } from "lucide-react";
+
+import type { ConverterTab, NavItem, RoleMode, RoleModeInfo } from "./types";
+
+export const SAMPLE_JSON = `{
+  "status": "success",
+  "data": {
+    "users": [
+      {
+        "id": 10293,
+        "username": "jdoe_99",
+        "profile": {
+          "age": "28",
+          "email": "jdoe@example.com"
+        }
+      }
+    ]
+  }
+}`;
+
+export const SAMPLE_DIFF_OLD = `{
+  "user": {
+    "id": "42",
+    "status": "pending",
+    "oldEmail": "legacy@example.com"
+  }
+}`;
+
+export const SAMPLE_DIFF_NEW = `{
+  "user": {
+    "id": 42,
+    "status": "active",
+    "email": "fresh@example.com"
+  }
+}`;
+
+export const SAMPLE_JWT =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Impzb25MaW5lcyBEZW1vIiwicm9sZSI6ImRldmVsb3BlciIsImlhdCI6MTUxNjIzOTAyMn0.FN8owgmjXX0Qo5py9fJ6ii3UsA5S5HL90CcN8yzZY4w";
+
+export const ROLE_MODES: RoleMode[] = ["General", "Frontend", "Backend", "QA", "Student"];
+
+export const CONVERTER_TABS: ConverterTab[] = [
+  "TypeScript",
+  "Zod",
+  "CSV",
+  "YAML",
+  "XML",
+  "Schema",
+  "Prisma",
+  "Mongoose",
+];
+
+export const ROLE_MODE_INFO: RoleModeInfo = {
+  General: {
+    description: "Balanced workspace for formatting, validation, tree view, search, and downloads.",
+    actions: [
+      { label: "Validation status", view: "editor", inspector: "status" },
+      { label: "Tree explorer", view: "editor", inspector: "tree" },
+      { label: "Graph view", view: "editor", inspector: "graph" },
+      { label: "Search results", view: "editor", inspector: "search" },
+    ],
+  },
+  Frontend: {
+    description:
+      "Focus on API responses, TypeScript, Zod, and frontend-friendly payload inspection.",
+    actions: [
+      { label: "TypeScript", view: "converters", converterTab: "TypeScript" },
+      { label: "Zod", view: "converters", converterTab: "Zod" },
+      { label: "Formatted JSON", view: "editor", inspector: "formatted" },
+    ],
+  },
+  Backend: {
+    description: "Focus on contracts, schema generation, storage models, and integration output.",
+    actions: [
+      { label: "JSON Schema", view: "converters", converterTab: "Schema" },
+      { label: "Prisma", view: "converters", converterTab: "Prisma" },
+      { label: "Mongoose", view: "converters", converterTab: "Mongoose" },
+      { label: "Graph view", view: "editor", inspector: "graph" },
+    ],
+  },
+  QA: {
+    description:
+      "Focus on expected vs actual comparisons, path lookup, and test-friendly inspection.",
+    actions: [
+      { label: "Diff tool", view: "diff" },
+      { label: "JSONPath", view: "editor", inspector: "tree" },
+      { label: "Search paths", view: "editor", inspector: "search" },
+    ],
+  },
+  Student: {
+    description: "Focus on readable errors, examples, and guided exploration of JSON structure.",
+    actions: [
+      { label: "Validation status", view: "editor", inspector: "status" },
+      { label: "Tree explorer", view: "editor", inspector: "tree" },
+      { label: "Try sample", view: "editor", inspector: "formatted" },
+    ],
+  },
+};
+
+export const NAV_ITEMS: NavItem[] = [
+  { id: "editor", label: "Editor", icon: Braces },
+  { id: "jwt", label: "JWT Decoder", icon: LockKeyhole },
+  { id: "diff", label: "JSON Diff", icon: FileDiff },
+  { id: "converters", label: "Converters", icon: WandSparkles },
+  { id: "history", label: "History", icon: FolderClock },
+];

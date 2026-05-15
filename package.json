@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
+    "@xyflow/react": "^12.10.2",
     "ajv": "^8.20.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -24,6 +25,7 @@
     "jwt-decode": "^4.0.0",
     "localforage": "^1.10.0",
     "lucide-react": "^1.14.0",
+    "monaco-editor": "^0.55.1",
     "next": "16.2.6",
     "papaparse": "^5.5.3",
     "quicktype-core": "^23.2.6",

@@ -1,6 +1,5 @@
 import type { JsonValue } from "@/types/json";
 import { generateJsonSchema } from "../converters/schema";
-import { appendPath } from "./search";
 
 /**
  * Generates an Axios fetch snippet.
@@ -48,4 +47,12 @@ export function collectWarnings(value: JsonValue): Array<{ path: string }> {
 
   visit(value, "$");
   return warnings;
+}
+
+function appendPath(parent: string, segment: string | number) {
+  if (typeof segment === "number") {
+    return `${parent}[${segment}]`;
+  }
+
+  return parent === "$" ? `$.${segment}` : `${parent}.${segment}`;
 }

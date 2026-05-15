@@ -1,5 +1,4 @@
 import type { JsonValue } from "@/types/json";
-import { appendPath } from "./search";
 
 const SENSITIVE_KEY_PATTERN =
   /(password|token|secret|api[_-]?key|authorization|client_secret|session|cookie)/i;
@@ -51,4 +50,12 @@ export function maskSensitiveValues(value: JsonValue): JsonValue {
   }
 
   return value;
+}
+
+function appendPath(parent: string, segment: string | number) {
+  if (typeof segment === "number") {
+    return `${parent}[${segment}]`;
+  }
+
+  return parent === "$" ? `$.${segment}` : `${parent}.${segment}`;
 }
