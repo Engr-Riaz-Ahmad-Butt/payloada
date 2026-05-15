@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 
 const FULL_JSON_STRING = `{
@@ -14,48 +15,56 @@ const FULL_JSON_STRING = `{
   }
 }`;
 
-function highlight(text: string): React.ReactNode[] {
-  const tokens: React.ReactNode[] = [];
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+
+function highlight(text: string): ReactNode[] {
+  const tokens: ReactNode[] = [];
   const regex =
     /("(?:[^"\\]|\\.)*")|(\b\d+(?:\.\d+)?\b)|(true|false|null)|([{}[\]])|([,:])|([\s\S])/g;
   let match: RegExpExecArray | null;
-  let i = 0;
+  let index = 0;
 
   while ((match = regex.exec(text)) !== null) {
     const [, str, num, kw, brace, punct, other] = match;
+
     if (str) {
       const before = text.slice(0, match.index).trimEnd();
       const isKey = /[{,]$/.test(before) || before === "";
       tokens.push(
-        <span key={i++} style={{ color: isKey ? "#C07040" : "#7DB87D" }}>
+        <span key={index++} style={{ color: isKey ? "#C07040" : "#7DB87D" }}>
           {str}
         </span>,
       );
-    } else if (num) {
+      continue;
+    }
+
+    if (num) {
       tokens.push(
-        <span key={i++} style={{ color: "#D4B483" }}>
+        <span key={index++} style={{ color: "#D4B483" }}>
           {num}
         </span>,
       );
-    } else if (kw) {
+      continue;
+    }
+
+    if (kw) {
       tokens.push(
-        <span key={i++} style={{ color: "#ffb68e" }}>
+        <span key={index++} style={{ color: "#ffb68e" }}>
           {kw}
         </span>,
       );
-    } else if (brace || punct || other) {
-      tokens.push(
-        <span key={i++} style={{ color: "#d9c2b6" }}>
-          {brace ?? punct ?? other}
-        </span>,
-      );
+      continue;
     }
+
+    tokens.push(
+      <span key={index++} style={{ color: "#d9c2b6" }}>
+        {brace ?? punct ?? other}
+      </span>,
+    );
   }
 
   return tokens;
 }
-
-type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 function TreeNode({
   label,
@@ -78,19 +87,21 @@ function TreeNode({
 
     return (
       <div>
-        <div
-          className="cursor-pointer select-none py-0.5"
+        <button
+          type="button"
+          className="flex cursor-pointer items-center py-0.5 text-left select-none"
           style={{ paddingLeft: indent, color: "#d9c2b6" }}
           onClick={() => setOpen((current) => !current)}
         >
-          <span style={{ fontSize: 11, width: 12, display: "inline-block" }}>
-            {open ? "▾" : "▸"}
+          <span style={{ display: "inline-block", width: 12, fontSize: 11 }}>
+            {open ? "v" : ">"}
           </span>
           {label !== null ? (
             <span style={{ color: "#C07040", fontWeight: 500, marginLeft: 2 }}>{label}</span>
           ) : null}
           <span style={{ marginLeft: label !== null ? 6 : 0 }}>{badge}</span>
-        </div>
+        </button>
+
         {open
           ? entries.map(([key, child]) => (
               <TreeNode key={key} label={isArray ? null : key} value={child} depth={depth + 1} />
@@ -106,13 +117,9 @@ function TreeNode({
   if (typeof value === "string") {
     valueColor = "#7DB87D";
     displayValue = `"${value}"`;
-  }
-
-  if (typeof value === "number") {
+  } else if (typeof value === "number") {
     valueColor = "#D4B483";
-  }
-
-  if (typeof value === "boolean" || value === null) {
+  } else if (typeof value === "boolean" || value === null) {
     valueColor = "#ffb68e";
   }
 
@@ -139,8 +146,8 @@ export default function WorkspaceMockup() {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const id = setInterval(() => setCursorVisible((value) => !value), 530);
-    return () => clearInterval(id);
+    const intervalId = setInterval(() => setCursorVisible((value) => !value), 530);
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
@@ -150,36 +157,40 @@ export default function WorkspaceMockup() {
           charIndexRef.current += 1;
           const current = FULL_JSON_STRING.slice(0, charIndexRef.current);
           setTyped(current);
+
           try {
-            const parsed = JSON.parse(current) as JsonValue;
-            setParsedJson(parsed);
+            setParsedJson(JSON.parse(current) as JsonValue);
             setIsValid(true);
           } catch {
+            setParsedJson(null);
             setIsValid(false);
           }
+
           timerRef.current = setTimeout(tick, 28);
-        } else {
-          timerRef.current = setTimeout(() => {
-            directionRef.current = "backward";
-            tick();
-          }, 2800);
+          return;
         }
-      } else if (charIndexRef.current > 0) {
-        charIndexRef.current -= 3;
-        if (charIndexRef.current < 0) {
-          charIndexRef.current = 0;
-        }
+
+        timerRef.current = setTimeout(() => {
+          directionRef.current = "backward";
+          tick();
+        }, 2800);
+        return;
+      }
+
+      if (charIndexRef.current > 0) {
+        charIndexRef.current = Math.max(charIndexRef.current - 3, 0);
         const current = FULL_JSON_STRING.slice(0, charIndexRef.current);
         setTyped(current);
-        setIsValid(false);
         setParsedJson(null);
+        setIsValid(false);
         timerRef.current = setTimeout(tick, 12);
-      } else {
-        timerRef.current = setTimeout(() => {
-          directionRef.current = "forward";
-          tick();
-        }, 600);
+        return;
       }
+
+      timerRef.current = setTimeout(() => {
+        directionRef.current = "forward";
+        tick();
+      }, 600);
     };
 
     timerRef.current = setTimeout(tick, 400);
@@ -192,31 +203,36 @@ export default function WorkspaceMockup() {
   }, []);
 
   const lineCount = typed.split("\n").length;
+  const currentColumn = typed.length > 0 ? typed.split("\n").at(-1)!.length + 1 : 1;
 
   return (
     <div
-      className="relative mt-4 flex h-95 w-full max-w-5xl flex-col overflow-hidden border"
+      className="relative mt-4 flex min-h-[560px] w-full max-w-5xl flex-col overflow-hidden rounded-xl border md:mt-6 md:min-h-0 md:h-[520px]"
       style={{
         backgroundColor: "#0d0d0d",
         borderColor: "#262626",
-        borderRadius: "0.5rem",
         boxShadow: "0 8px 40px rgba(0,0,0,0.85)",
         fontFamily: "JetBrains Mono, monospace",
-        fontSize: "13px",
+        fontSize: "12px",
         lineHeight: "20px",
       }}
     >
-      <div className="flex h-full grow overflow-hidden">
-        <div className="flex flex-1 flex-col border-r" style={{ borderColor: "#262626" }}>
+      <div className="flex grow flex-col overflow-hidden md:flex-row">
+        <div
+          className="flex min-h-[300px] flex-[1.15] flex-col border-b md:min-h-0 md:flex-1 md:border-b-0 md:border-r"
+          style={{ borderColor: "#262626" }}
+        >
           <div
-            className="flex h-9.5 shrink-0 items-center justify-between border-b px-3"
+            className="flex h-10 shrink-0 items-center justify-between border-b px-3 sm:px-4"
             style={{ backgroundColor: "#080808", borderColor: "#262626" }}
           >
             <div className="flex items-center gap-2">
               <span style={{ color: "#d9c2b6", fontSize: 11 }}>{`<>`}</span>
               <span style={{ color: "#F5F1EA", fontSize: 12 }}>input.json</span>
             </div>
+
             <button
+              type="button"
               className="border px-2 py-0.5 text-xs transition-colors"
               style={{
                 borderColor: "#262626",
@@ -232,12 +248,12 @@ export default function WorkspaceMockup() {
 
           <div className="flex grow overflow-hidden">
             <div
-              className="flex w-[40px] shrink-0 flex-col items-end py-2 pr-2 select-none"
+              className="flex w-9 shrink-0 flex-col items-end py-2 pr-2 select-none sm:w-10"
               style={{
                 backgroundColor: "#080808",
                 borderRight: "1px solid #1a1a1a",
                 color: "#3a3a3a",
-                fontSize: 12,
+                fontSize: 11,
                 lineHeight: "20px",
               }}
             >
@@ -247,12 +263,12 @@ export default function WorkspaceMockup() {
             </div>
 
             <div
-              className="grow overflow-hidden p-2"
-              style={{ backgroundColor: "#080808", textAlign: "left" }}
+              className="grow overflow-hidden p-2 text-left sm:p-3"
+              style={{ backgroundColor: "#080808" }}
             >
               <pre
                 className="wrap-break-word whitespace-pre-wrap"
-                style={{ color: "#F5F1EA", lineHeight: "20px" }}
+                style={{ color: "#F5F1EA", lineHeight: "20px", fontSize: "12px" }}
               >
                 {highlight(typed)}
                 <span
@@ -272,16 +288,17 @@ export default function WorkspaceMockup() {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col">
+        <div className="flex min-h-[220px] flex-[0.85] flex-col md:min-h-0 md:flex-1">
           <div
-            className="flex h-9.5 shrink-0 items-center justify-between border-b px-3"
+            className="flex min-h-10 shrink-0 flex-col items-start gap-2 border-b px-3 py-2 sm:h-10 sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:py-0"
             style={{ backgroundColor: "#080808", borderColor: "#262626" }}
           >
             <div className="flex items-center gap-2">
-              <span style={{ color: "#d9c2b6", fontSize: 11 }}>☰</span>
+              <span style={{ color: "#d9c2b6", fontSize: 11 }}>TREE</span>
               <span style={{ color: "#F5F1EA", fontSize: 12 }}>Viewer</span>
             </div>
-            <div className="flex items-center gap-2">
+
+            <div className="flex w-full flex-wrap items-center gap-2 overflow-visible sm:w-auto sm:flex-nowrap">
               <div
                 className="flex items-center gap-1 border px-2 py-0.5"
                 style={{
@@ -294,9 +311,10 @@ export default function WorkspaceMockup() {
                   transition: "all 0.3s",
                 }}
               >
-                {isValid ? <span style={{ fontSize: 9 }}>✓</span> : null}
+                {isValid ? <span style={{ fontSize: 9 }}>OK</span> : null}
                 {isValid ? "VALID JSON" : "INVALID"}
               </div>
+
               <div
                 className="border px-2 py-0.5"
                 style={{
@@ -313,8 +331,8 @@ export default function WorkspaceMockup() {
           </div>
 
           <div
-            className="grow overflow-auto p-3"
-            style={{ backgroundColor: "#0a0a0a", textAlign: "left" }}
+            className="grow overflow-auto p-3 text-left sm:p-4"
+            style={{ backgroundColor: "#0a0a0a" }}
           >
             {parsedJson ? (
               <div
@@ -328,7 +346,7 @@ export default function WorkspaceMockup() {
               </div>
             ) : (
               <div
-                className="flex h-full items-center justify-center"
+                className="flex h-full items-center justify-center px-6 text-center"
                 style={{ color: "#3a3a3a", fontSize: 12 }}
               >
                 Waiting for valid JSON...
@@ -339,19 +357,18 @@ export default function WorkspaceMockup() {
       </div>
 
       <div
-        className="flex h-6 shrink-0 items-center justify-between border-t px-3"
+        className="flex shrink-0 flex-col items-start justify-between gap-1 border-t px-3 py-2 text-[10px] sm:h-6 sm:flex-row sm:items-center sm:gap-3 sm:py-0"
         style={{
           backgroundColor: "#080808",
           borderColor: "#1a1a1a",
-          fontSize: 11,
           color: "#3a3a3a",
         }}
       >
         <span>
-          Ln {lineCount}, Col {typed.length > 0 ? typed.split("\n").at(-1)!.length + 1 : 1}
+          Ln {lineCount}, Col {currentColumn}
         </span>
         <span style={{ color: isValid ? "#7DB87D" : "#3a3a3a", transition: "color 0.3s" }}>
-          {isValid ? "● JSON" : "○ JSON"}
+          {isValid ? "JSON READY" : "JSON WAITING"}
         </span>
       </div>
     </div>
