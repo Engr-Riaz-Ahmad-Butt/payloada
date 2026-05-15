@@ -79,10 +79,10 @@ export function EditorWorkspace({
       <div
         className={cn(
           "flex min-h-0 flex-col",
-          inspectorView === "none" ? "" : "border-r border-[#262626]",
+          inspectorView === "none" ? "" : "border-r border-ui-border",
         )}
       >
-        <div className="flex items-center justify-between border-b border-[#262626] bg-[#171717] px-5 py-3">
+        <div className="flex items-center justify-between border-b border-ui-border bg-[#171717] px-5 py-3">
           <span className="font-mono text-sm text-[#d6c3b5]">input.json</span>
           <div className="flex items-center gap-2 text-[#d6c3b5]">
             <button type="button" onClick={() => onCopy(source, "Copied editor content")}>
@@ -102,7 +102,7 @@ export function EditorWorkspace({
                   <FileJson2 className="size-5 text-[#d69463]" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-[#f5f1ea]">Paste your JSON here</h3>
+                  <h3 className="text-lg font-semibold text-text-primary">Paste your JSON here</h3>
                   <p className="mt-2 text-sm text-[#a89589]">
                     You can also upload a file, load a URL, or try a sample.
                   </p>
@@ -141,7 +141,7 @@ export function EditorWorkspace({
           />
         </div>
 
-        <div className="flex items-center justify-between border-t border-[#262626] bg-[#111111] px-5 py-3 text-xs text-[#7b7068]">
+        <div className="flex items-center justify-between border-t border-ui-border bg-surface-elevated px-5 py-3 text-xs text-[#7b7068]">
           <div className="flex items-center gap-5">
             <span>UTF-8</span>
             <span>JSON</span>
@@ -153,10 +153,10 @@ export function EditorWorkspace({
         </div>
 
         {selectedNode ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#262626] bg-[#171717] px-5 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ui-border bg-[#171717] px-5 py-3">
             <div>
               <p className="text-[11px] uppercase tracking-[0.12em] text-[#7b7068]">Selected</p>
-              <p className="mt-1 font-mono text-sm text-[#f5f1ea]">{selectedNode.path}</p>
+              <p className="mt-1 font-mono text-sm text-text-primary">{selectedNode.path}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <SmallAction
@@ -180,7 +180,7 @@ export function EditorWorkspace({
 
       {inspectorView !== "none" ? (
         <aside className="flex min-h-0 flex-col overflow-y-auto bg-[#121212]">
-          <div className="flex items-center justify-between border-b border-[#262626] bg-[#171717] px-4 py-3">
+          <div className="flex items-center justify-between border-b border-ui-border bg-[#171717] px-4 py-3">
             <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#a89589]">
               {inspectorView === "status"
                 ? "Status"
@@ -274,7 +274,7 @@ export function EditorWorkspace({
                   <p className="text-sm text-[#a89589]">
                     Click any node to reveal its JSONPath and copy its value.
                   </p>
-                  <div className="overflow-x-auto rounded-sm border border-[#262626] bg-[#0a0a0a] p-3">
+                  <div className="overflow-x-auto rounded-sm border border-ui-border bg-[#0a0a0a] p-3">
                     <div className="min-w-max">
                       <TreeNode
                         label="root"
@@ -309,7 +309,7 @@ export function EditorWorkspace({
                         }}
                         className="w-full rounded-sm border border-[#2a2a2a] bg-[#0a0a0a] px-3 py-3 text-left transition-colors hover:border-[#c07040]"
                       >
-                        <p className="font-mono text-xs text-[#f5f1ea]">{match.path}</p>
+                        <p className="font-mono text-xs text-text-primary">{match.path}</p>
                         <p className="mt-1 text-xs text-[#a89589]">{match.preview}</p>
                       </button>
                     ))}

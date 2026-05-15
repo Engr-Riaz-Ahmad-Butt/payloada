@@ -14,7 +14,7 @@ export function WorkspaceTopbar({
   activateSearch: () => void;
 }) {
   return (
-    <header className="flex h-16 items-center justify-between border-b border-[#262626] bg-[#080808] px-5 sm:px-6 lg:px-10">
+    <header className="flex h-16 items-center justify-between border-b border-ui-border bg-obsidian-base px-5 sm:px-6 lg:px-10">
       <div className="flex min-w-[320px] items-center gap-4">
         <Search className="size-5 text-[#d6c3b5]" />
         <input
@@ -25,7 +25,7 @@ export function WorkspaceTopbar({
           }}
           onFocus={activateSearch}
           placeholder="Search files, actions, or data..."
-          className="w-full bg-transparent text-[15px] text-[#f5f1ea] outline-none placeholder:text-[#5b5450]"
+          className="w-full bg-transparent text-[15px] text-text-primary outline-none placeholder:text-outline-variant"
         />
       </div>
 
@@ -38,7 +38,7 @@ export function WorkspaceTopbar({
               "border-b-2 pb-1 transition-colors",
               index === 0
                 ? "border-[#c07040] text-[#d69463]"
-                : "border-transparent hover:text-[#f5f1ea]",
+                : "border-transparent hover:text-text-primary",
             )}
           >
             {item}

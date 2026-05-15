@@ -49,7 +49,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section className="w-full max-w-[1200px] px-4 py-14 md:px-8">
+    <section className="w-full max-w-300 px-4 py-14 md:px-8">
       <div className="mb-8 flex flex-col gap-3 md:mb-10">
         <p
           className="text-xs font-semibold uppercase tracking-[0.14em]"

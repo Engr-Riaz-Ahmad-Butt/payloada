@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Bell, CircleUserRound } from "lucide-react";
 
 const navLinks = [
   { label: "Workspace", href: "#", active: true },
@@ -63,13 +64,9 @@ export default function Navbar() {
         >
           Deploy
         </button>
-        <div className="flex items-center gap-2 ml-2" style={{ color: "#d9c2b6" }}>
-          <span className="material-symbols-outlined cursor-pointer transition-colors hover:text-[#ffb68e] text-[20px]">
-            notifications
-          </span>
-          <span className="material-symbols-outlined cursor-pointer transition-colors hover:text-[#ffb68e] text-[20px]">
-            account_circle
-          </span>
+        <div className="ml-2 flex items-center gap-2" style={{ color: "#d9c2b6" }}>
+          <Bell className="size-5 cursor-pointer transition-colors hover:text-[#ffb68e]" />
+          <CircleUserRound className="size-5 cursor-pointer transition-colors hover:text-[#ffb68e]" />
         </div>
       </div>
     </nav>

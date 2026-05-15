@@ -79,7 +79,7 @@ function TreeNode({
     return (
       <div>
         <div
-          className="cursor-pointer select-none py-[2px]"
+          className="cursor-pointer select-none py-0.5"
           style={{ paddingLeft: indent, color: "#d9c2b6" }}
           onClick={() => setOpen((current) => !current)}
         >
@@ -117,7 +117,7 @@ function TreeNode({
   }
 
   return (
-    <div className="flex items-center gap-1 py-[2px]" style={{ paddingLeft: indent + 16 }}>
+    <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: indent + 16 }}>
       {label !== null ? (
         <>
           <span style={{ color: "#C07040", fontWeight: 500 }}>{label}</span>
@@ -195,7 +195,7 @@ export default function WorkspaceMockup() {
 
   return (
     <div
-      className="relative mt-4 flex h-[380px] w-full max-w-5xl flex-col overflow-hidden border"
+      className="relative mt-4 flex h-95 w-full max-w-5xl flex-col overflow-hidden border"
       style={{
         backgroundColor: "#0d0d0d",
         borderColor: "#262626",
@@ -206,10 +206,10 @@ export default function WorkspaceMockup() {
         lineHeight: "20px",
       }}
     >
-      <div className="flex h-full flex-grow overflow-hidden">
+      <div className="flex h-full grow overflow-hidden">
         <div className="flex flex-1 flex-col border-r" style={{ borderColor: "#262626" }}>
           <div
-            className="flex h-[38px] flex-shrink-0 items-center justify-between border-b px-3"
+            className="flex h-9.5 shrink-0 items-center justify-between border-b px-3"
             style={{ backgroundColor: "#080808", borderColor: "#262626" }}
           >
             <div className="flex items-center gap-2">
@@ -230,9 +230,9 @@ export default function WorkspaceMockup() {
             </button>
           </div>
 
-          <div className="flex flex-grow overflow-hidden">
+          <div className="flex grow overflow-hidden">
             <div
-              className="flex w-[40px] flex-shrink-0 flex-col items-end py-2 pr-2 select-none"
+              className="flex w-[40px] shrink-0 flex-col items-end py-2 pr-2 select-none"
               style={{
                 backgroundColor: "#080808",
                 borderRight: "1px solid #1a1a1a",
@@ -247,11 +247,11 @@ export default function WorkspaceMockup() {
             </div>
 
             <div
-              className="flex-grow overflow-hidden p-2"
+              className="grow overflow-hidden p-2"
               style={{ backgroundColor: "#080808", textAlign: "left" }}
             >
               <pre
-                className="whitespace-pre-wrap break-words"
+                className="wrap-break-word whitespace-pre-wrap"
                 style={{ color: "#F5F1EA", lineHeight: "20px" }}
               >
                 {highlight(typed)}
@@ -274,7 +274,7 @@ export default function WorkspaceMockup() {
 
         <div className="flex flex-1 flex-col">
           <div
-            className="flex h-[38px] flex-shrink-0 items-center justify-between border-b px-3"
+            className="flex h-9.5 shrink-0 items-center justify-between border-b px-3"
             style={{ backgroundColor: "#080808", borderColor: "#262626" }}
           >
             <div className="flex items-center gap-2">
@@ -313,7 +313,7 @@ export default function WorkspaceMockup() {
           </div>
 
           <div
-            className="flex-grow overflow-auto p-3"
+            className="grow overflow-auto p-3"
             style={{ backgroundColor: "#0a0a0a", textAlign: "left" }}
           >
             {parsedJson ? (
@@ -339,7 +339,7 @@ export default function WorkspaceMockup() {
       </div>
 
       <div
-        className="flex h-[24px] flex-shrink-0 items-center justify-between border-t px-3"
+        className="flex h-6 shrink-0 items-center justify-between border-t px-3"
         style={{
           backgroundColor: "#080808",
           borderColor: "#1a1a1a",

@@ -123,10 +123,10 @@ export function DiffWorkspace({
   }, [syncScrolling]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#080808]">
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#262626] bg-[#111111] px-5 py-3">
+    <div className="flex h-full min-h-0 flex-col bg-obsidian-base">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-ui-border bg-surface-elevated px-5 py-3">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-[15px] font-semibold text-[#f5f1ea]">
+          <div className="flex items-center gap-2 text-[15px] font-semibold text-text-primary">
             <FileDiff className="size-4 text-[#c07040]" />
             JSON Diff Mode
           </div>
@@ -179,15 +179,15 @@ export function DiffWorkspace({
       </div>
 
       <div className="grid min-h-0 flex-1 2xl:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="min-h-0 2xl:border-r 2xl:border-[#262626]">
-          <div className="grid grid-cols-2 border-b border-[#262626] bg-[#111111] font-mono text-[12px] text-[#d6c3b5]">
-            <div className="border-r border-[#262626] px-5 py-3">
+        <div className="min-h-0 2xl:border-r 2xl:border-ui-border">
+          <div className="grid grid-cols-2 border-b border-ui-border bg-surface-elevated font-mono text-[12px] text-on-surface-variant">
+            <div className="border-r border-ui-border px-5 py-3">
               Original JSON (prod-config-v1.json)
             </div>
             <div className="px-5 py-3">Modified JSON (prod-config-v2.json)</div>
           </div>
 
-          <div className="h-[420px] bg-[#050505] lg:h-[520px] xl:h-[620px] 2xl:h-[calc(100vh-240px)]">
+          <div className="h-105 bg-[#050505] lg:h-130 xl:h-155 2xl:h-[calc(100vh-240px)]">
             <MonacoDiffEditor
               height="100%"
               language="json"
@@ -230,7 +230,7 @@ export function DiffWorkspace({
           </div>
         </div>
 
-        <aside className="min-h-0 border-t border-[#262626] bg-[#121212] 2xl:border-t-0">
+        <aside className="min-h-0 border-t border-ui-border bg-surface-elevated 2xl:border-t-0">
           <SidebarSection title="Diff Summary">
             {summary ? (
               <div className="space-y-4">

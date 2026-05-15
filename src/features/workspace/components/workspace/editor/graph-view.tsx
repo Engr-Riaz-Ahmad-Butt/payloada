@@ -18,7 +18,7 @@ export function JsonGraphView({ value }: { value: JsonValue }) {
   const graph = useMemo(() => buildJsonGraph(value), [value]);
 
   return (
-    <div className="h-[520px] overflow-hidden rounded-sm border border-[#262626] bg-[#0a0a0a]">
+    <div className="h-130 overflow-hidden rounded-sm border border-ui-border bg-[#0a0a0a]">
       <ReactFlowProvider>
         <ReactFlow
           nodes={graph.nodes}
@@ -87,7 +87,7 @@ function JsonGraphNode({ data }: { data: GraphNodeData }) {
 
   return (
     <div
-      className="min-w-[170px] max-w-[220px] rounded-sm border px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+      className="min-w-[170px] max-w-55 rounded-sm border px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
       style={{
         backgroundColor: toneStyles.background,
         borderColor: toneStyles.border,

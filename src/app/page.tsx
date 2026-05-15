@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Code2 } from "lucide-react";
 
 import FeaturesSection from "@/features/home/components/features-section";
 import FaqSection from "@/features/home/components/faq-section";
@@ -52,7 +53,7 @@ export default function Home() {
       <Navbar />
 
       <main className="flex flex-1 flex-col items-center">
-        <section className="mt-8 flex w-full max-w-[1200px] flex-col items-center px-4 py-16 text-center md:px-8 md:py-12">
+        <section className="mt-8 flex w-full max-w-300 flex-col items-center px-4 py-16 text-center md:px-8 md:py-12">
           <h1
             className="mb-6 max-w-3xl leading-tight"
             style={{
@@ -99,7 +100,7 @@ export default function Home() {
               Get Started — It&apos;s Free
             </Link>
             <button
-              className="flex items-center justify-center gap-2 border px-6 py-3 transition-colors hover:bg-[#121212] active:scale-95"
+              className="flex items-center justify-center gap-2 border px-6 py-3 transition-colors hover:bg-surface-elevated active:scale-95"
               style={{
                 borderColor: "#262626",
                 color: "#F5F1EA",
@@ -111,7 +112,7 @@ export default function Home() {
                 borderRadius: "0.125rem",
               }}
             >
-              <span className="material-symbols-outlined text-[16px]">code</span>
+              <Code2 className="size-4" />
               View on GitHub
             </button>
           </div>
@@ -121,7 +122,7 @@ export default function Home() {
 
         <FeaturesSection />
 
-        <section className="w-full max-w-[1200px] px-4 py-14 md:px-8">
+        <section className="w-full max-w-300 px-4 py-14 md:px-8">
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_380px]">
             <div
               className="rounded border p-8"
@@ -171,7 +172,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full max-w-[1200px] px-4 py-14 md:px-8">
+        <section className="w-full max-w-300 px-4 py-14 md:px-8">
           <div className="mb-8">
             <p
               className="mb-2 text-xs font-semibold uppercase tracking-[0.14em]"
@@ -219,7 +220,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full max-w-[1200px] px-4 py-14 md:px-8">
+        <section className="w-full max-w-300 px-4 py-14 md:px-8">
           <div className="grid gap-6 xl:grid-cols-2">
             <div
               className="rounded border p-8"
@@ -297,7 +298,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full max-w-[1200px] px-4 py-14 md:px-8">
+        <section className="w-full max-w-300 px-4 py-14 md:px-8">
           <div className="mb-8">
             <p
               className="mb-2 text-xs font-semibold uppercase tracking-[0.14em]"

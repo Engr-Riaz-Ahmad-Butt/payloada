@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { TerminalSquare } from "lucide-react";
 
 export default function WorkspaceError({
   error,
@@ -16,7 +17,7 @@ export default function WorkspaceError({
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center bg-[#080808] text-[#ffb4ab]">
       <div className="max-w-md space-y-6 text-center">
-        <span className="material-symbols-outlined text-6xl">terminal_error</span>
+        <TerminalSquare className="mx-auto size-16" />
         <h2 className="text-2xl font-bold uppercase tracking-tight">Workspace Failure</h2>
         <p className="text-sm leading-relaxed text-[#d9c2b6]">
           A critical error occurred in the terminal environment.

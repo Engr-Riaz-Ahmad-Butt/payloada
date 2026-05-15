@@ -85,8 +85,8 @@ export function LiveJsonWorkspace() {
   } = actions;
 
   return (
-    <section className="overflow-hidden border border-[#262626] bg-[#080808] text-[#f5f1ea] shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
-      <div className="grid min-h-[920px] xl:grid-cols-[260px_minmax(0,1fr)]">
+    <section className="overflow-hidden border border-ui-border bg-obsidian-base text-text-primary shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
+      <div className="grid min-h-230 xl:grid-cols-[260px_minmax(0,1fr)]">
         <WorkspaceSidebar workspaceView={workspaceView} onOpenWorkspace={openWorkspace} />
 
         <div className="flex min-w-0 flex-col">
@@ -96,7 +96,7 @@ export function LiveJsonWorkspace() {
             activateSearch={activateSearch}
           />
 
-          <div className="flex min-h-0 flex-1 flex-col bg-[#131313]">
+          <div className="flex min-h-0 flex-1 flex-col bg-surface">
             <WorkspaceModeStrip
               roleMode={roleMode}
               setRoleMode={setRoleMode}
@@ -127,12 +127,12 @@ export function LiveJsonWorkspace() {
             />
 
             {showUrlInput ? (
-              <div className="flex items-center gap-3 border-b border-[#262626] bg-[#111111] px-5 py-3">
+              <div className="flex items-center gap-3 border-b border-ui-border bg-surface-elevated px-5 py-3">
                 <input
                   value={urlValue}
                   onChange={(event) => setUrlValue(event.target.value)}
                   placeholder="https://api.example.com/users"
-                  className="h-10 flex-1 rounded-sm border border-[#2a2a2a] bg-[#080808] px-3 text-sm text-[#f5f1ea] outline-none placeholder:text-[#5f5a56]"
+                  className="h-10 flex-1 rounded-sm border border-surface-container-high bg-obsidian-base px-3 text-sm text-text-primary outline-none placeholder:text-outline-variant"
                 />
                 <button
                   className="rounded-sm bg-[#c77742] px-4 py-2 text-sm font-semibold text-black"
