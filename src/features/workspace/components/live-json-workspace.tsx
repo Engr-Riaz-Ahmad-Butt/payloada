@@ -20,6 +20,7 @@ export function LiveJsonWorkspace() {
   const {
     workspaceView,
     previousWorkspaceView,
+    isSidebarCollapsed,
     roleMode,
     inspectorView,
     source,
@@ -65,6 +66,7 @@ export function LiveJsonWorkspace() {
     setDiffNew,
     setConverterTab,
     setJwtInput,
+    setIsSidebarCollapsed,
     openWorkspace,
     openConverterWorkspace,
     handleCopy,
@@ -84,8 +86,20 @@ export function LiveJsonWorkspace() {
 
   return (
     <section className="overflow-hidden border border-ui-border bg-obsidian-base text-text-primary shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
-      <div className="grid min-h-screen xl:min-h-230 xl:grid-cols-[260px_minmax(0,1fr)]">
-        <WorkspaceSidebar workspaceView={workspaceView} onOpenWorkspace={openWorkspace} />
+      <div
+        className="grid min-h-screen xl:min-h-230 xl:[grid-template-columns:var(--sidebar-columns)] xl:transition-[grid-template-columns] xl:duration-500 xl:ease-[cubic-bezier(0.77,0,0.18,1)]"
+        style={
+          {
+            "--sidebar-columns": isSidebarCollapsed ? "88px minmax(0,1fr)" : "260px minmax(0,1fr)",
+          } as React.CSSProperties
+        }
+      >
+        <WorkspaceSidebar
+          workspaceView={workspaceView}
+          onOpenWorkspace={openWorkspace}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
+        />
 
         <div className="flex min-w-0 flex-col">
           <WorkspaceTopbar

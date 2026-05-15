@@ -41,6 +41,7 @@ export function useLiveJsonWorkspace() {
 
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("editor");
   const [previousWorkspaceView, setPreviousWorkspaceView] = useState<WorkspaceView>("editor");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [roleMode, setRoleMode] = useState<RoleMode>("General");
   const [inspectorView, setInspectorView] = useState<InspectorView>("status");
   const [source, setSource] = useState(SAMPLE_JSON);
@@ -406,6 +407,7 @@ export function useLiveJsonWorkspace() {
     state: {
       workspaceView,
       previousWorkspaceView,
+      isSidebarCollapsed,
       roleMode,
       inspectorView,
       source,
@@ -441,6 +443,7 @@ export function useLiveJsonWorkspace() {
     actions: {
       setWorkspaceView,
       setPreviousWorkspaceView,
+      setIsSidebarCollapsed,
       setRoleMode,
       setInspectorView,
       setSource,
