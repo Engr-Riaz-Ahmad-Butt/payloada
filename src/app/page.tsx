@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Code2 } from "lucide-react";
 
 import FeaturesSection from "@/features/home/components/features-section";
 import FaqSection from "@/features/home/components/faq-section";
@@ -52,14 +51,14 @@ export default function Home() {
     >
       <Navbar />
 
-      <main className="flex flex-1 flex-col items-center">
-        <section className="mt-8 flex w-full max-w-300 flex-col items-center px-4 py-16 text-center md:px-8 md:py-12">
+      <main className="flex flex-1 flex-col items-center overflow-x-hidden">
+        <section className="mt-4 flex w-full max-w-300 flex-col items-center px-4 py-12 text-center sm:mt-6 sm:px-6 sm:py-14 md:mt-8 md:px-8 md:py-16">
           <h1
-            className="mb-6 max-w-3xl leading-tight"
+            className="mb-5 max-w-4xl leading-tight sm:mb-6"
             style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: "clamp(28px, 5vw, 48px)",
-              lineHeight: "1.15",
+              fontSize: "clamp(30px, 7vw, 56px)",
+              lineHeight: "1.08",
               fontWeight: 700,
               letterSpacing: "-0.02em",
               color: "#F5F1EA",
@@ -69,11 +68,11 @@ export default function Home() {
           </h1>
 
           <p
-            className="mb-8 max-w-2xl"
+            className="mb-8 max-w-3xl px-1 sm:px-0"
             style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: "16px",
-              lineHeight: "24px",
+              fontSize: "clamp(15px, 2vw, 17px)",
+              lineHeight: "28px",
               color: "#d9c2b6",
             }}
           >
@@ -81,10 +80,10 @@ export default function Home() {
             jsonLines provides the tools you need to build, decode, and diff with absolute control.
           </p>
 
-          <div className="mb-12 flex flex-col gap-4 sm:flex-row">
+          <div className="mb-10 grid w-full max-w-sm grid-cols-1 gap-3 sm:mb-12">
             <Link
               href="/workspace"
-              className="flex items-center justify-center gap-2 px-6 py-3 transition-all hover:brightness-110 active:scale-95"
+              className="flex min-h-11 items-center justify-center gap-2 px-6 py-3 text-center transition-all hover:brightness-110 active:scale-95"
               style={{
                 backgroundColor: "#C07040",
                 color: "#F5F1EA",
@@ -97,24 +96,8 @@ export default function Home() {
                 textDecoration: "none",
               }}
             >
-              Get Started — It&apos;s Free
+              Get Started - It&apos;s Free
             </Link>
-            <button
-              className="flex items-center justify-center gap-2 border px-6 py-3 transition-colors hover:bg-surface-elevated active:scale-95"
-              style={{
-                borderColor: "#262626",
-                color: "#F5F1EA",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "12px",
-                fontWeight: 600,
-                letterSpacing: "0.05em",
-                textTransform: "uppercase",
-                borderRadius: "0.125rem",
-              }}
-            >
-              <Code2 className="size-4" />
-              View on GitHub
-            </button>
           </div>
 
           <WorkspaceMockup />
@@ -122,10 +105,10 @@ export default function Home() {
 
         <FeaturesSection />
 
-        <section className="w-full max-w-300 px-4 py-14 md:px-8">
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,1.08fr)_380px]">
+        <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
+          <div className="grid gap-5 lg:gap-6 xl:grid-cols-[minmax(0,1.08fr)_380px]">
             <div
-              className="rounded border p-8"
+              className="rounded border p-6 sm:p-7 lg:p-8"
               style={{ borderColor: "#262626", backgroundColor: "#121212" }}
             >
               <p
@@ -136,8 +119,8 @@ export default function Home() {
               </p>
               <h2
                 style={{
-                  fontSize: "32px",
-                  lineHeight: "38px",
+                  fontSize: "clamp(22px, 4vw, 32px)",
+                  lineHeight: "1.15",
                   fontWeight: 700,
                   letterSpacing: "-0.02em",
                 }}
@@ -154,7 +137,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {[
                 "Local-only processing for core formatting and analysis",
                 "Sensitive data scanner for tokens, emails, and secret-like fields",
@@ -172,7 +155,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full max-w-300 px-4 py-14 md:px-8">
+        <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
           <div className="mb-8">
             <p
               className="mb-2 text-xs font-semibold uppercase tracking-[0.14em]"
@@ -182,8 +165,8 @@ export default function Home() {
             </p>
             <h2
               style={{
-                fontSize: "32px",
-                lineHeight: "38px",
+                fontSize: "clamp(26px, 4vw, 32px)",
+                lineHeight: "1.15",
                 fontWeight: 700,
                 letterSpacing: "-0.02em",
               }}
@@ -196,7 +179,7 @@ export default function Home() {
             {useCases.map(([title, description]) => (
               <div
                 key={title}
-                className="rounded border p-6"
+                className="rounded border p-5 sm:p-6"
                 style={{ borderColor: "#262626", backgroundColor: "#121212" }}
               >
                 <h3
@@ -220,10 +203,10 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full max-w-300 px-4 py-14 md:px-8">
-          <div className="grid gap-6 xl:grid-cols-2">
+        <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
+          <div className="grid gap-5 lg:gap-6 xl:grid-cols-2">
             <div
-              className="rounded border p-8"
+              className="rounded border p-6 sm:p-7 lg:p-8"
               style={{ borderColor: "#262626", backgroundColor: "#121212" }}
             >
               <p
@@ -234,8 +217,8 @@ export default function Home() {
               </p>
               <h2
                 style={{
-                  fontSize: "32px",
-                  lineHeight: "38px",
+                  fontSize: "clamp(22px, 4vw, 32px)",
+                  lineHeight: "1.15",
                   fontWeight: 700,
                   letterSpacing: "-0.02em",
                 }}
@@ -247,11 +230,16 @@ export default function Home() {
                 {comparisons.map(([left, right]) => (
                   <div
                     key={left}
-                    className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded border px-4 py-3"
+                    className="grid gap-2 rounded border px-4 py-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-3"
                     style={{ borderColor: "#262626", backgroundColor: "#0d0d0d" }}
                   >
                     <span style={{ color: "#b8a69a", fontSize: "13px" }}>{left}</span>
-                    <span style={{ color: "#C07040", fontSize: "13px", fontWeight: 700 }}>→</span>
+                    <span
+                      className="hidden sm:inline"
+                      style={{ color: "#C07040", fontSize: "13px", fontWeight: 700 }}
+                    >
+                      →
+                    </span>
                     <span style={{ color: "#F5F1EA", fontSize: "13px" }}>{right}</span>
                   </div>
                 ))}
@@ -259,7 +247,7 @@ export default function Home() {
             </div>
 
             <div
-              className="rounded border p-8"
+              className="rounded border p-6 sm:p-7 lg:p-8"
               style={{ borderColor: "#262626", backgroundColor: "#121212" }}
             >
               <p
@@ -270,8 +258,8 @@ export default function Home() {
               </p>
               <h2
                 style={{
-                  fontSize: "32px",
-                  lineHeight: "38px",
+                  fontSize: "clamp(26px, 4vw, 32px)",
+                  lineHeight: "1.15",
                   fontWeight: 700,
                   letterSpacing: "-0.02em",
                 }}
@@ -298,18 +286,18 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="w-full max-w-300 px-4 py-14 md:px-8">
+        <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
           <div className="mb-8">
             <p
-              className="mb-2 text-xs font-semibold uppercase tracking-[0.14em]"
+              className="mb-2 text-sm font-semibold uppercase tracking-[0.14em]"
               style={{ color: "#d9c2b6" }}
             >
               FAQ
             </p>
             <h2
               style={{
-                fontSize: "32px",
-                lineHeight: "38px",
+                fontSize: "clamp(20px, 3.4vw, 32px)",
+                lineHeight: "1.15",
                 fontWeight: 700,
                 letterSpacing: "-0.02em",
               }}

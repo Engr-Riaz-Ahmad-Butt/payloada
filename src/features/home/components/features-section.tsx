@@ -49,7 +49,7 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <section className="w-full max-w-300 px-4 py-14 md:px-8">
+    <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
       <div className="mb-8 flex flex-col gap-3 md:mb-10">
         <p
           className="text-xs font-semibold uppercase tracking-[0.14em]"
@@ -83,11 +83,11 @@ export default function FeaturesSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
         {features.map(({ icon: Icon, title, description, example }) => (
           <div
             key={title}
-            className="group rounded border p-6 transition-colors"
+            className="group flex h-full flex-col rounded border p-5 transition-colors sm:p-6"
             style={{
               backgroundColor: "#121212",
               borderColor: "#262626",

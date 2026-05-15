@@ -25,7 +25,7 @@ export default function Footer() {
       className="mt-auto w-full border-t"
       style={{ backgroundColor: "#080808", borderColor: "#262626" }}
     >
-      <div className="mx-auto grid w-full max-w-300 gap-10 px-4 py-12 md:px-8 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <div className="mx-auto grid w-full max-w-300 gap-10 px-4 py-10 sm:px-6 md:px-8 md:py-12 lg:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
         <div className="space-y-5">
           <div>
             <h2
@@ -119,7 +119,7 @@ export default function Footer() {
 
       <div className="border-t" style={{ borderColor: "#262626" }}>
         <div
-          className="mx-auto flex w-full max-w-300 flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between md:px-8"
+          className="mx-auto flex w-full max-w-300 flex-col gap-3 px-4 py-4 text-center sm:px-6 md:flex-row md:items-center md:justify-between md:px-8 md:text-left"
           style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "12px", lineHeight: "18px" }}
         >
           <span style={{ color: "#d9c2b6" }}>© 2024 jsonLines Terminal. All rights reserved.</span>
