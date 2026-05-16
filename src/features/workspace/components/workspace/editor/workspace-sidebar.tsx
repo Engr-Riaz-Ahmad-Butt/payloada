@@ -23,7 +23,7 @@ export function WorkspaceSidebar({
   return (
     <aside
       className={cn(
-        "relative border-b border-ui-border bg-surface-elevated xl:flex xl:min-h-full xl:flex-col xl:border-b-0 xl:border-r xl:py-6 xl:transition-[padding] xl:duration-300 xl:ease-out",
+        "relative border-b-[0.5px] border-ui-border bg-surface-elevated xl:flex xl:min-h-full xl:flex-col xl:border-b-0 xl:border-r-[0.5px] xl:py-6 xl:transition-[padding] xl:duration-300 xl:ease-out",
         isCollapsed ? "xl:px-3" : "xl:px-5",
       )}
     >
@@ -32,15 +32,11 @@ export function WorkspaceSidebar({
         onClick={onToggleCollapse}
         title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         className={cn(
-          "hidden xl:flex xl:absolute xl:top-6 xl:right-0 xl:z-20 xl:h-10 xl:w-10 xl:translate-x-1/2 xl:items-center xl:justify-center xl:rounded-full xl:border xl:border-[#3a2b22] xl:bg-[#17110d] xl:text-[#d6c3b5] xl:shadow-[0_14px_34px_rgba(0,0,0,0.35)] xl:transition-all xl:duration-300 xl:ease-out xl:hover:border-[#c07040] xl:hover:bg-[#221710] xl:hover:text-[#f5f1ea]",
+          "hidden xl:flex xl:absolute xl:top-6 xl:right-0 xl:z-20 xl:h-10 xl:w-10 xl:translate-x-1/2 xl:items-center xl:justify-center xl:rounded-full xl:border-[0.5px] xl:border-ui-border xl:bg-[#17110d] xl:text-[#d6c3b5] xl:transition-all xl:duration-300 xl:ease-out xl:hover:border-[#2A2F42] xl:hover:bg-[#221710] xl:hover:text-[#f5f1ea] xl:focus-visible:border-[#C07040] xl:focus-visible:outline-none",
           isCollapsed && "xl:bg-[#1d1410] xl:text-[#ffb68e]",
         )}
       >
-        {isCollapsed ? (
-          <ChevronRight className="size-3.5" />
-        ) : (
-          <ChevronLeft className="size-3.5" />
-        )}
+        {isCollapsed ? <ChevronRight className="size-3.5" /> : <ChevronLeft className="size-3.5" />}
       </button>
 
       <div
@@ -74,7 +70,7 @@ export function WorkspaceSidebar({
           <button
             type="button"
             onClick={onNewDocument}
-            className="rounded-sm bg-[#c77742] px-3 py-2 text-xs font-semibold text-black transition-opacity hover:opacity-90 sm:px-4 sm:py-2.5 sm:text-sm xl:hidden"
+            className="rounded-sm border-[0.5px] border-ui-border bg-[#c77742] px-3 py-2 text-xs font-semibold text-black transition-colors hover:border-[#2A2F42] sm:px-4 sm:py-2.5 sm:text-sm xl:hidden"
           >
             + New Document
           </button>
@@ -91,16 +87,18 @@ export function WorkspaceSidebar({
             type="button"
             onClick={onNewDocument}
             className={cn(
-              "group relative rounded-sm bg-[#c77742] text-sm font-semibold text-black transition-all duration-300 ease-out hover:opacity-90",
+              "group relative rounded-sm border-[0.5px] border-ui-border bg-[#c77742] text-sm font-semibold text-black transition-all duration-300 ease-out hover:border-[#2A2F42] hover:opacity-90",
               isCollapsed
                 ? "flex h-10 w-10 items-center justify-center px-0"
                 : "flex w-full items-center justify-center gap-2.5 px-4 py-3",
             )}
           >
             <Plus className="size-4 shrink-0" />
-            {!isCollapsed ? <span className="whitespace-nowrap leading-none">New document</span> : null}
+            {!isCollapsed ? (
+              <span className="whitespace-nowrap leading-none">New document</span>
+            ) : null}
             {isCollapsed ? (
-              <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border border-[#3a2b22] bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] shadow-[0_12px_30px_rgba(0,0,0,0.35)] group-hover:flex">
+              <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border-[0.5px] border-ui-border bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] group-hover:flex">
                 New document
               </span>
             ) : null}
@@ -136,7 +134,7 @@ export function WorkspaceSidebar({
                 <span className="truncate text-sm font-medium xl:text-[15px]">{label}</span>
               ) : null}
               {isCollapsed ? (
-                <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border border-[#3a2b22] bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] shadow-[0_12px_30px_rgba(0,0,0,0.35)] group-hover:flex">
+                <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border-[0.5px] border-ui-border bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] group-hover:flex">
                   {label}
                 </span>
               ) : null}
@@ -147,7 +145,7 @@ export function WorkspaceSidebar({
 
       <div
         className={cn(
-          "hidden border-t border-ui-border pt-6 xl:mt-8 xl:block",
+          "hidden border-t-[0.5px] border-ui-border pt-6 xl:mt-8 xl:block",
           isCollapsed ? "xl:space-y-2" : "xl:space-y-1.5",
         )}
       >
@@ -164,7 +162,7 @@ export function WorkspaceSidebar({
             <Icon className="size-5" />
             {!isCollapsed ? <span className="text-[15px] font-medium">{label}</span> : null}
             {isCollapsed ? (
-              <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border border-[#3a2b22] bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] shadow-[0_12px_30px_rgba(0,0,0,0.35)] group-hover:flex">
+              <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border-[0.5px] border-ui-border bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] group-hover:flex">
                 {label}
               </span>
             ) : null}

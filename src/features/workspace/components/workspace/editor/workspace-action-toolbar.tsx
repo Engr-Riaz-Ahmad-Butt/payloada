@@ -30,7 +30,7 @@ export function WorkspaceActionToolbar({
   onJsonPath: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-3 border-b border-[#262626] bg-[#080808] px-4 py-3 sm:px-5 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
+    <div className="flex flex-col gap-3 border-b-[0.5px] border-ui-border bg-[#080808] px-4 py-3 sm:px-5 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
       <div className="flex flex-wrap gap-3 xl:shrink-0">
         <ToolbarButton
           icon={<ClipboardPaste className="size-4" />}

@@ -31,10 +31,10 @@ export function CommandPalette({
   return (
     <div className="fixed inset-0 z-[80] bg-black/45 p-4 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="mx-auto mt-[12vh] w-full max-w-2xl rounded-[20px] border border-[#2b2b2b] bg-[#101010] shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+        className="mx-auto mt-[12vh] w-full max-w-2xl rounded-[20px] border-[0.5px] border-ui-border bg-[#101010]"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="border-b border-[#262626] px-5 py-4">
+        <div className="border-b-[0.5px] border-ui-border px-5 py-4">
           <div className="flex items-center gap-3">
             <Search className="size-4 text-[#d69463]" />
             <input

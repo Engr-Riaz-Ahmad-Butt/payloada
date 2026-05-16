@@ -38,8 +38,8 @@ export function ConverterWorkspace({
 }) {
   return (
     <div className="grid h-full min-h-0 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.92fr)]">
-      <div className="flex min-h-0 flex-col border-b border-[#262626] xl:border-b-0 xl:border-r">
-        <div className="flex flex-col gap-3 border-b border-[#262626] bg-[#171717] px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex min-h-0 flex-col border-b-[0.5px] border-ui-border xl:border-b-0 xl:border-r-[0.5px]">
+        <div className="flex flex-col gap-3 border-b-[0.5px] border-ui-border bg-[#171717] px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-sm font-semibold text-[#f5f1ea]">Converter workspace</p>
             <p className="mt-1 text-xs text-[#a89589]">
@@ -73,7 +73,7 @@ export function ConverterWorkspace({
       </div>
 
       <aside className="flex min-h-0 flex-col bg-[#121212]">
-        <div className="border-b border-[#262626] px-4 py-4 sm:px-5">
+        <div className="border-b-[0.5px] border-ui-border px-4 py-4 sm:px-5">
           <div className="mb-3 flex items-center justify-between">
             <p className="text-sm font-semibold text-[#d6c3b5]">Output</p>
             <span className="text-xs text-[#7b7068]">Choose an output format</span>
@@ -85,10 +85,10 @@ export function ConverterWorkspace({
                 type="button"
                 onClick={() => setConverterTab(tab)}
                 className={cn(
-                  "rounded-sm border px-3 py-1.5 text-xs font-semibold transition-colors",
+                  "rounded-sm border-[0.5px] px-3 py-1.5 text-xs font-semibold transition-colors",
                   converterTab === tab
-                    ? "border-[#c07040] bg-[#2a1c13] text-[#d69463]"
-                    : "border-[#2a2a2a] bg-[#0a0a0a] text-[#d6c3b5]",
+                    ? "border-[#2A2F42] bg-[#2a1c13] text-[#d69463]"
+                    : "border-ui-border bg-[#0a0a0a] text-[#d6c3b5]",
                 )}
               >
                 {tab}
@@ -97,7 +97,7 @@ export function ConverterWorkspace({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 border-b border-[#262626] px-4 py-3 sm:px-5">
+        <div className="flex flex-wrap items-center gap-2 border-b-[0.5px] border-ui-border px-4 py-3 sm:px-5">
           <SmallAction
             label="Copy"
             onClick={() => onCopy(output, `Copied ${converterTab} output`)}

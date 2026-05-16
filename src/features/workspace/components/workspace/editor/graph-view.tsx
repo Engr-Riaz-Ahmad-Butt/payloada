@@ -18,7 +18,7 @@ export function JsonGraphView({ value }: { value: JsonValue }) {
   const graph = useMemo(() => buildJsonGraph(value), [value]);
 
   return (
-    <div className="h-[26rem] overflow-hidden rounded-sm border border-ui-border bg-[#0a0a0a] sm:h-[32rem] xl:h-130">
+    <div className="h-[26rem] overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] sm:h-[32rem] xl:h-130">
       <ReactFlowProvider>
         <ReactFlow
           nodes={graph.nodes}
@@ -37,7 +37,7 @@ export function JsonGraphView({ value }: { value: JsonValue }) {
             zoomable
             style={{
               background: "#111111",
-              border: "1px solid #262626",
+              border: "0.5px solid #1E2433",
             }}
             nodeColor={(node) =>
               node.data?.tone === "root"
@@ -52,7 +52,7 @@ export function JsonGraphView({ value }: { value: JsonValue }) {
             showInteractive={false}
             style={{
               background: "#111111",
-              border: "1px solid #262626",
+              border: "0.5px solid #1E2433",
               borderRadius: "2px",
             }}
           />
@@ -66,20 +66,20 @@ function JsonGraphNode({ data }: { data: GraphNodeData }) {
   const toneStyles =
     data.tone === "root"
       ? {
-          border: "#5c2f16",
+          border: "#1E2433",
           title: "#c07040",
           subtitle: "#f5f1ea",
           background: "#14100d",
         }
       : data.tone === "container"
       ? {
-          border: "#3f3527",
+          border: "#1E2433",
           title: "#e3c290",
           subtitle: "#d9c2b6",
           background: "#111111",
         }
       : {
-          border: "#23402a",
+          border: "#1E2433",
           title: "#7db87d",
           subtitle: "#f5f1ea",
           background: "#0f1410",
@@ -87,7 +87,7 @@ function JsonGraphNode({ data }: { data: GraphNodeData }) {
 
   return (
     <div
-      className="min-w-[170px] max-w-55 rounded-sm border px-3 py-2 shadow-[0_8px_24px_rgba(0,0,0,0.35)]"
+      className="min-w-[170px] max-w-55 rounded-sm border-[0.5px] px-3 py-2"
       style={{
         backgroundColor: toneStyles.background,
         borderColor: toneStyles.border,

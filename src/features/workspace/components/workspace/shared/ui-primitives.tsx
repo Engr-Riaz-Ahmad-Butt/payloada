@@ -17,7 +17,7 @@ export function ToolbarButton({
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex min-h-10 items-center gap-2 rounded-sm border border-[#2a2a2a] bg-[#111111] px-3 py-2 text-sm font-medium text-[#f5f1ea] transition-colors hover:border-[#c07040] sm:px-4"
+      className="inline-flex min-h-10 items-center gap-2 rounded-sm border-[0.5px] border-ui-border bg-[#111111] px-3 py-2 text-sm font-medium text-[#f5f1ea] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none sm:px-4"
     >
       {icon}
       {label}
@@ -55,15 +55,15 @@ export function IconButton({
 
 export function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border-b border-[#262626] p-5">
-      <h3 className="mb-4 text-[12px] font-semibold tracking-[0.02em] text-[#b8a69a]">{title}</h3>
+    <div className="border-b-[0.5px] border-ui-border p-5">
+      <h3 className="mb-4 text-[11px] font-medium tracking-[0.5px] text-[#5A6070]">{title}</h3>
       {children}
     </div>
   );
 }
 
 export function SidebarEmpty({ text }: { text: string }) {
-  return <p className="text-sm leading-6 text-[#a89589]">{text}</p>;
+  return <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">{text}</p>;
 }
 
 export function SmallAction({ label, onClick }: { label: string; onClick: () => void }) {
@@ -71,7 +71,7 @@ export function SmallAction({ label, onClick }: { label: string; onClick: () => 
     <button
       type="button"
       onClick={onClick}
-      className="rounded-sm border border-[#2a2a2a] bg-[#0a0a0a] px-3 py-1.5 text-xs font-semibold text-[#d6c3b5] transition-colors hover:border-[#c07040]"
+      className="rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-3 py-1.5 text-xs font-semibold text-[#d6c3b5] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
     >
       {label}
     </button>
@@ -91,18 +91,18 @@ export function IssueCard({
 }) {
   const toneClasses =
     tone === "error"
-      ? "border-[#7a1e1e] bg-[#4a0c0c] text-[#f1b0b0]"
+      ? "border-ui-border bg-[#4a0c0c] text-[#f1b0b0]"
       : tone === "warning"
-      ? "border-[#6b5527] bg-[#14110b] text-[#d7c49d]"
-      : "border-[#32593a] bg-[#0d1510] text-[#8ed08e]";
+      ? "border-ui-border bg-[#14110b] text-[#d7c49d]"
+      : "border-ui-border bg-[#0d1510] text-[#8ed08e]";
 
   return (
-    <div className={cn("rounded-sm border px-4 py-4", toneClasses)}>
+    <div className={cn("rounded-sm border-[0.5px] px-4 py-4", toneClasses)}>
       <div className="flex items-start gap-3">
         <div className="mt-0.5">{icon}</div>
         <div>
-          <p className="text-sm font-semibold">{title}</p>
-          <p className="mt-1 font-mono text-xs opacity-90">{body}</p>
+          <p className="text-[14px] font-medium text-[#E8EAF0]">{title}</p>
+          <p className="mt-1 text-[13px] font-normal leading-[1.6] text-current/85">{body}</p>
         </div>
       </div>
     </div>

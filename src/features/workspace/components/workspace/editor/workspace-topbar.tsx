@@ -47,14 +47,14 @@ export function WorkspaceTopbar({
   const workspaceMeta = WORKSPACE_TITLES[workspaceView];
 
   return (
-    <header className="flex flex-col gap-4 border-b border-ui-border bg-obsidian-base px-4 py-4 sm:px-5 lg:px-8 xl:px-10">
+    <header className="flex flex-col gap-4 border-b-[0.5px] border-ui-border bg-obsidian-base px-4 py-4 sm:px-5 lg:px-8 xl:px-10">
       <div>
         <p className="text-lg font-semibold text-text-primary">{workspaceMeta.title}</p>
         <p className="mt-1 text-sm text-on-surface-variant">{workspaceMeta.description}</p>
       </div>
 
       {workspaceView === "editor" ? (
-        <div className="flex min-w-0 items-center gap-3 rounded-sm border border-ui-border bg-[#101010] px-3 py-3 sm:gap-4">
+        <div className="flex min-w-0 items-center gap-3 rounded-sm border-[0.5px] border-ui-border bg-[#101010] px-3 py-3 sm:gap-4">
           <Search className="size-5 shrink-0 text-[#d6c3b5]" />
           <input
             value={searchTerm}

@@ -73,11 +73,11 @@ export function EditorWorkspace({
     <div
       className={cn(
         "flex min-h-0 flex-col",
-        inspectorView === "none" ? "" : "border-r border-ui-border",
+        inspectorView === "none" ? "" : "border-r-[0.5px] border-ui-border",
       )}
     >
-      <div className="flex items-center justify-between border-b border-ui-border bg-[#171717] px-4 py-3 sm:px-5">
-        <span className="font-mono text-sm text-[#d6c3b5]">input.json</span>
+      <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-[#171717] px-4 py-3 sm:px-5">
+        <span className="font-mono text-[13px] font-normal text-[#d6c3b5]">input.json</span>
         <div className="flex items-center gap-2 text-[#d6c3b5]">
           <button type="button" onClick={() => onCopy(source, "Copied editor content")}>
             <Copy className="size-4" />
@@ -96,8 +96,8 @@ export function EditorWorkspace({
                 <FileJson2 className="size-5 text-[#d69463]" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-text-primary">Paste your JSON here</h3>
-                <p className="mt-2 text-sm text-[#a89589]">
+                <h3 className="text-[14px] font-medium text-[#E8EAF0]">Paste your JSON here</h3>
+                <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
                   You can also upload a file, load a URL, or try a sample.
                 </p>
               </div>
@@ -127,7 +127,7 @@ export function EditorWorkspace({
             minimap: { enabled: false },
             scrollBeyondLastLine: false,
             padding: { top: 22, bottom: 22 },
-            fontSize: 15,
+            fontSize: 13,
             lineHeight: 28,
             tabSize: 2,
             fontFamily: "var(--font-geist-mono)",
@@ -135,7 +135,7 @@ export function EditorWorkspace({
         />
       </div>
 
-      <div className="flex flex-col gap-2 border-t border-ui-border bg-surface-elevated px-4 py-3 text-xs text-[#7b7068] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <div className="flex flex-col gap-2 border-t-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[11px] font-normal text-[#5A6070] sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex flex-wrap items-center gap-3 sm:gap-5">
           <span>UTF-8</span>
           <span>JSON</span>
@@ -147,10 +147,12 @@ export function EditorWorkspace({
       </div>
 
       {selectedNode ? (
-        <div className="flex flex-col gap-3 border-t border-ui-border bg-[#171717] px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-t-[0.5px] border-ui-border bg-[#171717] px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] tracking-[0.02em] text-[#7b7068]">Selected</p>
-            <p className="mt-1 font-mono text-sm text-text-primary">{selectedNode.path}</p>
+            <p className="text-[11px] font-medium tracking-[0.5px] text-[#5A6070]">Selected</p>
+            <p className="mt-1 font-mono text-[13px] font-normal text-[#C07040]">
+              {selectedNode.path}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <SmallAction
@@ -175,9 +177,9 @@ export function EditorWorkspace({
 
   const inspectorPane =
     inspectorView !== "none" ? (
-      <aside className="flex min-h-[320px] flex-col overflow-y-auto border-t border-ui-border bg-[#121212] xl:min-h-0 xl:border-t-0">
-        <div className="flex items-center justify-between border-b border-ui-border bg-[#171717] px-4 py-3">
-          <p className="text-[11px] font-semibold tracking-[0.02em] text-[#a89589]">
+      <aside className="flex min-h-[320px] flex-col overflow-y-auto border-t-[0.5px] border-ui-border bg-[#121212] xl:min-h-0 xl:border-t-0">
+        <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-[#171717] px-4 py-3">
+          <p className="text-[11px] font-medium tracking-[0.5px] text-[#5A6070]">
             {inspectorView === "status"
               ? "Status"
               : inspectorView === "formatted"
@@ -191,7 +193,7 @@ export function EditorWorkspace({
           <button
             type="button"
             onClick={() => setInspectorView("none")}
-            className="rounded-sm border border-[#2a2a2a] bg-[#0a0a0a] px-2 py-1 text-[11px] font-semibold text-[#d6c3b5] transition-colors hover:border-[#c07040]"
+            className="rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-2 py-1 text-[11px] font-semibold text-[#d6c3b5] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
           >
             Close
           </button>
@@ -203,8 +205,8 @@ export function EditorWorkspace({
                 className={cn(
                   "flex items-center gap-3 rounded-sm border px-4 py-4",
                   parseResult?.valid
-                    ? "border-[#32593a] bg-[#0e130f] text-[#8ed08e]"
-                    : "border-[#6b1e1e] bg-[#210b0b] text-[#e68f8f]",
+                    ? "border-ui-border bg-[#0e130f] text-[#8ed08e]"
+                    : "border-ui-border bg-[#210b0b] text-[#e68f8f]",
                 )}
               >
                 {parseResult?.valid ? (
@@ -212,7 +214,7 @@ export function EditorWorkspace({
                 ) : (
                   <XCircle className="size-5" />
                 )}
-                <span className="text-[15px] font-semibold">
+                <span className="text-[14px] font-medium">
                   {parseResult?.valid ? "Valid JSON" : "Invalid JSON"}
                 </span>
               </div>
@@ -267,10 +269,10 @@ export function EditorWorkspace({
           <SidebarSection title="Tree Explorer">
             {parseResult?.valid ? (
               <div className="space-y-2">
-                <p className="text-sm text-[#a89589]">
+                <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
                   Click any node to reveal its JSONPath and copy its value.
                 </p>
-                <div className="overflow-x-auto rounded-sm border border-ui-border bg-[#0a0a0a] p-3">
+                <div className="overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] p-3">
                   <div className="min-w-max">
                     <TreeNode
                       label="root"
@@ -294,7 +296,9 @@ export function EditorWorkspace({
             {searchTerm.trim() ? (
               searchMatches.length ? (
                 <div className="space-y-2">
-                  <p className="text-sm text-[#a89589]">{searchMatches.length} matches found</p>
+                  <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                    {searchMatches.length} matches found
+                  </p>
                   {searchMatches.slice(0, 8).map((match) => (
                     <button
                       key={match.path}
@@ -303,10 +307,14 @@ export function EditorWorkspace({
                         setInspectorView("tree");
                         setSelectedPath(match.path);
                       }}
-                      className="w-full rounded-sm border border-[#2a2a2a] bg-[#0a0a0a] px-3 py-3 text-left transition-colors hover:border-[#c07040]"
+                      className="w-full rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-3 py-3 text-left transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
                     >
-                      <p className="font-mono text-xs text-text-primary">{match.path}</p>
-                      <p className="mt-1 text-xs text-[#a89589]">{match.preview}</p>
+                      <p className="font-mono text-[13px] font-normal text-text-primary">
+                        {match.path}
+                      </p>
+                      <p className="mt-1 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                        {match.preview}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -323,7 +331,7 @@ export function EditorWorkspace({
           <SidebarSection title="Graph View">
             {parseResult?.valid ? (
               <div className="space-y-3">
-                <p className="text-sm text-[#a89589]">
+                <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
                   Explore the JSON structure as a node graph. Drag, zoom, and inspect nested
                   relationships.
                 </p>

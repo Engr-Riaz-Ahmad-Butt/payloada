@@ -54,26 +54,28 @@ export default function Home() {
       <main className="flex flex-1 flex-col items-center overflow-x-hidden">
         <section className="mt-4 flex w-full max-w-300 flex-col items-center px-4 py-12 text-center sm:mt-6 sm:px-6 sm:py-14 md:mt-8 md:px-8 md:py-16">
           <h1
-            className="mb-5 max-w-4xl leading-tight sm:mb-6"
+            className="mb-5 max-w-[720px] leading-tight sm:mb-6"
             style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: "clamp(30px, 7vw, 56px)",
-              lineHeight: "1.08",
+              fontSize: "clamp(36px, 7vw, 64px)",
+              lineHeight: "1.05",
               fontWeight: 700,
               letterSpacing: "-0.02em",
-              color: "#F5F1EA",
+              color: "#E8EAF0",
             }}
           >
-            The modern JSON workspace for <span style={{ color: "#C07040" }}>developers.</span>
+            The modern JSON workspace for <span style={{ color: "#C07040" }}>serious</span>{" "}
+            developers.
           </h1>
 
           <p
-            className="mb-8 max-w-3xl px-1 sm:px-0"
+            className="mb-8 max-w-[540px] px-1 sm:px-0"
             style={{
               fontFamily: "Inter, sans-serif",
-              fontSize: "clamp(15px, 2vw, 17px)",
-              lineHeight: "28px",
-              color: "#d9c2b6",
+              fontSize: "clamp(16px, 2.2vw, 18px)",
+              lineHeight: "1.6",
+              fontWeight: 400,
+              color: "#8B92A8",
             }}
           >
             Format JSON, decode JWTs, compare payloads, and generate developer-ready outputs in a
@@ -83,15 +85,12 @@ export default function Home() {
           <div className="mb-10 grid w-full max-w-sm grid-cols-1 gap-3 sm:mb-12">
             <Link
               href="/workspace"
-              className="flex min-h-11 items-center justify-center gap-2 px-6 py-3 text-center transition-all hover:brightness-110 active:scale-95"
+              className="flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#C07040] px-7 text-center transition-colors hover:bg-[#D48050] active:scale-95"
               style={{
-                backgroundColor: "#C07040",
-                color: "#F5F1EA",
+                color: "#FFFFFF",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "12px",
+                fontSize: "15px",
                 fontWeight: 600,
-                letterSpacing: "0.01em",
-                borderRadius: "0.125rem",
                 textDecoration: "none",
               }}
             >

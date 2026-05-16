@@ -5,8 +5,8 @@ import type { HistoryItem } from "../core/types";
 export function HistoryWorkspace({ items }: { items: HistoryItem[] }) {
   return (
     <div className="grid h-full min-h-0 xl:grid-cols-[minmax(0,1fr)_320px]">
-      <div className="border-b border-ui-border p-4 sm:p-5 xl:border-b-0 xl:border-r">
-        <div className="rounded-sm border border-ui-border bg-surface p-5">
+      <div className="border-b-[0.5px] border-ui-border p-4 sm:p-5 xl:border-b-0 xl:border-r-[0.5px]">
+        <div className="rounded-sm border-[0.5px] border-ui-border bg-surface p-5">
           <h3 className="text-lg font-semibold text-text-primary">Workspace history</h3>
           <p className="mt-2 text-sm text-[#a89589]">
             Review recent actions like formatting, downloads, masking, and converter generation.
@@ -17,7 +17,10 @@ export function HistoryWorkspace({ items }: { items: HistoryItem[] }) {
       <aside className="overflow-y-auto bg-surface-elevated p-4 sm:p-5">
         <div className="space-y-3">
           {items.map((item) => (
-            <div key={item.id} className="rounded-sm border border-ui-border bg-surface px-4 py-4">
+            <div
+              key={item.id}
+              className="rounded-sm border-[0.5px] border-ui-border bg-surface px-4 py-4"
+            >
               <p className="text-sm font-semibold text-text-primary">{item.label}</p>
               <p className="mt-1 text-sm text-[#a89589]">{item.detail}</p>
             </div>

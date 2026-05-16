@@ -86,7 +86,7 @@ export function LiveJsonWorkspace() {
   } = actions;
 
   return (
-    <section className="overflow-hidden border border-ui-border bg-obsidian-base text-text-primary shadow-[0_20px_60px_rgba(0,0,0,0.28)]">
+    <section className="overflow-hidden border-[0.5px] border-ui-border bg-obsidian-base text-text-primary">
       <div
         className="grid min-h-screen xl:min-h-230 xl:[grid-template-columns:var(--sidebar-columns)] xl:transition-[grid-template-columns] xl:duration-500 xl:ease-[cubic-bezier(0.77,0,0.18,1)]"
         style={
@@ -139,15 +139,15 @@ export function LiveJsonWorkspace() {
             ) : null}
 
             {workspaceView === "editor" && showUrlInput ? (
-              <div className="flex flex-col gap-3 border-b border-ui-border bg-surface-elevated px-4 py-3 sm:flex-row sm:items-center sm:px-5">
+              <div className="flex flex-col gap-3 border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 sm:flex-row sm:items-center sm:px-5">
                 <input
                   value={urlValue}
                   onChange={(event) => setUrlValue(event.target.value)}
                   placeholder="https://api.example.com/users"
-                  className="h-10 w-full flex-1 rounded-sm border border-surface-container-high bg-obsidian-base px-3 text-sm text-text-primary outline-none placeholder:text-outline-variant"
+                  className="h-10 w-full flex-1 rounded-sm border-[0.5px] border-ui-border bg-obsidian-base px-3 text-sm text-text-primary outline-none placeholder:text-outline-variant focus-visible:border-[#C07040]"
                 />
                 <button
-                  className="rounded-sm bg-[#c77742] px-4 py-2 text-sm font-semibold text-black sm:shrink-0"
+                  className="rounded-sm border-[0.5px] border-ui-border bg-[#c77742] px-4 py-2 text-sm font-semibold text-black transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none sm:shrink-0"
                   onClick={handleLoadUrl}
                 >
                   Fetch JSON

@@ -22,7 +22,7 @@ export function WorkspaceModeStrip({
   onDownload: () => void;
 }) {
   return (
-    <div className="border-b border-[#262626] px-4 py-3 sm:px-5">
+    <div className="border-b-[0.5px] border-ui-border px-4 py-3 sm:px-5">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
         <div className="flex flex-wrap gap-4 text-[14px] font-semibold sm:gap-6 sm:text-[15px]">
           {ROLE_MODES.map((item) => (
@@ -33,7 +33,7 @@ export function WorkspaceModeStrip({
               className={cn(
                 "border-b pb-1 transition-colors",
                 roleMode === item
-                  ? "border-[#c07040] text-[#d69463]"
+                  ? "border-[#2A2F42] text-[#d69463]"
                   : "border-transparent text-[#d6c3b5] hover:text-[#f5f1ea]",
               )}
             >
@@ -42,7 +42,7 @@ export function WorkspaceModeStrip({
           ))}
         </div>
 
-        <div className="flex w-full items-center gap-1 overflow-x-auto rounded-sm border border-[#2b2b2b] bg-[#0f0f0f] p-1 xl:w-auto">
+        <div className="flex w-full items-center gap-1 overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-[#0f0f0f] p-1 xl:w-auto">
           <IconButton
             active={inspectorView === "formatted"}
             icon={<List className="size-4" />}
@@ -61,7 +61,7 @@ export function WorkspaceModeStrip({
             onClick={() => setInspectorView("tree")}
             title="Tree explorer"
           />
-          <div className="mx-1 h-4 w-px bg-[#2f2f2f]" />
+          <div className="mx-1 h-4 w-px bg-ui-border" />
           <IconButton
             active={inspectorView === "search"}
             icon={<Search className="size-4" />}

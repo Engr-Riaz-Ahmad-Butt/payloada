@@ -32,15 +32,15 @@ export function JwtCard({
       : "text-[#ffb68e]";
 
   return (
-    <div className="group overflow-hidden rounded-lg border border-[#262626] bg-[#121212]">
-      <div className="flex items-center justify-between border-b border-[#262626] bg-[#0e0e0e] px-4 py-3">
+    <div className="group overflow-hidden rounded-lg border-[0.5px] border-ui-border bg-[#121212]">
+      <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-[#0e0e0e] px-4 py-3">
         <div>
-          <span className={cn("text-[12px] font-semibold tracking-[0.02em]", headingClass)}>
+          <span className={cn("text-[11px] font-medium tracking-[0.5px]", headingClass)}>
             {title}
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs text-[#a89589]">{subtitle}</span>
+          <span className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">{subtitle}</span>
           {actions}
         </div>
       </div>

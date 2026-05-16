@@ -72,7 +72,7 @@ export function TreeNode({
       </div>
 
       {isContainer && open ? (
-        <div className="ml-4 min-w-0 border-l border-[#262626] pl-3">
+        <div className="ml-4 min-w-0 border-l-[0.5px] border-ui-border pl-3">
           {children.map(([key, child]) => (
             <TreeNode
               key={`${path}-${key}`}

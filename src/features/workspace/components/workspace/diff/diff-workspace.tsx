@@ -130,22 +130,22 @@ export function DiffWorkspace({
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-obsidian-base">
-      <div className="flex flex-col gap-4 border-b border-ui-border bg-surface-elevated px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4 border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-[15px] font-semibold text-text-primary">
+          <div className="flex items-center gap-2 text-[14px] font-medium text-[#E8EAF0]">
             <FileDiff className="size-4 text-[#c07040]" />
             JSON diff
           </div>
-          <div className="hidden h-5 w-px bg-[#262626] lg:block" />
+          <div className="hidden h-5 w-px bg-ui-border lg:block" />
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setSyncScrolling((current) => !current)}
               className={cn(
-                "rounded-sm border px-3 py-1.5 text-xs font-semibold transition-colors",
+                "rounded-sm border-[0.5px] px-3 py-1.5 text-xs font-semibold transition-colors",
                 syncScrolling
-                  ? "border-[#c07040] bg-[#2a1c13] text-[#d69463]"
-                  : "border-[#2a2a2a] bg-[#0a0a0a] text-[#d6c3b5]",
+                  ? "border-[#2A2F42] bg-[#2a1c13] text-[#d69463]"
+                  : "border-ui-border bg-[#0a0a0a] text-[#d6c3b5]",
               )}
             >
               Sync Scrolling
@@ -154,10 +154,10 @@ export function DiffWorkspace({
               type="button"
               onClick={() => setIgnoreWhitespace((current) => !current)}
               className={cn(
-                "rounded-sm border px-3 py-1.5 text-xs font-semibold transition-colors",
+                "rounded-sm border-[0.5px] px-3 py-1.5 text-xs font-semibold transition-colors",
                 ignoreWhitespace
-                  ? "border-[#c07040] bg-[#2a1c13] text-[#d69463]"
-                  : "border-[#2a2a2a] bg-[#0a0a0a] text-[#d6c3b5]",
+                  ? "border-[#2A2F42] bg-[#2a1c13] text-[#d69463]"
+                  : "border-ui-border bg-[#0a0a0a] text-[#d6c3b5]",
               )}
             >
               Ignore Whitespace
@@ -168,16 +168,18 @@ export function DiffWorkspace({
                 setDiffOld(diffNew);
                 setDiffNew(diffOld);
               }}
-              className="rounded-sm border border-[#2a2a2a] bg-[#0a0a0a] px-3 py-1.5 text-xs font-semibold text-[#d6c3b5] transition-colors hover:border-[#c07040]"
+              className="rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-3 py-1.5 text-xs font-semibold text-[#d6c3b5] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
             >
               Swap Sides
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-sm">
-          <span className="font-mono text-[#d6c3b5]">{totalDifferences} differences found</span>
-          <div className="flex items-center gap-3 font-mono text-xs">
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-[13px] font-normal text-[#d6c3b5]">
+            {totalDifferences} differences found
+          </span>
+          <div className="flex items-center gap-3 font-mono text-[13px] font-normal">
             <span className="text-[#f1b0b0]">-{summary?.removed.length ?? 0}</span>
             <span className="text-[#8ed08e]">+{summary?.added.length ?? 0}</span>
           </div>
@@ -185,11 +187,11 @@ export function DiffWorkspace({
       </div>
 
       <div className="grid min-h-0 flex-1 2xl:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="min-h-0 2xl:border-r 2xl:border-ui-border">
+        <div className="min-h-0 2xl:border-r-[0.5px] 2xl:border-ui-border">
           {isDesktopDiff ? (
             <>
-              <div className="grid grid-cols-2 border-b border-ui-border bg-surface-elevated font-mono text-[12px] text-on-surface-variant">
-                <div className="border-r border-ui-border px-4 py-3 sm:px-5">
+              <div className="grid grid-cols-2 border-b-[0.5px] border-ui-border bg-surface-elevated font-mono text-[13px] font-normal text-on-surface-variant">
+                <div className="border-r-[0.5px] border-ui-border px-4 py-3 sm:px-5">
                   Original JSON (prod-config-v1.json)
                 </div>
                 <div className="px-4 py-3 sm:px-5">Modified JSON (prod-config-v2.json)</div>
@@ -246,8 +248,8 @@ export function DiffWorkspace({
                 <StatTile label="Type changes" value={String(summary?.typeChanges.length ?? 0)} />
               </div>
 
-              <div className="overflow-hidden rounded-sm border border-ui-border bg-obsidian-base">
-                <div className="border-b border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[12px] text-on-surface-variant">
+              <div className="overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base">
+                <div className="border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[13px] font-normal text-on-surface-variant">
                   Original JSON (prod-config-v1.json)
                 </div>
                 <div className="h-[260px]">
@@ -264,7 +266,7 @@ export function DiffWorkspace({
                       lineNumbers: "on",
                       wordWrap: "on",
                       padding: { top: 14, bottom: 14 },
-                      fontSize: 14,
+                      fontSize: 13,
                       lineHeight: 24,
                       tabSize: 2,
                       fontFamily: "var(--font-mono)",
@@ -273,8 +275,8 @@ export function DiffWorkspace({
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-sm border border-ui-border bg-obsidian-base">
-                <div className="border-b border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[12px] text-on-surface-variant">
+              <div className="overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base">
+                <div className="border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[13px] font-normal text-on-surface-variant">
                   Modified JSON (prod-config-v2.json)
                 </div>
                 <div className="h-[260px]">
@@ -291,7 +293,7 @@ export function DiffWorkspace({
                       lineNumbers: "on",
                       wordWrap: "on",
                       padding: { top: 14, bottom: 14 },
-                      fontSize: 14,
+                      fontSize: 13,
                       lineHeight: 24,
                       tabSize: 2,
                       fontFamily: "var(--font-mono)",
@@ -303,7 +305,7 @@ export function DiffWorkspace({
           )}
         </div>
 
-        <aside className="min-h-0 border-t border-ui-border bg-surface-elevated 2xl:border-t-0">
+        <aside className="min-h-0 border-t-[0.5px] border-ui-border bg-surface-elevated 2xl:border-t-0">
           <SidebarSection title="Diff summary">
             {summary ? (
               <div className="space-y-4">

@@ -65,17 +65,17 @@ export function JwtWorkspace({
   const tokenAlgorithm = String(decodedJwt?.header.alg ?? jwtAlgorithm);
 
   return (
-    <div className="grid h-full min-h-0 gap-px bg-[#262626] xl:grid-cols-2">
+    <div className="grid h-full min-h-0 gap-[0.5px] bg-ui-border xl:grid-cols-2">
       <section className="flex min-h-0 flex-col bg-[#080808]">
-        <div className="flex items-center justify-between border-b border-[#262626] bg-[#171717]/60 px-4 py-4 sm:px-5">
-          <h2 className="flex items-center gap-2 text-[15px] font-semibold text-[#f5f1ea]">
+        <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-[#171717]/60 px-4 py-4 sm:px-5">
+          <h2 className="flex items-center gap-2 text-[14px] font-medium text-[#E8EAF0]">
             <LockKeyhole className="size-4 text-[#c07040]" />
             Encoded Token
           </h2>
           <button
             type="button"
             onClick={() => setJwtInput("")}
-            className="text-[12px] font-semibold tracking-[0.02em] text-[#d6c3b5] transition-colors hover:text-[#f5f1ea]"
+            className="text-[11px] font-medium tracking-[0.5px] text-[#5A6070] transition-colors hover:text-[#f5f1ea]"
           >
             Clear
           </button>
@@ -87,13 +87,13 @@ export function JwtWorkspace({
             onChange={(event) => setJwtInput(event.target.value)}
             spellCheck={false}
             placeholder={`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.\neyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Impzb25MaW5lcyBEZW1vIiwiaWF0IjoxNTE2MjM5MDIyfQ.\nSflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`}
-            className="h-full w-full resize-none border-0 bg-transparent px-0 py-0 font-mono text-[15px] leading-8 text-[#f5f1ea] outline-none placeholder:text-[#5b5450]"
+            className="h-full w-full resize-none border-0 bg-transparent px-0 py-0 font-mono text-[13px] font-normal leading-7 text-[#f5f1ea] outline-none placeholder:text-[#5b5450]"
           />
         </div>
 
-        <div className="border-t border-[#262626] bg-[#121212] p-4 sm:p-6">
+        <div className="border-t-[0.5px] border-ui-border bg-[#121212] p-4 sm:p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-[15px] font-medium text-[#f5f1ea]">Verify signature</h3>
+            <h3 className="text-[14px] font-medium text-[#E8EAF0]">Verify signature</h3>
             <button
               type="button"
               role="switch"
@@ -115,12 +115,14 @@ export function JwtWorkspace({
 
           <div className="space-y-4">
             <div className="grid gap-4 md:grid-cols-[100px_minmax(0,1fr)] md:items-center">
-              <label className="font-mono text-xs text-[#a89589]">Algorithm</label>
+              <label className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                Algorithm
+              </label>
               <div className="relative">
                 <select
                   value={jwtAlgorithm}
                   onChange={(event) => setJwtAlgorithm(event.target.value)}
-                  className="h-11 w-full appearance-none rounded-sm border border-[#262626] bg-[#080808] px-3 font-mono text-sm text-[#f5f1ea] outline-none"
+                  className="h-11 w-full appearance-none rounded-sm border-[0.5px] border-ui-border bg-[#080808] px-3 font-mono text-[13px] font-normal text-[#f5f1ea] outline-none focus-visible:border-[#C07040]"
                 >
                   <option>HS256</option>
                   <option>RS256</option>
@@ -131,12 +133,14 @@ export function JwtWorkspace({
             </div>
 
             <div className="grid gap-4 md:grid-cols-[100px_minmax(0,1fr)] md:items-start">
-              <label className="pt-2 font-mono text-xs text-[#a89589]">Secret</label>
+              <label className="pt-2 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                Secret
+              </label>
               <div className="space-y-2">
                 <textarea
                   value={jwtSecret}
                   onChange={(event) => setJwtSecret(event.target.value)}
-                  className="h-24 w-full resize-none rounded-sm border border-[#262626] bg-[#080808] px-3 py-2 font-mono text-sm text-[#f5f1ea] outline-none"
+                  className="h-24 w-full resize-none rounded-sm border-[0.5px] border-ui-border bg-[#080808] px-3 py-2 font-mono text-[13px] font-normal text-[#f5f1ea] outline-none focus-visible:border-[#C07040]"
                   placeholder="your-256-bit-secret"
                 />
                 <div className="flex justify-end">
@@ -152,8 +156,8 @@ export function JwtWorkspace({
       </section>
 
       <section className="flex min-h-0 flex-col overflow-y-auto bg-[#080808]">
-        <div className="sticky top-0 z-10 border-b border-[#262626] bg-[#171717]/60 px-4 py-4 sm:px-5">
-          <h2 className="flex items-center gap-2 text-[15px] font-semibold text-[#f5f1ea]">
+        <div className="sticky top-0 z-10 border-b-[0.5px] border-ui-border bg-[#171717]/60 px-4 py-4 sm:px-5">
+          <h2 className="flex items-center gap-2 text-[14px] font-medium text-[#E8EAF0]">
             <Eye className="size-4 text-[#ffb68e]" />
             Decoded Payload
           </h2>
@@ -197,12 +201,12 @@ export function JwtWorkspace({
                 actions={
                   <div
                     className={cn(
-                      "flex items-center gap-2 rounded-sm border px-2.5 py-1",
+                      "flex items-center gap-2 rounded-sm border-[0.5px] px-2.5 py-1",
                       signatureState === "verified"
-                        ? "border-[#32593a] bg-[#0d1510] text-[#8ed08e]"
+                        ? "border-ui-border bg-[#0d1510] text-[#8ed08e]"
                         : signatureState === "invalid"
-                        ? "border-[#7a1e1e] bg-[#4a0c0c] text-[#f1b0b0]"
-                        : "border-[#4b3c24] bg-[#14110b] text-[#d7c49d]",
+                        ? "border-ui-border bg-[#4a0c0c] text-[#f1b0b0]"
+                        : "border-ui-border bg-[#14110b] text-[#d7c49d]",
                     )}
                   >
                     <CheckCircle2 className="size-3.5" />
@@ -270,7 +274,7 @@ export function JwtWorkspace({
                   {payloadClaims.map(([key, value]) => (
                     <div
                       key={key}
-                      className="flex items-center justify-between gap-4 rounded-sm border border-[#262626] bg-[#111111] px-3 py-2"
+                      className="flex items-center justify-between gap-4 rounded-sm border-[0.5px] border-ui-border bg-[#111111] px-3 py-2"
                     >
                       <span className="font-mono text-xs text-[#c07040]">{key}</span>
                       <span className="max-w-[70%] truncate font-mono text-xs text-[#f5f1ea]">
@@ -282,9 +286,9 @@ export function JwtWorkspace({
               </JwtCard>
             </>
           ) : (
-            <div className="rounded-sm border border-[#262626] bg-[#121212] p-6">
-              <p className="text-lg font-semibold text-[#f5f1ea]">Paste a valid JWT token</p>
-              <p className="mt-2 text-sm leading-6 text-[#a89589]">
+            <div className="rounded-sm border-[0.5px] border-ui-border bg-[#121212] p-6">
+              <p className="text-[14px] font-medium text-[#E8EAF0]">Paste a valid JWT token</p>
+              <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
                 Header, payload, and signature details will appear here as soon as the token can be
                 decoded.
               </p>

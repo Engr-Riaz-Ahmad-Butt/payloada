@@ -17,7 +17,9 @@
   --color-surface-container-highest: #353534;
   --color-surface-variant: #353534;
   --color-surface-bright: #3a3939;
-  --color-ui-border: #262626;
+  --color-ui-border: #1e2433;
+  --color-ui-border-hover: #2a2f42;
+  --color-focus-accent: #c07040;
   --color-outline: #a18c82;
   --color-outline-variant: #54433b;
 
@@ -147,4 +149,30 @@
 
 .jsonlines-diff-gutter-added {
   border-left: 2px solid #9ad598;
+}
+
+@utility jl-panel-border {
+  border: 0.5px solid var(--color-ui-border);
+}
+
+@utility jl-card-border {
+  border: 0.5px solid var(--color-ui-border);
+}
+
+@utility jl-divider-border {
+  border-color: var(--color-ui-border);
+}
+
+@utility jl-hover-border {
+  &:hover {
+    border-color: var(--color-ui-border-hover);
+  }
+}
+
+@utility jl-focus-border {
+  &:focus-visible {
+    border: 1px solid var(--color-focus-accent);
+    box-shadow: none;
+    outline: none;
+  }
 }

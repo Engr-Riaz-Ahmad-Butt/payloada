@@ -27,7 +27,7 @@ export default function WorkspaceError({
         </p>
         <button
           onClick={() => reset()}
-          className="rounded bg-[#C07040] px-6 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+          className="rounded border border-ui-border bg-[#C07040] px-6 py-2 text-sm font-bold text-white transition-transform hover:border-[#2A2F42] hover:scale-105 active:scale-95 focus-visible:border-[#C07040] focus-visible:outline-none"
         >
           Reset terminal
         </button>
