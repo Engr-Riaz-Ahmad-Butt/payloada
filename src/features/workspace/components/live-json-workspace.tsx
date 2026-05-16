@@ -200,6 +200,8 @@ export function LiveJsonWorkspace() {
                   setDiffNew={setDiffNew}
                   setDiffOld={setDiffOld}
                   summary={diffSummary}
+                  onCopy={handleCopy}
+                  onDownload={handleDownload}
                 />
               ) : null}
 

@@ -59,7 +59,7 @@ export function JwtWorkspace({
     };
   }, [decodedJwt, jwtAlgorithm, jwtSecret, verifyEnabled]);
 
-  const payloadClaims = decodedJwt?.payload ? Object.entries(decodedJwt.payload).slice(0, 6) : [];
+  const payloadClaims = decodedJwt?.payload ? Object.entries(decodedJwt.payload).slice(0, 8) : [];
   const headerJson = decodedJwt ? JSON.stringify(decodedJwt.header, null, 2) : "";
   const payloadJson = decodedJwt ? JSON.stringify(decodedJwt.payload, null, 2) : "";
   const tokenAlgorithm = String(decodedJwt?.header.alg ?? jwtAlgorithm);
@@ -291,7 +291,7 @@ export function JwtWorkspace({
               <JwtCard
                 title="Header"
                 subtitle="Algorithm and token type"
-                accent="copper"
+                accent="header"
                 actions={
                   <SmallAction
                     label="Copy Header"
@@ -305,7 +305,7 @@ export function JwtWorkspace({
               <JwtCard
                 title="Payload"
                 subtitle="Data"
-                accent="secondary"
+                accent="payload"
                 actions={
                   <SmallAction
                     label="Copy Payload"
@@ -316,7 +316,7 @@ export function JwtWorkspace({
                 <CodePreview value={payloadJson} className="border-0 bg-transparent p-0" />
               </JwtCard>
 
-              <JwtCard title="Signature" subtitle="Verification" accent="primary">
+              <JwtCard title="Signature" subtitle="Verification" accent="signature">
                 <div className="space-y-2 font-mono text-xs leading-6 text-[#d6c3b5]">
                   <p className="flex gap-2">
                     <span className="w-24 text-[#ffb68e]">Algorithm:</span>
@@ -344,7 +344,7 @@ export function JwtWorkspace({
               <JwtCard
                 title="Claims"
                 subtitle="Quick scan"
-                accent="secondary"
+                accent="claims"
                 actions={
                   <SmallAction
                     label="Copy Full JWT"
@@ -369,10 +369,22 @@ export function JwtWorkspace({
                   {payloadClaims.map(([key, value]) => (
                     <div
                       key={key}
-                      className="flex items-center justify-between gap-4 rounded-sm border-[0.5px] border-ui-border bg-[#111111] px-3 py-2"
+                      className="flex items-center justify-between gap-4 rounded-[6px] border-[0.5px] border-ui-border bg-[#111111] px-3 py-2 transition-colors hover:bg-[#1A1D24]"
                     >
-                      <span className="font-mono text-xs text-[#c07040]">{key}</span>
-                      <span className="max-w-[70%] truncate font-mono text-xs text-[#f5f1ea]">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <span
+                          className="text-[12px] font-medium"
+                          style={{ color: isStandardJwtClaim(key) ? "#C07040" : "#8B92A8" }}
+                        >
+                          {key}
+                        </span>
+                        {isStandardJwtClaim(key) ? (
+                          <span className="rounded-[4px] bg-[#1F140C] px-1.5 py-0.5 text-[9px] font-medium leading-none text-[#C07040]">
+                            std
+                          </span>
+                        ) : null}
+                      </div>
+                      <span className="max-w-[70%] truncate text-right font-mono text-[12px] text-[#E8EAF0]">
                         {typeof value === "string" ? value : JSON.stringify(value)}
                       </span>
                     </div>
@@ -405,6 +417,10 @@ function truncateTokenPart(value: string) {
 
 function getNumericClaim(value: unknown) {
   return typeof value === "number" ? value : null;
+}
+
+function isStandardJwtClaim(key: string) {
+  return ["sub", "iat", "exp", "iss", "aud", "nbf", "jti"].includes(key);
 }
 
 function formatJwtDate(value: number | null) {
