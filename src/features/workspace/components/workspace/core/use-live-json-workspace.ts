@@ -50,6 +50,7 @@ export function useLiveJsonWorkspace() {
   const [urlValue, setUrlValue] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [linePosition, setLinePosition] = useState({ line: 1, column: 1 });
@@ -140,7 +141,21 @@ export function useLiveJsonWorkspace() {
         event.preventDefault();
         setCommandIndex(0);
         setCommandQuery("");
+        setShowShortcutsModal(false);
         setShowCommandPalette(true);
+        return;
+      }
+
+      if (!event.ctrlKey && !event.metaKey && !event.altKey && event.key === "?") {
+        event.preventDefault();
+        setShowCommandPalette(false);
+        setShowShortcutsModal(true);
+        return;
+      }
+
+      if (event.key === "Escape" && showShortcutsModal) {
+        event.preventDefault();
+        setShowShortcutsModal(false);
         return;
       }
 
@@ -156,7 +171,7 @@ export function useLiveJsonWorkspace() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showCommandPalette]);
+  }, [showCommandPalette, showShortcutsModal]);
 
   useEffect(() => {
     if (showCommandPalette) {
@@ -431,6 +446,7 @@ export function useLiveJsonWorkspace() {
       urlValue,
       showUrlInput,
       showCommandPalette,
+      showShortcutsModal,
       commandQuery,
       commandIndex,
       linePosition,
@@ -467,6 +483,7 @@ export function useLiveJsonWorkspace() {
       setUrlValue,
       setShowUrlInput,
       setShowCommandPalette,
+      setShowShortcutsModal,
       setCommandQuery,
       setCommandIndex,
       setLinePosition,

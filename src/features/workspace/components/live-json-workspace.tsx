@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { CommandPalette } from "./workspace/shared/command-palette";
+import { CommandPalette, ShortcutsModal } from "./workspace/shared";
 import { ConverterWorkspace } from "./workspace/converters/converter-workspace";
 import { DiffWorkspace } from "./workspace/diff/diff-workspace";
 import { EditorWorkspace } from "./workspace/editor/editor-workspace";
@@ -27,6 +27,7 @@ export function LiveJsonWorkspace() {
     urlValue,
     showUrlInput,
     showCommandPalette,
+    showShortcutsModal,
     commandQuery,
     commandIndex,
     linePosition,
@@ -58,6 +59,7 @@ export function LiveJsonWorkspace() {
     setUrlValue,
     setShowUrlInput,
     setShowCommandPalette,
+    setShowShortcutsModal,
     setCommandQuery,
     setCommandIndex,
     setLinePosition,
@@ -108,6 +110,7 @@ export function LiveJsonWorkspace() {
             searchTerm={searchTerm}
             setSearchTerm={setSearchTerm}
             activateSearch={activateSearch}
+            onOpenShortcuts={() => setShowShortcutsModal(true)}
           />
 
           <div className="flex min-h-0 flex-1 flex-col bg-surface">
@@ -235,6 +238,8 @@ export function LiveJsonWorkspace() {
           onSelect={(id) => handleRunCommand(id)}
         />
       ) : null}
+
+      {showShortcutsModal ? <ShortcutsModal onClose={() => setShowShortcutsModal(false)} /> : null}
     </section>
   );
 }

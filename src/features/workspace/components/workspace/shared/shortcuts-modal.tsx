@@ -48,10 +48,7 @@ export function ShortcutsModal({ onClose }: { onClose: () => void }) {
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b-[0.5px] border-ui-border px-5 py-4">
-          <h2
-            id="keyboard-shortcuts-title"
-            className="text-[16px] font-semibold text-[#E8EAF0]"
-          >
+          <h2 id="keyboard-shortcuts-title" className="text-[16px] font-semibold text-[#E8EAF0]">
             Keyboard shortcuts
           </h2>
           <button
@@ -76,9 +73,7 @@ export function ShortcutsModal({ onClose }: { onClose: () => void }) {
                     <span className="inline-flex rounded-[4px] border-[0.5px] border-[#2A2F42] bg-[#1A1D24] px-[6px] py-[2px] font-mono text-[10px] text-[#8B92A8]">
                       {shortcut}
                     </span>
-                    <p className="text-[12px] font-normal leading-[1.5] text-[#8B92A8]">
-                      {label}
-                    </p>
+                    <p className="text-[12px] font-normal leading-[1.5] text-[#8B92A8]">{label}</p>
                   </div>
                 ))}
               </div>

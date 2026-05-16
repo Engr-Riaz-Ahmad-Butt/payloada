@@ -1,6 +1,6 @@
 "use client";
 
-import { Search } from "lucide-react";
+import { CircleHelp, Search } from "lucide-react";
 
 import type { WorkspaceView } from "../core/types";
 
@@ -38,19 +38,33 @@ export function WorkspaceTopbar({
   searchTerm,
   setSearchTerm,
   activateSearch,
+  onOpenShortcuts,
 }: {
   workspaceView: WorkspaceView;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   activateSearch: () => void;
+  onOpenShortcuts: () => void;
 }) {
   const workspaceMeta = WORKSPACE_TITLES[workspaceView];
 
   return (
     <header className="flex flex-col gap-4 border-b-[0.5px] border-ui-border bg-obsidian-base px-4 py-4 sm:px-5 lg:px-8 xl:px-10">
-      <div>
-        <p className="text-lg font-semibold text-text-primary">{workspaceMeta.title}</p>
-        <p className="mt-1 text-sm text-on-surface-variant">{workspaceMeta.description}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-lg font-semibold text-text-primary">{workspaceMeta.title}</p>
+          <p className="mt-1 text-sm text-on-surface-variant">{workspaceMeta.description}</p>
+        </div>
+
+        <button
+          type="button"
+          onClick={onOpenShortcuts}
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#101010] text-[#8B92A8] transition-colors hover:border-[#2A2F42] hover:text-[#E8EAF0] focus-visible:border-[#C07040] focus-visible:outline-none"
+          aria-label="Open keyboard shortcuts"
+          title="Keyboard shortcuts"
+        >
+          <CircleHelp className="size-4" />
+        </button>
       </div>
 
       {workspaceView === "editor" ? (
