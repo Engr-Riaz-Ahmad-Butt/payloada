@@ -398,6 +398,21 @@ export function useLiveJsonWorkspace() {
     setInspectorView("tree");
   };
 
+  const handleNewDocument = () => {
+    setWorkspaceView("editor");
+    setPreviousWorkspaceView("editor");
+    setRoleMode("General");
+    setInspectorView("status");
+    setSource("");
+    setSelectedPath(null);
+    setSearchTerm("");
+    setUrlValue("");
+    setShowUrlInput(false);
+    setLinePosition({ line: 1, column: 1 });
+    toast.success("Started a new document");
+    addHistory("Started a new document", "Editor reset");
+  };
+
   return {
     refs: {
       editorRef,
@@ -478,6 +493,7 @@ export function useLiveJsonWorkspace() {
       loadSampleJson,
       activateSearch,
       activateTreeInspector,
+      handleNewDocument,
     },
   };
 }

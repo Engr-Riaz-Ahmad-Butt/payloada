@@ -82,6 +82,7 @@ export function LiveJsonWorkspace() {
     loadSampleJson,
     activateSearch,
     activateTreeInspector,
+    handleNewDocument,
   } = actions;
 
   return (
@@ -97,6 +98,7 @@ export function LiveJsonWorkspace() {
         <WorkspaceSidebar
           workspaceView={workspaceView}
           onOpenWorkspace={openWorkspace}
+          onNewDocument={handleNewDocument}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
         />

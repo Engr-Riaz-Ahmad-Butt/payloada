@@ -10,11 +10,13 @@ import type { WorkspaceView } from "../core/types";
 export function WorkspaceSidebar({
   workspaceView,
   onOpenWorkspace,
+  onNewDocument,
   isCollapsed,
   onToggleCollapse,
 }: {
   workspaceView: WorkspaceView;
   onOpenWorkspace: (view: WorkspaceView) => void;
+  onNewDocument: () => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
 }) {
@@ -69,7 +71,11 @@ export function WorkspaceSidebar({
             ) : null}
           </div>
 
-          <button className="rounded-sm bg-[#c77742] px-3 py-2 text-xs font-semibold text-black transition-opacity hover:opacity-90 sm:px-4 sm:py-2.5 sm:text-sm xl:hidden">
+          <button
+            type="button"
+            onClick={onNewDocument}
+            className="rounded-sm bg-[#c77742] px-3 py-2 text-xs font-semibold text-black transition-opacity hover:opacity-90 sm:px-4 sm:py-2.5 sm:text-sm xl:hidden"
+          >
             + New Document
           </button>
         </div>
@@ -83,13 +89,16 @@ export function WorkspaceSidebar({
           <button
             title="New document"
             type="button"
+            onClick={onNewDocument}
             className={cn(
               "group relative rounded-sm bg-[#c77742] text-sm font-semibold text-black transition-all duration-300 ease-out hover:opacity-90",
-              isCollapsed ? "flex h-10 w-10 items-center justify-center px-0" : "w-full px-4 py-3",
+              isCollapsed
+                ? "flex h-10 w-10 items-center justify-center px-0"
+                : "flex w-full items-center justify-center gap-2.5 px-4 py-3",
             )}
           >
             <Plus className="size-4 shrink-0" />
-            {!isCollapsed ? <span className="ml-2 whitespace-nowrap">New document</span> : null}
+            {!isCollapsed ? <span className="whitespace-nowrap leading-none">New document</span> : null}
             {isCollapsed ? (
               <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border border-[#3a2b22] bg-[#17110d] px-3 py-2 text-xs font-semibold text-[#f5f1ea] shadow-[0_12px_30px_rgba(0,0,0,0.35)] group-hover:flex">
                 New document
