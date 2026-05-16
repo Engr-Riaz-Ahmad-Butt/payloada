@@ -251,7 +251,7 @@ export default function WorkspaceMockup() {
                 fontWeight: 500,
               }}
             >
-              jsonlens.dev
+              jsonlines.dev
             </span>
           </div>
 

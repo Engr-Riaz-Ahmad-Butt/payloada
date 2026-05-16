@@ -94,7 +94,7 @@ export default function Home() {
                 textDecoration: "none",
               }}
             >
-              Get started - it&apos;s free
+              Get started — it&apos;s free
             </Link>
           </div>
 
@@ -105,13 +105,10 @@ export default function Home() {
 
         <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
           <div className="grid gap-5 lg:gap-6 xl:grid-cols-[minmax(0,1.08fr)_380px]">
-            <div
-              className="rounded border p-6 sm:p-7 lg:p-8"
-              style={{ borderColor: "#262626", backgroundColor: "#121212" }}
-            >
+            <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 sm:p-7 lg:p-8">
               <p
-                className="mb-3 text-xs font-semibold tracking-[0.02em]"
-                style={{ color: "#d9c2b6" }}
+                className="mb-3 text-[11px] font-medium tracking-[0.04em]"
+                style={{ color: "#5A6070" }}
               >
                 Privacy-first
               </p>
@@ -127,7 +124,7 @@ export default function Home() {
               </h2>
               <p
                 className="mt-4"
-                style={{ color: "#d9c2b6", fontSize: "15px", lineHeight: "28px" }}
+                style={{ color: "#8B92A8", fontSize: "15px", lineHeight: "28px" }}
               >
                 jsonLines is designed for payloads that developers actually care about. Formatting,
                 validation, tree exploration, JWT decoding, diffing, and generation all happen in a
@@ -143,10 +140,9 @@ export default function Home() {
               ].map((item) => (
                 <div
                   key={item}
-                  className="rounded border p-5"
-                  style={{ borderColor: "#262626", backgroundColor: "#121212" }}
+                  className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5"
                 >
-                  <p style={{ color: "#F5F1EA", fontSize: "14px", lineHeight: "24px" }}>{item}</p>
+                  <p style={{ color: "#8B92A8", fontSize: "14px", lineHeight: "24px" }}>{item}</p>
                 </div>
               ))}
             </div>
@@ -156,8 +152,8 @@ export default function Home() {
         <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
           <div className="mb-8">
             <p
-              className="mb-2 text-xs font-semibold tracking-[0.02em]"
-              style={{ color: "#d9c2b6" }}
+              className="mb-2 text-[11px] font-medium tracking-[0.04em]"
+              style={{ color: "#5A6070" }}
             >
               Use cases
             </p>
@@ -177,8 +173,7 @@ export default function Home() {
             {useCases.map(([title, description]) => (
               <div
                 key={title}
-                className="rounded border p-5 sm:p-6"
-                style={{ borderColor: "#262626", backgroundColor: "#121212" }}
+                className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5 sm:p-6"
               >
                 <h3
                   style={{
@@ -192,7 +187,7 @@ export default function Home() {
                 </h3>
                 <p
                   className="mt-3"
-                  style={{ color: "#d9c2b6", fontSize: "14px", lineHeight: "24px" }}
+                  style={{ color: "#8B92A8", fontSize: "14px", lineHeight: "24px" }}
                 >
                   {description}
                 </p>
@@ -203,13 +198,10 @@ export default function Home() {
 
         <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
           <div className="grid gap-5 lg:gap-6 xl:grid-cols-2">
-            <div
-              className="rounded border p-6 sm:p-7 lg:p-8"
-              style={{ borderColor: "#262626", backgroundColor: "#121212" }}
-            >
+            <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 sm:p-7 lg:p-8">
               <p
-                className="mb-3 text-xs font-semibold tracking-[0.02em]"
-                style={{ color: "#d9c2b6" }}
+                className="mb-3 text-[11px] font-medium tracking-[0.04em]"
+                style={{ color: "#5A6070" }}
               >
                 Comparison
               </p>
@@ -228,10 +220,9 @@ export default function Home() {
                 {comparisons.map(([left, right]) => (
                   <div
                     key={left}
-                    className="grid gap-2 rounded border px-4 py-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-3"
-                    style={{ borderColor: "#262626", backgroundColor: "#0d0d0d" }}
+                    className="grid gap-2 rounded-[10px] border-[0.5px] border-ui-border bg-obsidian-base px-4 py-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-3"
                   >
-                    <span style={{ color: "#b8a69a", fontSize: "13px" }}>{left}</span>
+                    <span style={{ color: "#8B92A8", fontSize: "13px" }}>{left}</span>
                     <span
                       className="hidden sm:inline"
                       style={{ color: "#C07040", fontSize: "13px", fontWeight: 700 }}
@@ -244,13 +235,10 @@ export default function Home() {
               </div>
             </div>
 
-            <div
-              className="rounded border p-6 sm:p-7 lg:p-8"
-              style={{ borderColor: "#262626", backgroundColor: "#121212" }}
-            >
+            <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 sm:p-7 lg:p-8">
               <p
-                className="mb-3 text-xs font-semibold tracking-[0.02em]"
-                style={{ color: "#d9c2b6" }}
+                className="mb-3 text-[11px] font-medium tracking-[0.04em]"
+                style={{ color: "#5A6070" }}
               >
                 Search-friendly content
               </p>
@@ -266,7 +254,7 @@ export default function Home() {
               </h2>
               <p
                 className="mt-4"
-                style={{ color: "#d9c2b6", fontSize: "15px", lineHeight: "28px" }}
+                style={{ color: "#8B92A8", fontSize: "15px", lineHeight: "28px" }}
               >
                 jsonLines combines JSON formatting, JWT decoding, JSON diffing, type generation,
                 search, and safety checks in one modern workspace. That makes it easier to
@@ -274,7 +262,7 @@ export default function Home() {
               </p>
               <p
                 className="mt-4"
-                style={{ color: "#d9c2b6", fontSize: "15px", lineHeight: "28px" }}
+                style={{ color: "#8B92A8", fontSize: "15px", lineHeight: "28px" }}
               >
                 Instead of feeling like a thin marketing wrapper, the homepage should show the real
                 product, explain why it matters, and surface the workflows people want to use most.
@@ -286,8 +274,8 @@ export default function Home() {
         <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
           <div className="mb-8">
             <p
-              className="mb-2 text-sm font-semibold tracking-[0.02em]"
-              style={{ color: "#d9c2b6" }}
+              className="mb-2 text-[11px] font-medium tracking-[0.04em]"
+              style={{ color: "#5A6070" }}
             >
               Questions
             </p>

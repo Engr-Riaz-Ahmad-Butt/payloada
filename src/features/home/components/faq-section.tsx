@@ -17,14 +17,15 @@ export default function FaqSection({ items }: { items: readonly FaqItem[] }) {
         const isOpen = openIndex === index;
 
         return (
-          <button
+          <div
             key={item.question}
-            type="button"
-            onClick={() => setOpenIndex((current) => (current === index ? null : index))}
-            className="rounded border p-4 text-left transition-colors sm:p-5 md:p-6"
-            style={{ borderColor: "#262626", backgroundColor: "#121212" }}
+            className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-4 text-left transition-colors hover:border-[#2A2F42] sm:p-5 md:p-6"
           >
-            <div className="flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={() => setOpenIndex((current) => (current === index ? null : index))}
+              className="flex w-full items-center justify-between gap-4 text-left"
+            >
               <h3
                 style={{
                   color: "#F5F1EA",
@@ -42,17 +43,17 @@ export default function FaqSection({ items }: { items: readonly FaqItem[] }) {
                   transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
                 }}
               />
-            </div>
+            </button>
 
             {isOpen ? (
               <p
                 className="mt-3"
-                style={{ color: "#d9c2b6", fontSize: "15px", lineHeight: "26px" }}
+                style={{ color: "#8B92A8", fontSize: "15px", lineHeight: "26px" }}
               >
                 {item.answer}
               </p>
             ) : null}
-          </button>
+          </div>
         );
       })}
     </div>

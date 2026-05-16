@@ -1,10 +1,9 @@
 "use client";
 
-import { Braces, CheckCircle2, Download, GitBranch, List, Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Braces, CheckCircle2, ChevronDown, Download, GitBranch, List, Search } from "lucide-react";
 
-import { cn } from "@/lib/utils";
-
-import { ROLE_MODES } from "../core/constants";
+import { ROLE_MODE_INFO, ROLE_MODES } from "../core/constants";
 import { IconButton } from "../shared";
 import type { InspectorView, RoleMode } from "../core/types";
 
@@ -21,25 +20,68 @@ export function WorkspaceModeStrip({
   setInspectorView: (view: InspectorView) => void;
   onDownload: () => void;
 }) {
+  const [showModeMenu, setShowModeMenu] = useState(false);
+  const modeMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!modeMenuRef.current?.contains(event.target as Node)) {
+        setShowModeMenu(false);
+      }
+    };
+
+    window.addEventListener("mousedown", handlePointerDown);
+    return () => window.removeEventListener("mousedown", handlePointerDown);
+  }, []);
+
   return (
     <div className="border-b-[0.5px] border-ui-border px-4 py-3 sm:px-5">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
-        <div className="flex flex-wrap gap-4 text-[14px] font-semibold sm:gap-6 sm:text-[15px]">
-          {ROLE_MODES.map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setRoleMode(item)}
-              className={cn(
-                "border-b pb-1 transition-colors",
-                roleMode === item
-                  ? "border-[#2A2F42] text-[#d69463]"
-                  : "border-transparent text-[#d6c3b5] hover:text-[#f5f1ea]",
-              )}
-            >
-              {item}
-            </button>
-          ))}
+        <div ref={modeMenuRef} className="relative w-full xl:w-auto">
+          <button
+            type="button"
+            onClick={() => setShowModeMenu((current) => !current)}
+            className="flex h-10 w-full items-center justify-between rounded-[10px] border-[0.5px] border-ui-border bg-[#0f0f0f] px-4 text-left transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none xl:min-w-[220px]"
+          >
+            <div>
+              <p className="text-[15px] font-medium text-[#F5F1EA]">{roleMode} mode</p>
+            </div>
+            <ChevronDown
+              className="size-4 text-[#8B92A8] transition-transform"
+              style={{ transform: showModeMenu ? "rotate(180deg)" : "rotate(0deg)" }}
+            />
+          </button>
+
+          {showModeMenu ? (
+            <div className="absolute left-0 top-[calc(100%+8px)] z-20 w-full overflow-hidden rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated xl:w-[320px]">
+              <div className="border-b-[0.5px] border-ui-border px-4 py-3">
+                <p className="text-[11px] font-medium tracking-[0.04em] text-[#5A6070]">Mode</p>
+              </div>
+              <div className="p-2">
+                {ROLE_MODES.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => {
+                      setRoleMode(item);
+                      setShowModeMenu(false);
+                    }}
+                    className="flex w-full flex-col rounded-[10px] px-3 py-3 text-left transition-colors hover:bg-surface-container-low"
+                  >
+                    <span
+                      className="text-[14px] font-medium"
+                      style={{ color: roleMode === item ? "#C07040" : "#F5F1EA" }}
+                    >
+                      {item}
+                    </span>
+                    <span className="mt-1 text-[13px] font-normal leading-[1.5] text-[#8B92A8]">
+                      {ROLE_MODE_INFO[item].description}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="flex w-full items-center gap-1 overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-[#0f0f0f] p-1 xl:w-auto">

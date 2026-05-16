@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CheckCircle2, ChevronDown, Eye, LockKeyhole } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChevronDown, Eye, LockKeyhole, Unlock } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -22,7 +22,7 @@ export function JwtWorkspace({
 }) {
   const [verifyEnabled, setVerifyEnabled] = useState(true);
   const [jwtAlgorithm, setJwtAlgorithm] = useState("HS256");
-  const [jwtSecret, setJwtSecret] = useState("your-256-bit-secret");
+  const [jwtSecret, setJwtSecret] = useState("");
   const [signatureState, setSignatureState] = useState<
     "idle" | "verified" | "invalid" | "unsupported"
   >("idle");
@@ -63,6 +63,38 @@ export function JwtWorkspace({
   const headerJson = decodedJwt ? JSON.stringify(decodedJwt.header, null, 2) : "";
   const payloadJson = decodedJwt ? JSON.stringify(decodedJwt.payload, null, 2) : "";
   const tokenAlgorithm = String(decodedJwt?.header.alg ?? jwtAlgorithm);
+  const tokenParts = decodedJwt?.tokenParts ?? ["", "", ""];
+  const issuedAt = getNumericClaim(decodedJwt?.payload?.iat);
+  const expiresAt = getNumericClaim(decodedJwt?.payload?.exp);
+  const expiryMeta = getExpiryMeta(issuedAt, expiresAt);
+
+  const bannerConfig =
+    signatureState === "verified"
+      ? {
+          background: "#0D2E23",
+          border: "#3DD68C",
+          text: "#3DD68C",
+          icon: <CheckCircle2 className="size-4" />,
+          label: "Signature verified — token is authentic",
+          weight: 500,
+        }
+      : signatureState === "invalid"
+      ? {
+          background: "#2A0D10",
+          border: "#FF5C6C",
+          text: "#FF5C6C",
+          icon: <AlertTriangle className="size-4" />,
+          label: "Signature invalid — do not trust this token",
+          weight: 500,
+        }
+      : {
+          background: "#1A1D24",
+          border: "#2A2F42",
+          text: "#5A6070",
+          icon: <Unlock className="size-4" />,
+          label: "Signature not verified — enter secret below to verify",
+          weight: 400,
+        };
 
   return (
     <div className="grid h-full min-h-0 gap-[0.5px] bg-ui-border xl:grid-cols-2">
@@ -81,14 +113,53 @@ export function JwtWorkspace({
           </button>
         </div>
 
-        <div className="min-h-[280px] flex-1 bg-[#080808] p-4 sm:min-h-[320px] sm:p-5">
+        <div className="space-y-2 bg-[#080808] p-4 sm:p-5">
           <textarea
             value={jwtInput}
             onChange={(event) => setJwtInput(event.target.value)}
             spellCheck={false}
             placeholder={`eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.\neyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Impzb25MaW5lcyBEZW1vIiwiaWF0IjoxNTE2MjM5MDIyfQ.\nSflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c`}
-            className="h-full w-full resize-none border-0 bg-transparent px-0 py-0 font-mono text-[13px] font-normal leading-7 text-[#f5f1ea] outline-none placeholder:text-[#5b5450]"
+            className="max-h-[100px] min-h-[100px] w-full resize-none overflow-y-auto rounded-[8px] border-[0.5px] border-ui-border bg-[#0A0A0A] px-3 py-3 font-mono text-[13px] font-normal leading-6 text-[#f5f1ea] outline-none placeholder:text-[#5b5450]"
           />
+
+          <div className="space-y-1">
+            {[
+              {
+                label: "Header",
+                background: "#1A2040",
+                text: "#79C0FF",
+                value: tokenParts[0],
+              },
+              {
+                label: "Payload",
+                background: "#1F140C",
+                text: "#C07040",
+                value: tokenParts[1],
+              },
+              {
+                label: "Signature",
+                background: "#1A2A1A",
+                text: "#3DD68C",
+                value: tokenParts[2],
+              },
+            ].map((part) => (
+              <div
+                key={part.label}
+                className="flex h-11 items-center justify-between rounded-[6px] border-[0.5px] border-ui-border px-3"
+                style={{ backgroundColor: part.background }}
+              >
+                <span className="text-[12px] font-medium" style={{ color: part.text }}>
+                  {part.label}
+                </span>
+                <span
+                  className="max-w-[60%] truncate font-mono text-[12px]"
+                  style={{ color: part.text }}
+                >
+                  {truncateTokenPart(part.value)}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="border-t-[0.5px] border-ui-border bg-[#121212] p-4 sm:p-6">
@@ -166,6 +237,57 @@ export function JwtWorkspace({
         <div className="space-y-5 p-4 sm:p-6">
           {decodedJwt ? (
             <>
+              <div
+                className="flex w-full items-center gap-3 rounded-[8px] border-[0.5px] px-4 py-3"
+                style={{
+                  backgroundColor: bannerConfig.background,
+                  borderColor: bannerConfig.border,
+                  color: bannerConfig.text,
+                }}
+              >
+                {bannerConfig.icon}
+                <span
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: bannerConfig.weight,
+                    lineHeight: "1.4",
+                  }}
+                >
+                  {bannerConfig.label}
+                </span>
+              </div>
+
+              <div className="rounded-[8px] border-[0.5px] border-ui-border bg-[#0F1117] px-4 py-3">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-normal uppercase tracking-[0.06em] text-[#5A6070]">
+                      Issued
+                    </p>
+                    <p className="mt-1 font-mono text-[12px] text-[#8B92A8]">
+                      {formatJwtDate(issuedAt)}
+                    </p>
+                  </div>
+
+                  <div className="hidden h-8 w-px bg-ui-border md:block" />
+
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-normal uppercase tracking-[0.06em] text-[#5A6070]">
+                      Expires
+                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <p className="font-mono text-[12px]" style={{ color: expiryMeta.color }}>
+                        {expiryMeta.label}
+                      </p>
+                      {expiryMeta.badge ? (
+                        <span className="rounded-full border-[0.5px] border-[#FF5C6C] bg-[#2A0D10] px-2 py-0.5 text-[10px] font-medium text-[#FF5C6C]">
+                          {expiryMeta.badge}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <JwtCard
                 title="Header"
                 subtitle="Algorithm and token type"
@@ -194,34 +316,7 @@ export function JwtWorkspace({
                 <CodePreview value={payloadJson} className="border-0 bg-transparent p-0" />
               </JwtCard>
 
-              <JwtCard
-                title="Signature"
-                subtitle="Verification"
-                accent="primary"
-                actions={
-                  <div
-                    className={cn(
-                      "flex items-center gap-2 rounded-sm border-[0.5px] px-2.5 py-1",
-                      signatureState === "verified"
-                        ? "border-ui-border bg-[#0d1510] text-[#8ed08e]"
-                        : signatureState === "invalid"
-                        ? "border-ui-border bg-[#4a0c0c] text-[#f1b0b0]"
-                        : "border-ui-border bg-[#14110b] text-[#d7c49d]",
-                    )}
-                  >
-                    <CheckCircle2 className="size-3.5" />
-                    <span className="font-mono text-xs">
-                      {signatureState === "verified"
-                        ? "Signature verified"
-                        : signatureState === "invalid"
-                        ? "Signature invalid"
-                        : signatureState === "unsupported"
-                        ? "Verification limited"
-                        : "Verification idle"}
-                    </span>
-                  </div>
-                }
-              >
+              <JwtCard title="Signature" subtitle="Verification" accent="primary">
                 <div className="space-y-2 font-mono text-xs leading-6 text-[#d6c3b5]">
                   <p className="flex gap-2">
                     <span className="w-24 text-[#ffb68e]">Algorithm:</span>
@@ -298,4 +393,102 @@ export function JwtWorkspace({
       </section>
     </div>
   );
+}
+
+function truncateTokenPart(value: string) {
+  if (!value) {
+    return "Not available";
+  }
+
+  return value.length > 12 ? `${value.slice(0, 12)}...` : value;
+}
+
+function getNumericClaim(value: unknown) {
+  return typeof value === "number" ? value : null;
+}
+
+function formatJwtDate(value: number | null) {
+  if (!value) {
+    return "Not set";
+  }
+
+  return new Date(value * 1000).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+function getExpiryMeta(issuedAt: number | null, expiresAt: number | null) {
+  if (!expiresAt) {
+    return {
+      label: "No expiry set",
+      color: "#3A4060",
+      badge: null as string | null,
+      issuedLabel: formatJwtDate(issuedAt),
+    };
+  }
+
+  const now = Date.now();
+  const expiresAtMs = expiresAt * 1000;
+  const deltaMs = expiresAtMs - now;
+
+  if (deltaMs <= 0) {
+    return {
+      label: `Expired ${formatElapsedTime(Math.abs(deltaMs))} ago`,
+      color: "#FF5C6C",
+      badge: "Expired",
+      issuedLabel: formatJwtDate(issuedAt),
+    };
+  }
+
+  return {
+    label: `in ${formatRemainingTime(deltaMs)} (${formatShortDate(expiresAtMs)})`,
+    color: "#3DD68C",
+    badge: null as string | null,
+    issuedLabel: formatJwtDate(issuedAt),
+  };
+}
+
+function formatElapsedTime(deltaMs: number) {
+  const totalHours = Math.floor(deltaMs / (1000 * 60 * 60));
+  const totalDays = Math.floor(totalHours / 24);
+
+  if (totalDays >= 1) {
+    return `${totalDays} day${totalDays === 1 ? "" : "s"}`;
+  }
+
+  if (totalHours >= 1) {
+    return `${totalHours} hour${totalHours === 1 ? "" : "s"}`;
+  }
+
+  const totalMinutes = Math.max(1, Math.floor(deltaMs / (1000 * 60)));
+  return `${totalMinutes} minute${totalMinutes === 1 ? "" : "s"}`;
+}
+
+function formatRemainingTime(deltaMs: number) {
+  const totalMinutes = Math.max(1, Math.floor(deltaMs / (1000 * 60)));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours >= 24) {
+    const days = Math.floor(hours / 24);
+    return `${days}d ${hours % 24}h`;
+  }
+
+  if (hours >= 1) {
+    return `${hours}h ${minutes}m`;
+  }
+
+  return `${totalMinutes}m`;
+}
+
+function formatShortDate(timestamp: number) {
+  return new Date(timestamp).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
