@@ -1,49 +1,25 @@
 "use client";
 
-import { Braces, Diff, FileCode2, KeyRound, Search, ShieldAlert } from "lucide-react";
+import { Diff, FileCode2, KeyRound } from "lucide-react";
 
 const features = [
   {
-    icon: Braces,
-    title: "JSON Formatter",
-    description:
-      "Beautify and minify payloads instantly with readable structure and fast copy/export actions.",
-    example: "Clean webhook bodies before debugging or sharing them with your team.",
+    icon: FileCode2,
+    title: "Precision editor",
+    description: "Flawless syntax highlighting with 8pt grid precision.",
+    label: "Editor workflow",
   },
   {
     icon: KeyRound,
-    title: "JWT Decoder",
-    description:
-      "Decode header and payload claims quickly, then verify signatures in the same workspace.",
-    example: "Inspect auth tokens without bouncing to another tool.",
+    title: "Fast JWT decoder",
+    description: "Decode and verify JWT tokens without leaving your workspace.",
+    label: "Token workflow",
   },
   {
     icon: Diff,
-    title: "JSON Diff",
-    description:
-      "Compare original and modified payloads side by side with readable summaries of what changed.",
-    example: "Spot added fields, removed keys, and type mismatches fast.",
-  },
-  {
-    icon: FileCode2,
-    title: "JSON to TypeScript",
-    description:
-      "Generate developer-ready interfaces and output from real API responses inside the app.",
-    example: "Turn nested payloads into usable types without hand-writing interfaces.",
-  },
-  {
-    icon: Search,
-    title: "JSONPath Finder",
-    description:
-      "Explore deep structures and copy exact paths for frontend mapping, tests, and debugging.",
-    example: "Jump straight to `$.users[0].profile.email` in seconds.",
-  },
-  {
-    icon: ShieldAlert,
-    title: "Sensitive Data Scanner",
-    description:
-      "Catch tokens, secrets, and private-looking fields before you export or share a payload.",
-    example: "Detect `password`, `secret`, and email-style fields automatically.",
+    title: "Intelligent diff",
+    description: "Compare JSON payloads side-by-side with smart conflict detection.",
+    label: "Review workflow",
   },
 ] as const;
 
@@ -83,41 +59,55 @@ export default function FeaturesSection() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {features.map(({ icon: Icon, title, description, example }) => (
+      <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-3">
+        {features.map(({ icon: Icon, title, description, label }) => (
           <div
             key={title}
-            className="group flex h-full flex-col rounded border p-5 transition-colors sm:p-6"
-            style={{
-              backgroundColor: "#121212",
-              borderColor: "#262626",
-              borderRadius: "0.25rem",
-            }}
-            onMouseEnter={(event) => {
-              event.currentTarget.style.borderColor = "#C07040";
-            }}
-            onMouseLeave={(event) => {
-              event.currentTarget.style.borderColor = "#262626";
-            }}
+            className="group relative flex h-full flex-col overflow-hidden rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 transition-[border-color,transform,background-color] duration-150 hover:-translate-y-0.5 hover:border-[#C07040]"
           >
             <div
-              className="mb-4 flex h-11 w-11 items-center justify-center rounded border"
+              className="pointer-events-none absolute inset-0 opacity-100 transition-opacity duration-150"
               style={{
-                borderColor: "#2d2119",
-                backgroundColor: "#0c0c0c",
+                background:
+                  "linear-gradient(180deg, rgba(192,112,64,0.05) 0%, rgba(18,18,18,0) 30%), linear-gradient(135deg, rgba(255,255,255,0.015) 0%, rgba(255,255,255,0) 55%)",
+              }}
+            />
+            <div className="relative mb-1 flex items-center justify-between">
+              <span
+                style={{
+                  color: "#5A6070",
+                  fontFamily: "Inter, sans-serif",
+                  fontSize: "11px",
+                  fontWeight: 500,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {label}
+              </span>
+              <span
+                className="h-[0.5px] w-10 transition-all duration-150 group-hover:w-14"
+                style={{ backgroundColor: "#2A2F42" }}
+              />
+            </div>
+
+            <div
+              className="relative mt-3 flex h-11 w-11 items-center justify-center rounded-[10px] border-[0.5px] transition-colors"
+              style={{
+                backgroundColor: "#1F140C",
+                borderColor: "#1E2433",
                 color: "#C07040",
               }}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-[22px] w-[22px]" />
             </div>
 
             <h3
-              className="mb-2"
+              className="relative mt-4"
               style={{
                 color: "#F5F1EA",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "18px",
-                lineHeight: "24px",
+                fontSize: "15px",
+                lineHeight: "1.4",
                 fontWeight: 600,
               }}
             >
@@ -125,27 +115,22 @@ export default function FeaturesSection() {
             </h3>
 
             <p
+              className="relative mt-3 max-w-[26ch]"
               style={{
-                color: "#d9c2b6",
+                color: "#8B92A8",
                 fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                lineHeight: "22px",
+                fontSize: "13px",
+                lineHeight: "1.5",
+                fontWeight: 400,
               }}
             >
               {description}
             </p>
 
             <div
-              className="mt-5 border-t pt-4"
-              style={{
-                borderColor: "#262626",
-                color: "#b8a69a",
-                fontSize: "12px",
-                lineHeight: "20px",
-              }}
-            >
-              {example}
-            </div>
+              className="relative mt-5 h-[0.5px] w-full transition-colors duration-150 group-hover:bg-[#C07040]"
+              style={{ backgroundColor: "#2A2F42" }}
+            />
           </div>
         ))}
       </div>
