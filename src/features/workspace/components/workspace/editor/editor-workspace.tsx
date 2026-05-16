@@ -1,8 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
-import { CheckCircle2, Copy, FileJson2, Info, ShieldAlert, XCircle } from "lucide-react";
+import {
+  Braces,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  FileJson2,
+  Info,
+  Search,
+  ShieldAlert,
+  X,
+  XCircle,
+} from "lucide-react";
 
 import { parseJsonSafe } from "@/lib/json";
 import { cn } from "@/lib/utils";
@@ -20,7 +32,7 @@ import {
   TreeNode,
 } from "../shared";
 import type { EditorInstance, InspectorView, SearchMatch, SelectedNode } from "../core/types";
-import { renderJsonValue } from "../shared/utils";
+import { evaluateJsonPathQuery, findSearchMatches, renderJsonValue } from "../shared/utils";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -44,6 +56,9 @@ export function EditorWorkspace({
   linePosition,
   setLinePosition,
   onClear,
+  onPaste,
+  onLoadSample,
+  onFetchFromUrl,
 }: {
   source: string;
   setSource: React.Dispatch<React.SetStateAction<string>>;
@@ -65,9 +80,72 @@ export function EditorWorkspace({
   linePosition: { line: number; column: number };
   setLinePosition: React.Dispatch<React.SetStateAction<{ line: number; column: number }>>;
   onClear: () => void;
+  onPaste: () => Promise<void>;
+  onLoadSample: () => void;
+  onFetchFromUrl: () => void;
 }) {
   const hasDesktopInspectorLayout = useMediaQuery("(min-width: 1280px)");
   const showMobileGraphPanel = inspectorView === "graph" && !hasDesktopInspectorLayout;
+  const [treeContainerElement, setTreeContainerElement] = useState<HTMLDivElement | null>(null);
+  const [jsonPathQuery, setJsonPathQuery] = useState("");
+  const jsonPathState = useMemo(
+    () =>
+      parseResult?.valid
+        ? evaluateJsonPathQuery(parseResult.data, jsonPathQuery)
+        : { matches: [], error: null as string | null },
+    [jsonPathQuery, parseResult],
+  );
+  const jsonPathExamples = ["$.*", "$..key", "$[0]", "$.array[*].field"];
+  const [treeSearchTerm, setTreeSearchTerm] = useState("");
+  const treeSearchMatches = useMemo(
+    () =>
+      parseResult?.valid && treeSearchTerm.trim()
+        ? findSearchMatches(parseResult.data, treeSearchTerm)
+        : [],
+    [parseResult, treeSearchTerm],
+  );
+  const treeMatchPaths = useMemo<Set<string>>(
+    () => new Set<string>(treeSearchMatches.map((match: SearchMatch) => match.path)),
+    [treeSearchMatches],
+  );
+  const treeMatchIndex =
+    treeSearchTerm.trim() && selectedNode
+      ? treeSearchMatches.findIndex((match: SearchMatch) => match.path === selectedNode.path)
+      : -1;
+  const activeTreeMatchNumber =
+    treeSearchTerm.trim() && treeSearchMatches.length ? Math.max(treeMatchIndex + 1, 1) : 0;
+
+  useEffect(() => {
+    if (!treeSearchTerm.trim() || !treeSearchMatches.length) {
+      return;
+    }
+
+    if (!selectedNode || !treeMatchPaths.has(selectedNode.path)) {
+      setSelectedPath((treeSearchMatches[0] as SearchMatch | undefined)?.path ?? null);
+    }
+  }, [selectedNode, setSelectedPath, treeMatchPaths, treeSearchMatches, treeSearchTerm]);
+
+  useEffect(() => {
+    if (!treeSearchTerm.trim() || !selectedNode?.path || !treeContainerElement) {
+      return;
+    }
+
+    const target = Array.from(
+      treeContainerElement.querySelectorAll<HTMLElement>("[data-tree-path]"),
+    ).find((node) => node.dataset.treePath === selectedNode.path);
+    target?.scrollIntoView({ block: "nearest" });
+  }, [selectedNode?.path, treeContainerElement, treeSearchTerm]);
+
+  const navigateTreeMatch = (direction: "next" | "previous") => {
+    if (!treeSearchMatches.length) {
+      return;
+    }
+
+    const currentIndex = treeMatchIndex >= 0 ? treeMatchIndex : 0;
+    const offset = direction === "next" ? 1 : -1;
+    const nextIndex = (currentIndex + offset + treeSearchMatches.length) % treeSearchMatches.length;
+    setSelectedPath(treeSearchMatches[nextIndex]?.path ?? null);
+  };
 
   const editorPane = (
     <div
@@ -188,7 +266,9 @@ export function EditorWorkspace({
               ? "Tree"
               : inspectorView === "search"
               ? "Search"
-              : "Graph"}
+              : inspectorView === "graph"
+              ? "Graph"
+              : "JSONPath"}
           </p>
           <button
             type="button"
@@ -198,7 +278,41 @@ export function EditorWorkspace({
             Close
           </button>
         </div>
-        {inspectorView === "status" ? (
+        {!source.trim() ? (
+          <div className="flex min-h-[420px] flex-1 items-center justify-center p-6">
+            <div className="w-full max-w-[320px] space-y-4 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[12px] bg-[#1A1D24]">
+                <Braces className="size-7 text-[#C07040]" />
+              </div>
+              <h3 className="text-[16px] font-medium text-[#8B92A8]">
+                Paste your JSON to get started
+              </h3>
+              <div className="flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={() => void onPaste()}
+                  className="h-10 rounded-[8px] bg-[#C07040] px-4 text-[14px] font-semibold text-white transition-colors hover:bg-[#D48050] focus-visible:outline-none"
+                >
+                  Paste from clipboard
+                </button>
+                <button
+                  type="button"
+                  onClick={onLoadSample}
+                  className="h-10 rounded-[8px] border-[0.5px] border-ui-border bg-[#161616] px-4 text-[14px] font-medium text-[#E8EAF0] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+                >
+                  Load sample JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={onFetchFromUrl}
+                  className="h-10 rounded-[8px] px-4 text-[14px] font-medium text-[#8B92A8] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                >
+                  Fetch from URL
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : inspectorView === "status" ? (
           <>
             <SidebarSection title="Status">
               <div
@@ -269,20 +383,85 @@ export function EditorWorkspace({
           <SidebarSection title="Tree Explorer">
             {parseResult?.valid ? (
               <div className="space-y-2">
+                <div className="overflow-hidden rounded-[6px] border-[0.5px] border-ui-border bg-[#0F1117]">
+                  <div className="flex h-[34px] items-center gap-2 border-b-[0.5px] border-[#1E2433] px-3">
+                    <Search className="size-[14px] shrink-0 text-[#3A4060]" />
+                    <input
+                      value={treeSearchTerm}
+                      onChange={(event) => setTreeSearchTerm(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          navigateTreeMatch(event.shiftKey ? "previous" : "next");
+                        }
+                      }}
+                      placeholder="Search keys, values, paths..."
+                      className="w-full bg-transparent font-mono text-[12px] text-[#E8EAF0] outline-none placeholder:text-[#5A6070]"
+                    />
+                    {treeSearchTerm.trim() && treeSearchMatches.length ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => navigateTreeMatch("previous")}
+                          className="inline-flex h-5 w-5 items-center justify-center text-[#5A6070] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                          aria-label="Previous tree match"
+                        >
+                          <ChevronLeft className="size-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => navigateTreeMatch("next")}
+                          className="inline-flex h-5 w-5 items-center justify-center text-[#5A6070] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                          aria-label="Next tree match"
+                        >
+                          <ChevronRight className="size-3.5" />
+                        </button>
+                      </div>
+                    ) : null}
+                    {treeSearchTerm.trim() ? (
+                      <button
+                        type="button"
+                        onClick={() => setTreeSearchTerm("")}
+                        className="inline-flex h-5 w-5 items-center justify-center text-[#5A6070] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                        aria-label="Clear tree search"
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    ) : null}
+                    <span className="shrink-0 font-mono text-[10px] text-[#5A6070]">
+                      {treeSearchTerm.trim()
+                        ? `${activeTreeMatchNumber} of ${treeSearchMatches.length}`
+                        : ""}
+                    </span>
+                  </div>
+                </div>
+
                 <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
                   Click any node to reveal its JSONPath and copy its value.
                 </p>
-                <div className="overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] p-3">
-                  <div className="min-w-max">
-                    <TreeNode
-                      label="root"
-                      path="$"
-                      value={parseResult.data}
-                      selectedPath={selectedNode?.path ?? null}
-                      onSelect={setSelectedPath}
-                      onCopy={onCopy}
-                    />
-                  </div>
+                <div
+                  ref={setTreeContainerElement}
+                  className="overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] p-3"
+                >
+                  {treeSearchTerm.trim() && !treeSearchMatches.length ? (
+                    <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-[#3A4060]">
+                      No matches for this search
+                    </div>
+                  ) : (
+                    <div className="min-w-max">
+                      <TreeNode
+                        label="root"
+                        path="$"
+                        value={parseResult.data}
+                        selectedPath={selectedNode?.path ?? null}
+                        onSelect={setSelectedPath}
+                        onCopy={onCopy}
+                        treeSearchTerm={treeSearchTerm}
+                        treeMatchPaths={treeMatchPaths}
+                        activeMatchPath={selectedNode?.path ?? null}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
@@ -339,6 +518,87 @@ export function EditorWorkspace({
               </div>
             ) : (
               <SidebarEmpty text="Valid JSON will appear as an interactive graph here." />
+            )}
+          </SidebarSection>
+        ) : null}
+
+        {inspectorView === "jsonpath" ? (
+          <SidebarSection title="JSONPath">
+            {parseResult?.valid ? (
+              <div className="space-y-3">
+                <div className="rounded-[6px] border-[0.5px] border-ui-border bg-[#0A0C0F] p-3">
+                  <input
+                    value={jsonPathQuery}
+                    onChange={(event) => setJsonPathQuery(event.target.value)}
+                    placeholder="$.store.books[*].title"
+                    className="h-12 w-full rounded-[6px] border-[0.5px] border-[#2A2F42] bg-[#1A1D24] px-3 font-mono text-[13px] text-[#E8EAF0] outline-none placeholder:text-[#5A6070] focus-visible:border-[#C07040]"
+                  />
+                  <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-[#3A4060]">
+                    {jsonPathExamples.map((example, index) => (
+                      <React.Fragment key={example}>
+                        <button
+                          type="button"
+                          onClick={() => setJsonPathQuery(example)}
+                          className="font-mono transition-colors hover:text-[#C07040] focus-visible:text-[#C07040] focus-visible:outline-none"
+                        >
+                          {example}
+                        </button>
+                        {index < jsonPathExamples.length - 1 ? <span>·</span> : null}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[6px] border-[0.5px] border-ui-border bg-[#0A0C0F] p-3">
+                  {jsonPathState.error ? (
+                    <div className="rounded-[6px] border-[0.5px] border-[#FF5C6C] bg-[#2A0D10] px-4 py-3">
+                      <p className="text-[13px] font-medium text-[#FF5C6C]">
+                        Invalid JSONPath query
+                      </p>
+                      <p className="mt-1 text-[13px] font-normal leading-[1.6] text-[#FFB3BD]">
+                        {jsonPathState.error}
+                      </p>
+                    </div>
+                  ) : jsonPathQuery.trim() ? (
+                    jsonPathState.matches.length ? (
+                      <div className="space-y-3">
+                        <div className="flex justify-end">
+                          <span className="rounded-[6px] bg-[#1F140C] px-2.5 py-1 text-[11px] font-medium text-[#C07040]">
+                            {jsonPathState.matches.length} results
+                          </span>
+                        </div>
+
+                        <div className="space-y-3">
+                          {jsonPathState.matches.map((match) => (
+                            <button
+                              key={match.path}
+                              type="button"
+                              onClick={() => setSelectedPath(match.path)}
+                              className="block w-full rounded-[6px] border-[0.5px] border-ui-border bg-[#111111] p-3 text-left transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+                            >
+                              <p className="font-mono text-[13px] text-[#C07040]">{match.path}</p>
+                              <CodePreview
+                                value={JSON.stringify(match.value, null, 2)}
+                                className="mt-2 border-0 bg-transparent p-0 text-[#E8EAF0]"
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-[#3A4060]">
+                        No matches for this path
+                      </div>
+                    )
+                  ) : (
+                    <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-[#3A4060]">
+                      Enter a JSONPath query to inspect matching values.
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <SidebarEmpty text="Valid JSON is required before JSONPath queries can run." />
             )}
           </SidebarSection>
         ) : null}

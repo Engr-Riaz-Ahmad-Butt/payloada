@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { CommandPalette, ShortcutsModal } from "./workspace/shared";
+import { CommandPalette, ShareModal, ShortcutsModal } from "./workspace/shared";
 import { ConverterWorkspace } from "./workspace/converters/converter-workspace";
 import { DiffWorkspace } from "./workspace/diff/diff-workspace";
 import { EditorWorkspace } from "./workspace/editor/editor-workspace";
@@ -28,6 +28,7 @@ export function LiveJsonWorkspace() {
     showUrlInput,
     showCommandPalette,
     showShortcutsModal,
+    showShareModal,
     commandQuery,
     commandIndex,
     linePosition,
@@ -60,6 +61,7 @@ export function LiveJsonWorkspace() {
     setShowUrlInput,
     setShowCommandPalette,
     setShowShortcutsModal,
+    setShowShareModal,
     setCommandQuery,
     setCommandIndex,
     setLinePosition,
@@ -111,6 +113,7 @@ export function LiveJsonWorkspace() {
             setSearchTerm={setSearchTerm}
             activateSearch={activateSearch}
             onOpenShortcuts={() => setShowShortcutsModal(true)}
+            onOpenShare={() => setShowShareModal(true)}
           />
 
           <div className="flex min-h-0 flex-1 flex-col bg-surface">
@@ -177,6 +180,9 @@ export function LiveJsonWorkspace() {
                   linePosition={linePosition}
                   setLinePosition={setLinePosition}
                   onClear={clearEditor}
+                  onPaste={handlePaste}
+                  onLoadSample={loadSampleJson}
+                  onFetchFromUrl={() => setShowUrlInput(true)}
                 />
               ) : null}
 
@@ -240,6 +246,9 @@ export function LiveJsonWorkspace() {
       ) : null}
 
       {showShortcutsModal ? <ShortcutsModal onClose={() => setShowShortcutsModal(false)} /> : null}
+      {showShareModal ? (
+        <ShareModal source={source} onClose={() => setShowShareModal(false)} onCopy={handleCopy} />
+      ) : null}
     </section>
   );
 }

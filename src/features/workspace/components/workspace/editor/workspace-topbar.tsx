@@ -39,12 +39,14 @@ export function WorkspaceTopbar({
   setSearchTerm,
   activateSearch,
   onOpenShortcuts,
+  onOpenShare,
 }: {
   workspaceView: WorkspaceView;
   searchTerm: string;
   setSearchTerm: (value: string) => void;
   activateSearch: () => void;
   onOpenShortcuts: () => void;
+  onOpenShare: () => void;
 }) {
   const workspaceMeta = WORKSPACE_TITLES[workspaceView];
 
@@ -56,15 +58,24 @@ export function WorkspaceTopbar({
           <p className="mt-1 text-sm text-on-surface-variant">{workspaceMeta.description}</p>
         </div>
 
-        <button
-          type="button"
-          onClick={onOpenShortcuts}
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#101010] text-[#8B92A8] transition-colors hover:border-[#2A2F42] hover:text-[#E8EAF0] focus-visible:border-[#C07040] focus-visible:outline-none"
-          aria-label="Open keyboard shortcuts"
-          title="Keyboard shortcuts"
-        >
-          <CircleHelp className="size-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenShare}
+            className="inline-flex h-9 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#101010] px-3 text-[12px] font-medium text-[#E8EAF0] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+          >
+            Share
+          </button>
+          <button
+            type="button"
+            onClick={onOpenShortcuts}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#101010] text-[#8B92A8] transition-colors hover:border-[#2A2F42] hover:text-[#E8EAF0] focus-visible:border-[#C07040] focus-visible:outline-none"
+            aria-label="Open keyboard shortcuts"
+            title="Keyboard shortcuts"
+          >
+            <CircleHelp className="size-4" />
+          </button>
+        </div>
       </div>
 
       {workspaceView === "editor" ? (

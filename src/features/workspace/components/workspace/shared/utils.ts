@@ -1,5 +1,6 @@
 export {
   appendPath,
+  evaluateJsonPathQuery,
   findSearchMatches,
   getFirstSelectableNode,
   getValueAtPath,

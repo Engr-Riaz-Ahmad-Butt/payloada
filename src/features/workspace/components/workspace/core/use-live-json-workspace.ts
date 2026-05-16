@@ -51,6 +51,7 @@ export function useLiveJsonWorkspace() {
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [linePosition, setLinePosition] = useState({ line: 1, column: 1 });
@@ -142,6 +143,7 @@ export function useLiveJsonWorkspace() {
         setCommandIndex(0);
         setCommandQuery("");
         setShowShortcutsModal(false);
+        setShowShareModal(false);
         setShowCommandPalette(true);
         return;
       }
@@ -159,6 +161,20 @@ export function useLiveJsonWorkspace() {
         return;
       }
 
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        setShowCommandPalette(false);
+        setShowShortcutsModal(false);
+        setShowShareModal(true);
+        return;
+      }
+
+      if (event.key === "Escape" && showShareModal) {
+        event.preventDefault();
+        setShowShareModal(false);
+        return;
+      }
+
       if (!showCommandPalette) {
         return;
       }
@@ -171,7 +187,7 @@ export function useLiveJsonWorkspace() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showCommandPalette, showShortcutsModal]);
+  }, [showCommandPalette, showShareModal, showShortcutsModal]);
 
   useEffect(() => {
     if (showCommandPalette) {
@@ -447,6 +463,7 @@ export function useLiveJsonWorkspace() {
       showUrlInput,
       showCommandPalette,
       showShortcutsModal,
+      showShareModal,
       commandQuery,
       commandIndex,
       linePosition,
@@ -484,6 +501,7 @@ export function useLiveJsonWorkspace() {
       setShowUrlInput,
       setShowCommandPalette,
       setShowShortcutsModal,
+      setShowShareModal,
       setCommandQuery,
       setCommandIndex,
       setLinePosition,

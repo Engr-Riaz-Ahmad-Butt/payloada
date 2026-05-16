@@ -96,3 +96,146 @@ export function previewValue(value: JsonValue) {
 export function renderJsonValue(value: JsonValue) {
   return typeof value === "string" ? value : JSON.stringify(value, null, 2);
 }
+
+export function evaluateJsonPathQuery(value: JsonValue, query: string) {
+  const trimmed = query.trim();
+
+  if (!trimmed) {
+    return { matches: [] as SearchMatch[], error: null as string | null };
+  }
+
+  if (!trimmed.startsWith("$")) {
+    return {
+      matches: [] as SearchMatch[],
+      error: 'JSONPath should start with "$".',
+    };
+  }
+
+  const tokenPattern = /\.\.([A-Za-z_$][\w$]*)|\.([A-Za-z_$][\w$]*)|(\.\*)|\[(\d+|\*)\]/g;
+  const tokens: Array<
+    | { type: "recursive"; key: string }
+    | { type: "property"; key: string }
+    | { type: "wildcard" }
+    | { type: "index"; value: number | "*" }
+  > = [];
+
+  let cursor = 1;
+  let match: RegExpExecArray | null;
+
+  while ((match = tokenPattern.exec(trimmed)) !== null) {
+    if (match.index !== cursor) {
+      return {
+        matches: [] as SearchMatch[],
+        error: `Unsupported JSONPath segment near "${trimmed.slice(cursor)}".`,
+      };
+    }
+
+    if (match[1]) {
+      tokens.push({ type: "recursive", key: match[1] });
+    } else if (match[2]) {
+      tokens.push({ type: "property", key: match[2] });
+    } else if (match[3]) {
+      tokens.push({ type: "wildcard" });
+    } else if (match[4]) {
+      tokens.push({
+        type: "index",
+        value: match[4] === "*" ? "*" : Number(match[4]),
+      });
+    }
+
+    cursor = match.index + match[0].length;
+  }
+
+  if (cursor !== trimmed.length) {
+    return {
+      matches: [] as SearchMatch[],
+      error: `Unsupported JSONPath segment near "${trimmed.slice(cursor)}".`,
+    };
+  }
+
+  let current: Array<{ path: string; value: JsonValue }> = [{ path: "$", value }];
+
+  for (const token of tokens) {
+    const next: Array<{ path: string; value: JsonValue }> = [];
+
+    for (const item of current) {
+      if (token.type === "property") {
+        if (item.value !== null && typeof item.value === "object" && !Array.isArray(item.value)) {
+          const child = (item.value as Record<string, JsonValue>)[token.key];
+          if (child !== undefined) {
+            next.push({ path: appendPath(item.path, token.key), value: child });
+          }
+        }
+        continue;
+      }
+
+      if (token.type === "index") {
+        if (Array.isArray(item.value)) {
+          if (token.value === "*") {
+            item.value.forEach((child, index) => {
+              next.push({ path: appendPath(item.path, index), value: child });
+            });
+          } else {
+            const child = item.value[token.value];
+            if (child !== undefined) {
+              next.push({ path: appendPath(item.path, token.value), value: child });
+            }
+          }
+        }
+        continue;
+      }
+
+      if (token.type === "wildcard") {
+        if (Array.isArray(item.value)) {
+          item.value.forEach((child, index) => {
+            next.push({ path: appendPath(item.path, index), value: child });
+          });
+        } else if (item.value !== null && typeof item.value === "object") {
+          Object.entries(item.value).forEach(([key, child]) => {
+            next.push({ path: appendPath(item.path, key), value: child });
+          });
+        }
+        continue;
+      }
+
+      if (token.type === "recursive") {
+        collectRecursiveMatches(item.value, item.path, token.key, next);
+      }
+    }
+
+    current = next;
+  }
+
+  return {
+    matches: current.map((item) => ({
+      path: item.path,
+      preview: previewValue(item.value),
+      value: item.value,
+    })),
+    error: null as string | null,
+  };
+}
+
+function collectRecursiveMatches(
+  value: JsonValue,
+  path: string,
+  key: string,
+  matches: Array<{ path: string; value: JsonValue }>,
+) {
+  if (Array.isArray(value)) {
+    value.forEach((child, index) => {
+      collectRecursiveMatches(child, appendPath(path, index), key, matches);
+    });
+    return;
+  }
+
+  if (value !== null && typeof value === "object") {
+    Object.entries(value).forEach(([childKey, childValue]) => {
+      const childPath = appendPath(path, childKey);
+      if (childKey === key) {
+        matches.push({ path: childPath, value: childValue });
+      }
+      collectRecursiveMatches(childValue, childPath, key, matches);
+    });
+  }
+}

@@ -3,7 +3,14 @@
 import type React from "react";
 
 export type WorkspaceView = "editor" | "jwt" | "diff" | "converters" | "history";
-export type InspectorView = "none" | "status" | "formatted" | "tree" | "search" | "graph";
+export type InspectorView =
+  | "none"
+  | "status"
+  | "formatted"
+  | "tree"
+  | "search"
+  | "graph"
+  | "jsonpath";
 export type ConverterTab =
   | "TypeScript"
   | "Zod"

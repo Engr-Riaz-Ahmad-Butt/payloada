@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Braces, CheckCircle2, ChevronDown, Download, GitBranch, List, Search } from "lucide-react";
+import {
+  Braces,
+  CheckCircle2,
+  ChevronDown,
+  Download,
+  GitBranch,
+  List,
+  Search,
+  Waypoints,
+} from "lucide-react";
 
 import { ROLE_MODE_INFO, ROLE_MODES } from "../core/constants";
 import { IconButton } from "../shared";
@@ -115,6 +124,12 @@ export function WorkspaceModeStrip({
             icon={<GitBranch className="size-4" />}
             onClick={() => setInspectorView("graph")}
             title="Graph view"
+          />
+          <IconButton
+            active={inspectorView === "jsonpath"}
+            icon={<Waypoints className="size-4" />}
+            onClick={() => setInspectorView("jsonpath")}
+            title="JSONPath"
           />
           <IconButton
             active={false}
