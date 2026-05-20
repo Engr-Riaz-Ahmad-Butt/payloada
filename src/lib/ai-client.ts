@@ -1,4 +1,4 @@
-const MODEL = "gemini-1.5-flash";
+const MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash-lite";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 const TIMEOUT_MS = 30_000;
 
@@ -56,6 +56,17 @@ export async function callGemini({
     const data = (await res.json()) as GeminiResponse;
 
     if (!res.ok) {
+      if (res.status === 429) {
+        const msg = data.error?.message ?? "";
+        const seconds = Math.ceil(parseFloat(msg.match(/[\d.]+(?=s)/)?.[0] ?? "60"));
+        throw Object.assign(new Error("rate_limited_upstream"), {
+          retryAfter: seconds,
+          provider: "gemini",
+          model: MODEL,
+          upstreamMessage: msg || "Gemini rate limit reached",
+          status: res.status,
+        });
+      }
       throw new Error(`Gemini API error ${res.status}: ${data.error?.message ?? res.statusText}`);
     }
 

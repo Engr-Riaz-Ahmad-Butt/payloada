@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { AlertTriangle, Link2, Shield, X } from "lucide-react";
 
 // BUG-001: Practical URL length limit for cross-browser safety (~8 KB encoded)
@@ -15,11 +15,8 @@ export function ShareModal({
   onClose: () => void;
   onCopy: (value: string, message?: string) => Promise<void>;
 }) {
-  const [workspaceOrigin, setWorkspaceOrigin] = useState("/workspace");
-
-  useEffect(() => {
-    setWorkspaceOrigin(`${window.location.origin}/workspace`);
-  }, []);
+  const workspaceOrigin =
+    typeof window !== "undefined" ? `${window.location.origin}/workspace` : "/workspace";
 
   const previewText = useMemo(() => {
     const lines = source.split("\n").slice(0, 3);

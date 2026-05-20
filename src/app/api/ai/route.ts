@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       .split(",")[0]
       .trim();
 
-    const rl = consumeRequest(ip);
+    const rl = await consumeRequest(ip);
     if (!rl.allowed) {
       return NextResponse.json(
         { error: "Daily limit reached (10 requests). Resets at midnight UTC.", code: "rate_limited" },
@@ -58,8 +58,27 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ result, tokensUsed, remaining: rl.remaining });
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[/api/ai]", err);
+    if (err instanceof Error && err.message === "rate_limited_upstream") {
+      const rateLimitError = err as Error & {
+        retryAfter?: number;
+        provider?: string;
+        model?: string;
+        upstreamMessage?: string;
+      };
+      const seconds = rateLimitError.retryAfter ?? 60;
+      return NextResponse.json(
+        {
+          error: `Gemini rate limit reached. Please wait ${seconds}s and try again.`,
+          code: "rate_limited_upstream",
+          provider: rateLimitError.provider ?? "gemini",
+          model: rateLimitError.model ?? "unknown",
+          retryAfter: seconds,
+          upstreamMessage: rateLimitError.upstreamMessage ?? "Gemini rate limit reached",
+        },
+        { status: 429 },
+      );
+    }
     return NextResponse.json(
       { error: "AI service is temporarily unavailable. Try again in a moment.", code: "ai_error" },
       { status: 502 },
