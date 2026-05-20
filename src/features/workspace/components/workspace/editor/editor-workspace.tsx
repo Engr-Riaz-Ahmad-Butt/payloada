@@ -10,6 +10,7 @@ import {
   Copy,
   FileJson2,
   Info,
+  Loader2,
   Search,
   ShieldAlert,
   X,
@@ -59,6 +60,7 @@ export function EditorWorkspace({
   onPaste,
   onLoadSample,
   onFetchFromUrl,
+  isParsing,
 }: {
   source: string;
   setSource: React.Dispatch<React.SetStateAction<string>>;
@@ -83,6 +85,7 @@ export function EditorWorkspace({
   onPaste: () => Promise<void>;
   onLoadSample: () => void;
   onFetchFromUrl: () => void;
+  isParsing?: boolean;
 }) {
   const hasDesktopInspectorLayout = useMediaQuery("(min-width: 1280px)");
   const showMobileGraphPanel = inspectorView === "graph" && !hasDesktopInspectorLayout;
@@ -178,6 +181,18 @@ export function EditorWorkspace({
                 <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
                   You can also upload a file, load a URL, or try a sample.
                 </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
+
+        {isParsing ? (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#050505]/75 backdrop-blur-[2px]">
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-[#2A2F42]/30 bg-[#0A0C0F]/90 px-6 py-5 text-center shadow-2xl">
+              <Loader2 className="size-6 animate-spin text-[#C07040]" />
+              <div>
+                <p className="text-[13px] font-semibold text-[#E8EAF0]">Parsing large JSON</p>
+                <p className="mt-1 text-[11px] text-[#5A6070]">Executing inside a background thread worker...</p>
               </div>
             </div>
           </div>
