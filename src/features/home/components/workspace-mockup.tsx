@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 const FULL_JSON_STRING = `{
   "project": {
-    "name": "jsonLines",
+    "name": "JSONova",
     "version": "1.0.0",
     "features": [
       "Validation",
@@ -250,8 +250,8 @@ export default function WorkspaceMockup() {
                 fontSize: "12px",
                 fontWeight: 500,
               }}
-            >
-              jsonlines.dev
+              >
+              jsonova.dev
             </span>
           </div>
 

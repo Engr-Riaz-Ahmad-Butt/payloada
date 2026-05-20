@@ -74,6 +74,7 @@ export function LiveJsonWorkspace() {
     setIsSidebarCollapsed,
     openWorkspace,
     openConverterWorkspace,
+    clearHistory,
     handleCopy,
     handleDownload,
     handlePaste,
@@ -229,7 +230,9 @@ export function LiveJsonWorkspace() {
                 <AiWorkspace source={source} onSendToEditor={setSource} onCopy={handleCopy} />
               ) : null}
 
-              {workspaceView === "history" ? <HistoryWorkspace items={historyItems} /> : null}
+              {workspaceView === "history" ? (
+                <HistoryWorkspace items={historyItems} onClear={clearHistory} />
+              ) : null}
             </div>
           </div>
         </div>

@@ -4,16 +4,34 @@ import { FolderOpen, History } from "lucide-react";
 
 import type { HistoryItem } from "../core/types";
 
-export function HistoryWorkspace({ items }: { items: HistoryItem[] }) {
+export function HistoryWorkspace({
+  items,
+  onClear,
+}: {
+  items: HistoryItem[];
+  onClear: () => void;
+}) {
   return (
     <div className="grid h-full min-h-0 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="border-b-[0.5px] border-ui-border p-4 sm:p-5 xl:border-b-0 xl:border-r-[0.5px]">
         {items.length ? (
           <div className="rounded-sm border-[0.5px] border-ui-border bg-surface p-5">
-            <h3 className="text-lg font-semibold text-text-primary">Workspace history</h3>
-            <p className="mt-2 text-sm text-[#a89589]">
-              Review recent actions like formatting, downloads, masking, and converter generation.
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-lg font-semibold text-text-primary">Workspace history</h3>
+                <p className="mt-2 text-sm text-[#a89589]">
+                  Review recent actions like formatting, downloads, masking, and converter
+                  generation.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onClear}
+                className="rounded-[8px] border-[0.5px] border-ui-border bg-[#1A1D24] px-3 py-2 text-[12px] font-medium text-[#8B92A8] transition-colors hover:border-[#C07040] hover:text-[#E8EAF0] focus-visible:border-[#C07040] focus-visible:outline-none"
+              >
+                Clear history
+              </button>
+            </div>
           </div>
         ) : (
           <div className="flex min-h-[320px] items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-surface p-6">

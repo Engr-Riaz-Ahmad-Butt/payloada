@@ -291,7 +291,7 @@ function highlightTypeSystemLine(line: string) {
       );
     }
 
-    if (/^[A-Z][A-Za-z0-9_]*$/.test(token) || /^jsonLinesRecord$/.test(token)) {
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token) || /^jsonovaRecord$/.test(token)) {
       return (
         <span key={index} style={{ color: "#C07040" }}>
           {token}

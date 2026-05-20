@@ -59,10 +59,7 @@ export function useLiveJsonWorkspace() {
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [linePosition, setLinePosition] = useState({ line: 1, column: 1 });
-  const [historyItems, setHistoryItems] = useLocalStorage<HistoryItem[]>("jsonova-history", [
-    { id: "1", label: "Workspace opened", detail: "General mode • Editor" },
-    { id: "2", label: "Sample JSON loaded", detail: "input.json" },
-  ]);
+  const [historyItems, setHistoryItems] = useLocalStorage<HistoryItem[]>("jsonova-history", []);
   const [diffOld, setDiffOld] = useState(SAMPLE_DIFF_OLD);
   const [diffNew, setDiffNew] = useState(SAMPLE_DIFF_NEW);
   const [converterTab, setConverterTab] = useState<ConverterTab>("TypeScript");
@@ -266,6 +263,11 @@ export function useLiveJsonWorkspace() {
       ];
       return next.slice(0, 50);
     });
+  };
+
+  const clearHistory = () => {
+    setHistoryItems([]);
+    toast.success("History cleared");
   };
 
   const openWorkspace = (view: WorkspaceView) => {
@@ -645,6 +647,7 @@ export function useLiveJsonWorkspace() {
       setDiffNew,
       setConverterTab,
       setJwtInput,
+      clearHistory,
       addHistory,
       openWorkspace,
       openConverterWorkspace,
