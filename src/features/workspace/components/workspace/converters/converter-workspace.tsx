@@ -14,7 +14,7 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
 });
 
-const TYPE_SYSTEM_TABS: ConverterTab[] = ["TypeScript", "Zod", "Go", "Python", "Prisma", "Mongoose"];
+const TYPE_SYSTEM_TABS: ConverterTab[] = ["TypeScript", "Zod", "Go", "Python", "Rust", "C#", "Java", "Prisma", "Mongoose"];
 const DATA_FORMAT_TABS: ConverterTab[] = ["CSV", "YAML", "XML", "Schema"];
 
 const FORMAT_META: Record<ConverterTab, string> = {
@@ -22,6 +22,9 @@ const FORMAT_META: Record<ConverterTab, string> = {
   Zod: "Zod schema — runtime-safe validation code",
   Go: "Go structs — structured typing definitions",
   Python: "Python dataclasses — native modern data models",
+  Rust: "Rust structs — serde-supported data mapping definitions",
+  "C#": "C# classes — System.Text.Json property model templates",
+  Java: "Java classes — robust Jackson-annotated data transfer objects",
   CSV: "CSV export — flattened from JSON array",
   YAML: "YAML format — human-readable data serialization",
   XML: "XML export — structured markup from JSON",
@@ -256,6 +259,12 @@ function highlightLine(tab: ConverterTab, line: string) {
       return highlightGoLine(line);
     case "Python":
       return highlightPythonLine(line);
+    case "Rust":
+      return highlightRustLine(line);
+    case "C#":
+      return highlightCSharpLine(line);
+    case "Java":
+      return highlightJavaLine(line);
     case "Zod":
       return highlightZodLine(line);
     case "YAML":
@@ -500,6 +509,162 @@ function highlightPythonLine(line: string) {
     if (/^[A-Z][A-Za-z0-9_]*$/.test(token)) {
       return (
         <span key={index} style={{ color: "#C07040" }}>
+          {token}
+        </span>
+      );
+    }
+
+    return <span key={index}>{token}</span>;
+  });
+}
+
+function highlightRustLine(line: string) {
+  const tokens = tokenizePreservingWhitespace(line);
+
+  return tokens.map((token, index) => {
+    if (/^\s+$/.test(token)) {
+      return token;
+    }
+
+    if (/^(pub|struct|type|use|as|fn|impl|let|mut)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#79C0FF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^#\[(derive|serde)\(.*\)\]$/.test(token) || /^#\[.*\]$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C77DFF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^(String|i64|f64|bool|Vec|Option|Value)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#3DD68C" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C07040" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^".*"$/.test(token) || /^'.*'$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#d69463" }}>
+          {token}
+        </span>
+      );
+    }
+
+    return <span key={index}>{token}</span>;
+  });
+}
+
+function highlightCSharpLine(line: string) {
+  const tokens = tokenizePreservingWhitespace(line);
+
+  return tokens.map((token, index) => {
+    if (/^\s+$/.test(token)) {
+      return token;
+    }
+
+    if (/^(public|class|using|get|set|namespace|private|protected|internal)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#79C0FF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^\[JsonPropertyName\(.*\)\]$/.test(token) || /^\[.*\]$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C77DFF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^(string|long|double|bool|List|object|int|float|void)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#3DD68C" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C07040" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^".*"$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#d69463" }}>
+          {token}
+        </span>
+      );
+    }
+
+    return <span key={index}>{token}</span>;
+  });
+}
+
+function highlightJavaLine(line: string) {
+  const tokens = tokenizePreservingWhitespace(line);
+
+  return tokens.map((token, index) => {
+    if (/^\s+$/.test(token)) {
+      return token;
+    }
+
+    if (/^(public|static|class|private|import|return|void|package|protected)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#79C0FF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^@JsonProperty\(.*\)$/.test(token) || /^@.*$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C77DFF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^(String|Long|Double|Boolean|List|Object|int|double|long|boolean)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#3DD68C" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C07040" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^".*"$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#d69463" }}>
           {token}
         </span>
       );

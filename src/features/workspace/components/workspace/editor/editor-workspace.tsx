@@ -34,6 +34,7 @@ import {
 } from "../shared";
 import type { EditorInstance, InspectorView, SearchMatch, SelectedNode } from "../core/types";
 import { evaluateJsonPathQuery, findSearchMatches, renderJsonValue } from "../shared/utils";
+import { ColumnView } from "./column-view";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -88,7 +89,7 @@ export function EditorWorkspace({
   isParsing?: boolean;
 }) {
   const hasDesktopInspectorLayout = useMediaQuery("(min-width: 1280px)");
-  const showMobileGraphPanel = inspectorView === "graph" && !hasDesktopInspectorLayout;
+  const showMobileGraphPanel = (inspectorView === "graph" || inspectorView === "columns") && !hasDesktopInspectorLayout;
   const [treeContainerElement, setTreeContainerElement] = useState<HTMLDivElement | null>(null);
   const [jsonPathQuery, setJsonPathQuery] = useState("");
   const jsonPathState = useMemo(
@@ -283,6 +284,8 @@ export function EditorWorkspace({
               ? "Search"
               : inspectorView === "graph"
               ? "Graph"
+              : inspectorView === "columns"
+              ? "Column Finder"
               : "JSONPath"}
           </p>
           <button
@@ -617,6 +620,26 @@ export function EditorWorkspace({
             )}
           </SidebarSection>
         ) : null}
+
+        {inspectorView === "columns" ? (
+          <SidebarSection title="Column Finder">
+            {parseResult?.valid ? (
+              <div className="space-y-3">
+                <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                  Traverse nested arrays and objects using a macOS Finder-style multi-column drilldown.
+                </p>
+                <div className="h-[480px] min-h-[380px]">
+                  <ColumnView
+                    value={parseResult.data}
+                    onSelectNode={(path, val) => setSelectedPath(path)}
+                  />
+                </div>
+              </div>
+            ) : (
+              <SidebarEmpty text="Valid JSON will appear as columns here." />
+            )}
+          </SidebarSection>
+        ) : null}
       </aside>
     ) : null;
 
@@ -626,7 +649,7 @@ export function EditorWorkspace({
         "grid h-full min-h-0",
         inspectorView === "none"
           ? "grid-cols-1"
-          : inspectorView === "graph"
+          : (inspectorView === "graph" || inspectorView === "columns")
           ? "grid-cols-1 xl:grid-cols-2"
           : "grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px]",
       )}

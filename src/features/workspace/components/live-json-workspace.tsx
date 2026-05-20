@@ -10,6 +10,7 @@ import { HistoryWorkspace } from "./workspace/history/history-workspace";
 import { JwtWorkspace } from "./workspace/jwt/jwt-workspace";
 import { AiWorkspace } from "./workspace/ai/ai-workspace";
 import { TableWorkspace } from "./workspace/table/table-workspace";
+import { MockWorkspace } from "./workspace/mock/mock-workspace";
 import { WorkspaceActionToolbar } from "./workspace/editor/workspace-action-toolbar";
 import { WorkspaceModeStrip } from "./workspace/editor/workspace-mode-strip";
 import { WorkspaceSidebar } from "./workspace/editor/workspace-sidebar";
@@ -236,6 +237,16 @@ export function LiveJsonWorkspace() {
                   parsedValue={parsedValue}
                   onCopy={handleCopy}
                   onDownload={handleDownload}
+                />
+              ) : null}
+
+              {workspaceView === "mock" ? (
+                <MockWorkspace
+                  onSendToEditor={(value) => {
+                    setSource(value);
+                    openWorkspace("editor");
+                  }}
+                  onCopy={handleCopy}
                 />
               ) : null}
 

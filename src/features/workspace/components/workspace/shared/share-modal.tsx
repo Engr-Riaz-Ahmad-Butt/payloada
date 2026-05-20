@@ -1,7 +1,6 @@
-"use client";
-
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Link2, Shield, X } from "lucide-react";
+import { compressString } from "./compression";
 
 // BUG-001: Practical URL length limit for cross-browser safety (~8 KB encoded)
 const URL_SAFE_DATA_LIMIT = 8_000;
@@ -23,15 +22,47 @@ export function ShareModal({
     return lines.map((line) => (line.length > 84 ? `${line.slice(0, 84)}...` : line)).join("\n");
   }, [source]);
 
-  // BUG-001 Fix B: encode without silent truncation; warn when payload is too large
-  const { generatedUrl, isTooLarge } = useMemo(() => {
-    const encoded = encodeURIComponent(source);
+  const [generatedUrl, setGeneratedUrl] = useState("");
+  const [isTooLarge, setIsTooLarge] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-    if (encoded.length > URL_SAFE_DATA_LIMIT) {
-      return { generatedUrl: "", isTooLarge: true };
+  useEffect(() => {
+    let active = true;
+    async function generate() {
+      if (active) setIsLoading(true);
+      try {
+        const compressed = await compressString(source);
+
+        if (!active) return;
+
+        if (compressed.length > URL_SAFE_DATA_LIMIT) {
+          setIsTooLarge(true);
+          setGeneratedUrl("");
+        } else {
+          setIsTooLarge(false);
+          setGeneratedUrl(`${workspaceOrigin}?share=compressed&data=${compressed}`);
+        }
+      } catch {
+        // Fallback to plain URL encoding if compression fails/not supported
+        if (!active) return;
+        const encoded = encodeURIComponent(source);
+        if (encoded.length > URL_SAFE_DATA_LIMIT) {
+          setIsTooLarge(true);
+          setGeneratedUrl("");
+        } else {
+          setIsTooLarge(false);
+          setGeneratedUrl(`${workspaceOrigin}?share=public&data=${encoded}`);
+        }
+      } finally {
+        if (active) setIsLoading(false);
+      }
     }
 
-    return { generatedUrl: `${workspaceOrigin}?share=public&data=${encoded}`, isTooLarge: false };
+    void generate();
+
+    return () => {
+      active = false;
+    };
   }, [source, workspaceOrigin]);
 
   return (
@@ -72,8 +103,12 @@ export function ShareModal({
             {previewText || "{ }"}
           </pre>
 
-          {/* BUG-001 Fix B: show clear error instead of silently truncating */}
-          {isTooLarge ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center gap-3 rounded-[10px] border-[0.5px] border-ui-border bg-[#0A0C0F] py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#1E2433] border-t-[#C07040]" />
+              <p className="font-mono text-[11px] text-[#8B92A8]">Securing and compressing link…</p>
+            </div>
+          ) : isTooLarge ? (
             <div className="flex items-start gap-3 rounded-[10px] border-[0.5px] border-[#5A3A1A] bg-[#1A0E00] px-4 py-4">
               <AlertTriangle className="mt-0.5 size-4 shrink-0 text-[#C07040]" />
               <div>

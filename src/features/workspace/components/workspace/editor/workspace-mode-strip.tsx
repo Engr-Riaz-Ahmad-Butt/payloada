@@ -10,6 +10,7 @@ import {
   List,
   Search,
   Waypoints,
+  Columns,
 } from "lucide-react";
 
 import { ROLE_MODE_INFO, ROLE_MODES } from "../core/constants";
@@ -111,6 +112,12 @@ export function WorkspaceModeStrip({
             icon={<Braces className="size-4" />}
             onClick={() => setInspectorView("tree")}
             title="Tree explorer"
+          />
+          <IconButton
+            active={inspectorView === "columns"}
+            icon={<Columns className="size-4" />}
+            onClick={() => setInspectorView("columns")}
+            title="Column finder"
           />
           <div className="mx-1 h-4 w-px bg-ui-border" />
           <IconButton

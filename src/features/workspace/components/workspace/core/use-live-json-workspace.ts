@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { toast } from "sonner";
 
 import { getJsonStats, parseJsonSafe } from "@/lib/json";
@@ -36,6 +36,7 @@ import {
   maskSensitiveValues,
   repairJsonInput,
 } from "../shared/utils";
+import { decompressString } from "../shared";
 
 export function useLiveJsonWorkspace() {
   const editorRef = useRef<EditorInstance | null>(null);
@@ -71,6 +72,59 @@ export function useLiveJsonWorkspace() {
   const [isParsing, setIsParsing] = useState(false);
   const workerRef = useRef<Worker | null>(null);
   const activeRequestIdRef = useRef<string | null>(null);
+
+  const addHistory = useCallback((label: string, detail: string) => {
+    setHistoryItems((current) => {
+      const next = [
+        {
+          id: `${Date.now()}-${Math.random()}`,
+          label,
+          detail,
+        },
+        ...current,
+      ];
+      return next.slice(0, 50);
+    });
+  }, [setHistoryItems]);
+
+  // Load shared JSON from URL if present
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const shareParam = params.get("share");
+    const dataParam = params.get("data");
+
+    if (!dataParam) return;
+
+    async function loadSharedData() {
+      try {
+        if (shareParam === "compressed") {
+          const decompressed = await decompressString(dataParam!);
+          setSource(decompressed);
+          toast.success("Compressed shared JSON loaded");
+          addHistory("Loaded shared JSON", "Compressed URL payload");
+        } else if (shareParam === "public") {
+          const decoded = decodeURIComponent(dataParam!);
+          setSource(decoded);
+          toast.success("Shared JSON loaded");
+          addHistory("Loaded shared JSON", "URL payload");
+        }
+      } catch {
+        toast.error("Failed to load shared JSON: URL payload may be corrupted.");
+      }
+
+      // Clean up the URL parameters so they don't load again on refresh/actions
+      try {
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+      } catch {
+        // Safe to ignore if replaceState fails
+      }
+    }
+
+    void loadSharedData();
+  }, [addHistory]);
 
   useEffect(() => {
     const worker = new Worker(
@@ -252,19 +306,6 @@ export function useLiveJsonWorkspace() {
     }
   }, [showCommandPalette]);
 
-  const addHistory = (label: string, detail: string) => {
-    setHistoryItems((current) => {
-      const next = [
-        {
-          id: `${Date.now()}-${Math.random()}`,
-          label,
-          detail,
-        },
-        ...current,
-      ];
-      return next.slice(0, 50);
-    });
-  };
 
   const clearHistory = () => {
     setHistoryItems([]);

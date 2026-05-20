@@ -39,6 +39,10 @@ const WORKSPACE_TITLES: Record<
     title: "History",
     description: "Review recent formatting, downloads, diff checks, and conversion activity.",
   },
+  mock: {
+    title: "Mock Generator",
+    description: "Generate structured random mock JSON data from schema templates or presets.",
+  },
 };
 
 export function WorkspaceTopbar({

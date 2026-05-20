@@ -14,3 +14,5 @@ export {
   SmallAction,
   ToolbarButton,
 } from "./ui-primitives";
+export { compressString, decompressString } from "./compression";
+

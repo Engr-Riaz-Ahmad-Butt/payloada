@@ -1,0 +1,29 @@
+﻿chore(workspace): editor, converters, core types, add column-view/mock, compression
+
+Apply a set of workspace improvements and add missing components and helpers:
+- Update editor and graph internals (`live-json-workspace`, `editor-workspace`, `graph-view`, `graph-view-inner`, `workspace-topbar`, `workspace-mode-strip`) to refine editor behavior and dynamic loading integration.
+- Update converters (`converters/converter-utils.ts`, `converters/converter-workspace.tsx`) to improve CSV/Mongo/Prisma conversion stability.
+- Update core runtime/types (`core/constants.ts`, `core/types.ts`, `core/use-live-json-workspace.ts`) to keep typings and constants consistent across workspace components.
+- Add `column-view.tsx` and `mock-workspace.tsx` to support additional editor views and local mocks.
+- Add `shared/compression.ts` helper for compression utilities used by sharing and export features.
+- Minor accessibility and modal improvements (`shared/share-modal.tsx`).
+
+These changes complete unfinished editor features, tighten type-safety, and add utility helpers required by the new workspace views.
+
+Files changed:
+- src/features/workspace/components/live-json-workspace.tsx
+- src/features/workspace/components/workspace/converters/converter-utils.ts
+- src/features/workspace/components/workspace/converters/converter-workspace.tsx
+- src/features/workspace/components/workspace/core/constants.ts
+- src/features/workspace/components/workspace/core/types.ts
+- src/features/workspace/components/workspace/core/use-live-json-workspace.ts
+- src/features/workspace/components/workspace/editor/editor-workspace.tsx
+- src/features/workspace/components/workspace/editor/graph-view-inner.tsx
+- src/features/workspace/components/workspace/editor/graph-view.tsx
+- src/features/workspace/components/workspace/editor/workspace-mode-strip.tsx
+- src/features/workspace/components/workspace/editor/workspace-topbar.tsx
+- src/features/workspace/components/workspace/shared/index.ts
+- src/features/workspace/components/workspace/shared/share-modal.tsx
+- (new) src/features/workspace/components/workspace/editor/column-view.tsx
+- (new) src/features/workspace/components/workspace/mock/mock-workspace.tsx
+- (new) src/features/workspace/components/workspace/shared/compression.ts

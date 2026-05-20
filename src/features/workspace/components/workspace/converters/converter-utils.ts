@@ -18,6 +18,12 @@ export function getConverterOutput(tab: ConverterTab, value: JsonValue | null) {
       return generateGoStructs("RootPayload", value);
     case "Python":
       return generatePythonDataclasses("RootPayload", value);
+    case "Rust":
+      return generateRustStructs("RootPayload", value);
+    case "C#":
+      return generateCSharpClasses("RootPayload", value);
+    case "Java":
+      return generateJavaClasses("RootPayload", value);
     case "CSV":
       return generateCsvOutput(value);
     case "YAML":
@@ -404,4 +410,224 @@ function generatePythonDataclasses(name: string, value: JsonValue): string {
   }
 
   return header + classes.join("\n\n").trim() + "\n";
+}
+
+function toCamelCase(str: string): string {
+  const pascal = toPascalCase(str);
+  return pascal.charAt(0).toLowerCase() + pascal.slice(1) || "field";
+}
+
+function generateRustStructs(name: string, value: JsonValue): string {
+  const structs: string[] = [];
+  const structNamesUsed = new Set<string>();
+
+  function makeUniqueName(base: string): string {
+    const clean = toPascalCase(base);
+    if (!structNamesUsed.has(clean)) {
+      structNamesUsed.add(clean);
+      return clean;
+    }
+    let suffix = 2;
+    while (structNamesUsed.has(clean + suffix)) {
+      suffix++;
+    }
+    const finalName = clean + suffix;
+    structNamesUsed.add(finalName);
+    return finalName;
+  }
+
+  function walk(currentName: string, val: JsonValue): string {
+    if (Array.isArray(val)) {
+      if (val.length === 0) {
+        return "Vec<serde_json::Value>";
+      }
+      return `Vec<${walk(currentName, val[0])}>`;
+    }
+
+    if (val === null) {
+      return "Option<serde_json::Value>";
+    }
+
+    switch (typeof val) {
+      case "string":
+        return "String";
+      case "number":
+        return Number.isInteger(val) ? "i64" : "f64";
+      case "boolean":
+        return "bool";
+      case "object": {
+        const uniqueName = makeUniqueName(currentName);
+        const entries = Object.entries(val);
+        const fields = entries
+          .map(([key, child]) => {
+            const snakeKey = toSnakeCase(key);
+            const childRustType = walk(toPascalCase(key), child);
+            const renameAttr = snakeKey !== key ? `#[serde(rename = "${key}")]\n    ` : "";
+            return `    ${renameAttr}pub ${snakeKey}: ${childRustType},`;
+          })
+          .join("\n");
+
+        structs.push(`#[derive(Serialize, Deserialize, Debug)]\npub struct ${uniqueName} {\n${fields}\n}`);
+        return uniqueName;
+      }
+      default:
+        return "serde_json::Value";
+    }
+  }
+
+  const rootTypeName = walk(name, value);
+  const header = "use serde::{Serialize, Deserialize};\n\n";
+
+  if (Array.isArray(value)) {
+    return (
+      header +
+      structs.reverse().join("\n\n").trim() +
+      `\n\npub type ${name} = ${rootTypeName};\n`
+    );
+  }
+
+  return header + structs.reverse().join("\n\n").trim() + "\n";
+}
+
+function generateCSharpClasses(name: string, value: JsonValue): string {
+  const classes: string[] = [];
+  const classNamesUsed = new Set<string>();
+
+  function makeUniqueName(base: string): string {
+    const clean = toPascalCase(base);
+    if (!classNamesUsed.has(clean)) {
+      classNamesUsed.add(clean);
+      return clean;
+    }
+    let suffix = 2;
+    while (classNamesUsed.has(clean + suffix)) {
+      suffix++;
+    }
+    const finalName = clean + suffix;
+    classNamesUsed.add(finalName);
+    return finalName;
+  }
+
+  function walk(currentName: string, val: JsonValue): string {
+    if (Array.isArray(val)) {
+      if (val.length === 0) {
+        return "List<object>";
+      }
+      return `List<${walk(currentName, val[0])}>`;
+    }
+
+    if (val === null) {
+      return "object";
+    }
+
+    switch (typeof val) {
+      case "string":
+        return "string";
+      case "number":
+        return Number.isInteger(val) ? "long" : "double";
+      case "boolean":
+        return "bool";
+      case "object": {
+        const uniqueName = makeUniqueName(currentName);
+        const entries = Object.entries(val);
+        const properties = entries
+          .map(([key, child]) => {
+            const pascalKey = toPascalCase(key);
+            const childCSharpType = walk(pascalKey, child);
+            return `    [JsonPropertyName("${key}")]\n    public ${childCSharpType} ${pascalKey} { get; set; }`;
+          })
+          .join("\n\n");
+
+        classes.push(`public class ${uniqueName}\n{\n${properties}\n}`);
+        return uniqueName;
+      }
+      default:
+        return "object";
+    }
+  }
+
+  const rootTypeName = walk(name, value);
+  const header = "using System.Collections.Generic;\nusing System.Text.Json.Serialization;\n\n";
+
+  if (Array.isArray(value)) {
+    return (
+      header +
+      classes.reverse().join("\n\n").trim() +
+      `\n\n// Root payload type alias\n// using ${name} = ${rootTypeName};\n`
+    );
+  }
+
+  return header + classes.reverse().join("\n\n").trim() + "\n";
+}
+
+function generateJavaClasses(name: string, value: JsonValue): string {
+  const classes: string[] = [];
+  const classNamesUsed = new Set<string>();
+
+  function makeUniqueName(base: string): string {
+    const clean = toPascalCase(base);
+    if (!classNamesUsed.has(clean)) {
+      classNamesUsed.add(clean);
+      return clean;
+    }
+    let suffix = 2;
+    while (classNamesUsed.has(clean + suffix)) {
+      suffix++;
+    }
+    const finalName = clean + suffix;
+    classNamesUsed.add(finalName);
+    return finalName;
+  }
+
+  function walk(currentName: string, val: JsonValue): string {
+    if (Array.isArray(val)) {
+      if (val.length === 0) {
+        return "List<Object>";
+      }
+      return `List<${walk(currentName, val[0])}>`;
+    }
+
+    if (val === null) {
+      return "Object";
+    }
+
+    switch (typeof val) {
+      case "string":
+        return "String";
+      case "number":
+        return Number.isInteger(val) ? "Long" : "Double";
+      case "boolean":
+        return "Boolean";
+      case "object": {
+        const uniqueName = makeUniqueName(currentName);
+        const entries = Object.entries(val);
+        const fields = entries
+          .map(([key, child]) => {
+            const camelKey = toCamelCase(key);
+            const pascalKey = toPascalCase(key);
+            const childJavaType = walk(pascalKey, child);
+            return `    @JsonProperty("${key}")\n    private ${childJavaType} ${camelKey};\n\n    public ${childJavaType} get${pascalKey}() { return this.${camelKey}; }\n    public void set${pascalKey}(${childJavaType} value) { this.${camelKey} = value; }`;
+          })
+          .join("\n\n");
+
+        classes.push(`public static class ${uniqueName} {\n${fields}\n}`);
+        return uniqueName;
+      }
+      default:
+        return "Object";
+    }
+  }
+
+  const rootTypeName = walk(name, value);
+  const header = "import com.fasterxml.jackson.annotation.JsonProperty;\nimport java.util.List;\n\n";
+
+  if (Array.isArray(value)) {
+    return (
+      header +
+      classes.reverse().join("\n\n").trim() +
+      `\n\n// Root payload type alias\n// type ${name} = ${rootTypeName};\n`
+    );
+  }
+
+  return header + classes.reverse().join("\n\n").trim() + "\n";
 }

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-export type WorkspaceView = "editor" | "jwt" | "diff" | "converters" | "history" | "ai" | "table";
+export type WorkspaceView = "editor" | "jwt" | "diff" | "converters" | "history" | "ai" | "table" | "mock";
 export type InspectorView =
   | "none"
   | "status"
@@ -10,12 +10,16 @@ export type InspectorView =
   | "tree"
   | "search"
   | "graph"
-  | "jsonpath";
+  | "jsonpath"
+  | "columns";
 export type ConverterTab =
   | "TypeScript"
   | "Zod"
   | "Go"
   | "Python"
+  | "Rust"
+  | "C#"
+  | "Java"
   | "CSV"
   | "YAML"
   | "XML"
