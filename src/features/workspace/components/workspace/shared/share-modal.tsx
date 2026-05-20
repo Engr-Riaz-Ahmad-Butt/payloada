@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { AlertTriangle, Link2, Shield, X } from "lucide-react";
 
 // BUG-001: Practical URL length limit for cross-browser safety (~8 KB encoded)
