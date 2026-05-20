@@ -1,12 +1,10 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Lock, Shield, X } from "lucide-react";
+import { AlertTriangle, Link2, Shield, X } from "lucide-react";
 
-type ShareOption = "public" | "private" | "expiring";
-type ExpiryDuration = "1h" | "24h" | "7d" | "30d";
-
-const EXPIRY_OPTIONS: ExpiryDuration[] = ["1h", "24h", "7d", "30d"];
+// BUG-001: Practical URL length limit for cross-browser safety (~8 KB encoded)
+const URL_SAFE_DATA_LIMIT = 8_000;
 
 export function ShareModal({
   source,
@@ -17,29 +15,23 @@ export function ShareModal({
   onClose: () => void;
   onCopy: (value: string, message?: string) => Promise<void>;
 }) {
-  const [shareOption, setShareOption] = useState<ShareOption>("public");
-  const [expiryDuration, setExpiryDuration] = useState<ExpiryDuration>("24h");
-
   const previewText = useMemo(() => {
     const lines = source.split("\n").slice(0, 3);
     return lines.map((line) => (line.length > 84 ? `${line.slice(0, 84)}...` : line)).join("\n");
   }, [source]);
 
-  const generatedUrl = useMemo(() => {
+  // BUG-001 Fix B: encode without silent truncation; warn when payload is too large
+  const { generatedUrl, isTooLarge } = useMemo(() => {
     const base =
       typeof window !== "undefined" ? `${window.location.origin}/workspace` : "/workspace";
-    const encoded = encodeURIComponent(source.slice(0, 1500));
+    const encoded = encodeURIComponent(source);
 
-    if (shareOption === "private") {
-      return `${base}?share=private&data=${encoded}`;
+    if (encoded.length > URL_SAFE_DATA_LIMIT) {
+      return { generatedUrl: "", isTooLarge: true };
     }
 
-    if (shareOption === "expiring") {
-      return `${base}?share=expiring&ttl=${expiryDuration}&data=${encoded}`;
-    }
-
-    return `${base}?share=public&data=${encoded}`;
-  }, [expiryDuration, shareOption, source]);
+    return { generatedUrl: `${base}?share=public&data=${encoded}`, isTooLarge: false };
+  }, [source]);
 
   return (
     <div
@@ -73,124 +65,70 @@ export function ShareModal({
             {previewText || "{ }"}
           </pre>
 
-          <div className="space-y-2">
-            <ShareOptionCard
-              selected={shareOption === "public"}
-              title="Public link"
-              description="Anyone with link can view"
-              onSelect={() => setShareOption("public")}
-            />
-
-            <ShareOptionCard
-              selected={shareOption === "private"}
-              title="Private link"
-              description="Password protected"
-              pro
-              onSelect={() => setShareOption("private")}
-            />
-
-            <ShareOptionCard
-              selected={shareOption === "expiring"}
-              title="Expiring link"
-              description="Choose duration"
-              pro
-              onSelect={() => setShareOption("expiring")}
-            >
-              {shareOption === "expiring" ? (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {EXPIRY_OPTIONS.map((duration) => (
-                    <button
-                      key={duration}
-                      type="button"
-                      onClick={() => setExpiryDuration(duration)}
-                      className={
-                        expiryDuration === duration
-                          ? "rounded-[6px] border-[0.5px] border-[#C07040] bg-[#1F140C] px-2.5 py-1 text-[11px] font-medium text-[#C07040]"
-                          : "rounded-[6px] border-[0.5px] border-[#2A2F42] bg-[#1A1D24] px-2.5 py-1 text-[11px] font-medium text-[#8B92A8]"
-                      }
-                    >
-                      {duration}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </ShareOptionCard>
-          </div>
-
-          <div className="rounded-[8px] border-[0.5px] border-ui-border bg-[#0A0C0F] p-3">
-            <div className="flex items-center gap-3">
-              <code className="min-w-0 flex-1 truncate font-mono text-[12px] text-[#3DD68C]">
-                {generatedUrl}
-              </code>
-              <button
-                type="button"
-                onClick={() => void onCopy(generatedUrl, "Copied share link")}
-                className="h-9 shrink-0 rounded-[8px] bg-[#C07040] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#D48050] focus-visible:outline-none"
-              >
-                Copy link
-              </button>
+          {/* BUG-001 Fix B: show clear error instead of silently truncating */}
+          {isTooLarge ? (
+            <div className="flex items-start gap-3 rounded-[10px] border-[0.5px] border-[#5A3A1A] bg-[#1A0E00] px-4 py-4">
+              <AlertTriangle className="mt-0.5 size-4 shrink-0 text-[#C07040]" />
+              <div>
+                <p className="text-[13px] font-medium text-[#C07040]">JSON is too large to share via URL</p>
+                <p className="mt-1 text-[12px] leading-[1.6] text-[#8B92A8]">
+                  This payload exceeds the safe URL length limit. Download the file and share it directly instead.
+                </p>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="mt-3 h-9 rounded-[8px] bg-[#C07040] px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#D48050] focus-visible:outline-none"
+                >
+                  Close &amp; download instead
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <>
+              {/* BUG-001 Fix A: only public link — no fake private/expiring options */}
+              <div className="flex items-start gap-3 rounded-[10px] border-[0.5px] border-[#C07040] bg-[#1F140C] px-4 py-3">
+                <Link2 className="mt-0.5 size-4 shrink-0 text-[#C07040]" />
+                <div>
+                  <p className="text-[13px] font-medium text-[#E8EAF0]">Public link</p>
+                  <p className="mt-1 text-[12px] leading-[1.5] text-[#8B92A8]">
+                    Anyone with this link can view the JSON. All data is encoded in the URL — nothing is stored on a server.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-[8px] border-[0.5px] border-ui-border bg-[#0A0C0F] p-3">
+                <div className="flex items-center gap-3">
+                  <code className="min-w-0 flex-1 truncate font-mono text-[12px] text-[#3DD68C]">
+                    {generatedUrl}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => void onCopy(generatedUrl, "Copied share link")}
+                    className="h-9 shrink-0 rounded-[8px] bg-[#C07040] px-4 text-[15px] font-semibold text-white transition-colors hover:bg-[#D48050] focus-visible:outline-none"
+                  >
+                    Copy link
+                  </button>
+                </div>
+              </div>
+
+              {/* Coming soon: private & expiring links */}
+              <div className="rounded-[10px] border-[0.5px] border-dashed border-[#2A2F42] px-4 py-3">
+                <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-[#5A6070]">Coming soon — Pro</p>
+                <p className="mt-1 text-[12px] leading-[1.6] text-[#3A4060]">
+                  Password-protected and expiring links are planned for a future Pro release. All links are currently public and URL-encoded only.
+                </p>
+              </div>
+            </>
+          )}
 
           <div className="flex items-start gap-2 rounded-[8px] border-[0.5px] border-ui-border bg-[#11141B] px-3 py-3">
             <Shield className="mt-0.5 size-4 shrink-0 text-[#5A6070]" />
             <p className="text-[11px] leading-[1.6] text-[#5A6070]">
-              Your JSON is processed locally. Nothing is stored without your consent.
+              Your JSON is processed locally. Nothing is stored on any server without your consent.
             </p>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function ShareOptionCard({
-  selected,
-  title,
-  description,
-  pro,
-  onSelect,
-  children,
-}: {
-  selected: boolean;
-  title: string;
-  description: string;
-  pro?: boolean;
-  onSelect: () => void;
-  children?: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={
-        selected
-          ? "block w-full rounded-[10px] border-[0.5px] border-[#C07040] bg-[#1F140C] px-4 py-3 text-left"
-          : "block w-full rounded-[10px] border-[0.5px] border-ui-border bg-[#0F1117] px-4 py-3 text-left"
-      }
-    >
-      <div className="flex items-start gap-3">
-        <span
-          className={
-            selected
-              ? "mt-1 inline-flex h-3 w-3 rounded-full border-[2px] border-[#C07040] bg-[#C07040]"
-              : "mt-1 inline-flex h-3 w-3 rounded-full border-[2px] border-[#5A6070]"
-          }
-        />
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p className="text-[13px] font-medium text-[#E8EAF0]">{title}</p>
-            {pro ? (
-              <span className="inline-flex items-center gap-1 rounded-[4px] bg-[#1A1D24] px-1.5 py-0.5 text-[9px] font-medium text-[#C07040]">
-                <Lock className="size-2.5" />
-                Pro
-              </span>
-            ) : null}
-          </div>
-          <p className="mt-1 text-[12px] leading-[1.5] text-[#8B92A8]">{description}</p>
-          {children}
-        </div>
-      </div>
-    </button>
   );
 }

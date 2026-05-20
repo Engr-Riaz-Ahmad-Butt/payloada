@@ -49,6 +49,7 @@ export function useLiveJsonWorkspace() {
   const [searchTerm, setSearchTerm] = useState("");
   const [urlValue, setUrlValue] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlLoadingState, setUrlLoadingState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -294,6 +295,14 @@ export function useLiveJsonWorkspace() {
       return;
     }
 
+    // BUG-008: guard against huge files before reading into memory
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error(`File is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 5 MB.`);
+      event.target.value = "";
+      return;
+    }
+
     const text = await file.text();
     setSource(text);
     event.target.value = "";
@@ -351,17 +360,51 @@ export function useLiveJsonWorkspace() {
       return;
     }
 
+    // BUG-002 Fix A: enforce HTTPS only
+    let parsedUrl: URL;
     try {
-      const response = await fetch(urlValue);
-      const json = await response.json();
+      parsedUrl = new URL(urlValue);
+    } catch {
+      toast.error("Please enter a valid URL");
+      return;
+    }
+    if (parsedUrl.protocol !== "https:") {
+      toast.error("Only HTTPS URLs are supported for security reasons");
+      return;
+    }
+
+    // BUG-002 Fix C: abort after 10 seconds
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 10_000);
+
+    setUrlLoadingState("loading");
+    try {
+      const response = await fetch(urlValue, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      // BUG-002 Fix B: check HTTP status before parsing
+      if (!response.ok) {
+        toast.error(`Server returned ${response.status} — ${response.statusText}`);
+        setUrlLoadingState("error");
+        return;
+      }
+
+      const json = (await response.json()) as unknown;
       setSource(JSON.stringify(json, null, 2));
       setShowUrlInput(false);
+      setUrlLoadingState("success");
       toast.success("JSON loaded from URL");
       addHistory("Loaded URL", urlValue);
-    } catch {
-      toast.error("Unable to load JSON from that URL");
+    } catch (err) {
+      clearTimeout(timeoutId);
+      setUrlLoadingState("error");
+      if (err instanceof Error && err.name === "AbortError") {
+        toast.error("Request timed out — the server took too long to respond");
+      } else {
+        toast.error("Unable to load JSON from that URL — check CORS settings or the URL");
+      }
     }
-  };
+  };;
 
   const handleRunCommand = (commandId: string) => {
     setShowCommandPalette(false);
@@ -461,6 +504,7 @@ export function useLiveJsonWorkspace() {
       searchTerm,
       urlValue,
       showUrlInput,
+      urlLoadingState,
       showCommandPalette,
       showShortcutsModal,
       showShareModal,
