@@ -418,3 +418,91 @@ function tokenizePreservingWhitespace(line: string) {
     /(\s+|(?=[{}:;,[\]()])|(?<=[{}:;,[\]()])|(?=\.object|\.string|\.number|\.array|\.boolean|\.null|\.unknown)|(?<=\.object|\.string|\.number|\.array|\.boolean|\.null|\.unknown))/g,
   );
 }
+
+function highlightGoLine(line: string) {
+  const tokens = tokenizePreservingWhitespace(line);
+
+  return tokens.map((token, index) => {
+    if (/^\s+$/.test(token)) {
+      return token;
+    }
+
+    if (/^(type|struct)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#79C0FF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^(string|int64|float64|bool|interface\{\})$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#3DD68C" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^`json:".*"`$/.test(token) || /^".*"$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#d69463" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C07040" }}>
+          {token}
+        </span>
+      );
+    }
+
+    return <span key={index}>{token}</span>;
+  });
+}
+
+function highlightPythonLine(line: string) {
+  const tokens = tokenizePreservingWhitespace(line);
+
+  return tokens.map((token, index) => {
+    if (/^\s+$/.test(token)) {
+      return token;
+    }
+
+    if (/^(from|import|class|def|pass)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#79C0FF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^@(dataclass)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C77DFF" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^(str|int|float|bool|List|Optional|Any)$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#3DD68C" }}>
+          {token}
+        </span>
+      );
+    }
+
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token)) {
+      return (
+        <span key={index} style={{ color: "#C07040" }}>
+          {token}
+        </span>
+      );
+    }
+
+    return <span key={index}>{token}</span>;
+  });
+}

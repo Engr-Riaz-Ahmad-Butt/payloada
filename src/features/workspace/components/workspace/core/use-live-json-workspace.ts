@@ -414,6 +414,32 @@ export function useLiveJsonWorkspace() {
     addHistory("Masked sensitive values", "Secrets replaced");
   };
 
+  const handleSortKeys = () => {
+    if (!parsedValue) {
+      toast.error("Please add valid JSON first");
+      return;
+    }
+
+    const sortObjectKeys = (value: unknown): unknown => {
+      if (Array.isArray(value)) {
+        return value.map(sortObjectKeys);
+      }
+      if (value !== null && typeof value === "object") {
+        const sortedObj: Record<string, unknown> = {};
+        const sortedKeys = Object.keys(value as Record<string, unknown>).sort();
+        for (const key of sortedKeys) {
+          sortedObj[key] = sortObjectKeys((value as Record<string, unknown>)[key]);
+        }
+        return sortedObj;
+      }
+      return value;
+    };
+
+    setSource(JSON.stringify(sortObjectKeys(parsedValue), null, 2));
+    toast.success("Object keys sorted alphabetically");
+    addHistory("Sorted keys", "Keys sorted alphabetically");
+  };
+
   const handleLoadUrl = async () => {
     if (!urlValue.trim()) {
       toast.error("Enter a JSON URL first");
