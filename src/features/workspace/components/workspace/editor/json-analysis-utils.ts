@@ -1,4 +1,5 @@
 import type { JsonStats } from "@/types/json";
+import { SENSITIVE_FIELDS_REGEX } from "@/constants/app";
 
 import type { JsonValue } from "../core/types";
 
@@ -23,7 +24,7 @@ export function buildIntelligentIssues(value: JsonValue | null) {
       Object.entries(current).forEach(([key, child]) => {
         const nextPath = path === "$" ? `$.${key}` : `${path}.${key}`;
 
-        if (!sensitive && /(password|token|secret|email)/i.test(key)) {
+        if (!sensitive && SENSITIVE_FIELDS_REGEX.test(key)) {
           sensitive = { path: nextPath };
         }
 
@@ -49,7 +50,7 @@ export function maskSensitiveValues(value: JsonValue): JsonValue {
     return Object.fromEntries(
       Object.entries(value).map(([key, child]) => [
         key,
-        /(password|token|secret|api[_-]?key|authorization|client_secret|email)/i.test(key)
+        SENSITIVE_FIELDS_REGEX.test(key)
           ? "[masked]"
           : maskSensitiveValues(child),
       ]),

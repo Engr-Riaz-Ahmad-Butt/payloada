@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 import type { ConverterTab, JsonValue } from "../core/types";
 import { SidebarEmpty, SmallAction } from "../shared";
+import { CSV_ERROR_PREFIX } from "./converter-utils";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -179,6 +180,18 @@ function ConverterOutputPreview({ tab, value }: { tab: ConverterTab; value: stri
 }
 
 function CsvPreview({ value }: { value: string }) {
+  if (value.startsWith(CSV_ERROR_PREFIX)) {
+    const errorMessage = value.replace(CSV_ERROR_PREFIX, "");
+    return (
+      <div className="rounded-[10px] border-[0.5px] border-[#5A3A1A] bg-[#1A0E00] px-4 py-4">
+        <p className="text-[13px] font-medium text-[#C07040]">Cannot Export CSV</p>
+        <p className="mt-1 text-[12px] leading-[1.6] text-[#8B92A8] whitespace-pre-line">
+          {errorMessage}
+        </p>
+      </div>
+    );
+  }
+
   const rows = value
     .trim()
     .split("\n")

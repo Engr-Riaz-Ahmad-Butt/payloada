@@ -34,3 +34,6 @@ export const FOOTER_NAV_ITEMS = [
   { icon: "settings", label: "Settings", href: APP_ROUTES.SETTINGS },
   { icon: "help_outline", label: "Support", href: APP_ROUTES.SUPPORT },
 ] as const;
+
+// BUG-009: unified sensitive field scanner regex
+export const SENSITIVE_FIELDS_REGEX = /(password|token|secret|api[_-]?key|authorization|session|cookie|email|private_key|client_secret)/i;

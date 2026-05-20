@@ -57,7 +57,7 @@ export function useLiveJsonWorkspace() {
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [linePosition, setLinePosition] = useState({ line: 1, column: 1 });
-  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([
+  const [historyItems, setHistoryItems] = useLocalStorage<HistoryItem[]>("jsonova-history", [
     { id: "1", label: "Workspace opened", detail: "General mode • Editor" },
     { id: "2", label: "Sample JSON loaded", detail: "input.json" },
   ]);
@@ -198,14 +198,17 @@ export function useLiveJsonWorkspace() {
   }, [showCommandPalette]);
 
   const addHistory = (label: string, detail: string) => {
-    setHistoryItems((current) => [
-      {
-        id: `${Date.now()}-${Math.random()}`,
-        label,
-        detail,
-      },
-      ...current,
-    ]);
+    setHistoryItems((current) => {
+      const next = [
+        {
+          id: `${Date.now()}-${Math.random()}`,
+          label,
+          detail,
+        },
+        ...current,
+      ];
+      return next.slice(0, 50);
+    });
   };
 
   const openWorkspace = (view: WorkspaceView) => {
