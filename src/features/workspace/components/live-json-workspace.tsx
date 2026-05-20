@@ -9,6 +9,7 @@ import { EditorWorkspace } from "./workspace/editor/editor-workspace";
 import { HistoryWorkspace } from "./workspace/history/history-workspace";
 import { JwtWorkspace } from "./workspace/jwt/jwt-workspace";
 import { AiWorkspace } from "./workspace/ai/ai-workspace";
+import { TableWorkspace } from "./workspace/table/table-workspace";
 import { WorkspaceActionToolbar } from "./workspace/editor/workspace-action-toolbar";
 import { WorkspaceModeStrip } from "./workspace/editor/workspace-mode-strip";
 import { WorkspaceSidebar } from "./workspace/editor/workspace-sidebar";
@@ -228,6 +229,14 @@ export function LiveJsonWorkspace() {
 
               {workspaceView === "ai" ? (
                 <AiWorkspace source={source} onSendToEditor={setSource} onCopy={handleCopy} />
+              ) : null}
+
+              {workspaceView === "table" ? (
+                <TableWorkspace
+                  parsedValue={parsedValue}
+                  onCopy={handleCopy}
+                  onDownload={handleDownload}
+                />
               ) : null}
 
               {workspaceView === "history" ? (

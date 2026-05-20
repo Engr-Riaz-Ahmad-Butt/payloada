@@ -428,13 +428,18 @@ function formatJwtDate(value: number | null) {
     return "Not set";
   }
 
-  return new Date(value * 1000).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  try {
+    return new Date(value * 1000).toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    // Fallback for out-of-range timestamps (e.g. year > 275760)
+    return new Date(value * 1000).toISOString().slice(0, 16).replace("T", " ");
+  }
 }
 
 function getExpiryMeta(issuedAt: number | null, expiresAt: number | null) {

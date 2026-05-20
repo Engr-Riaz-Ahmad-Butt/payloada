@@ -31,6 +31,10 @@ const WORKSPACE_TITLES: Record<
     title: "AI Assistant",
     description: "Ask questions about the current JSON, generate samples, or request fixes.",
   },
+  table: {
+    title: "Table View",
+    description: "Explore JSON arrays as a sortable, filterable, paginated spreadsheet.",
+  },
   history: {
     title: "History",
     description: "Review recent formatting, downloads, diff checks, and conversion activity.",

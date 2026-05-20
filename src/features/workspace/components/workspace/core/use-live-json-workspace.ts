@@ -169,6 +169,7 @@ export function useLiveJsonWorkspace() {
         { id: "minify", label: "Minify JSON", hint: "Compress current editor" },
         { id: "repair", label: "Repair JSON", hint: "Remove common syntax issues" },
         { id: "upload", label: "Upload File", hint: "Import a .json file" },
+        { id: "table", label: "Open Table View", hint: "Explore JSON as a sortable table" },
         { id: "convert", label: "Open Converters", hint: "Switch to converter workspace" },
         { id: "diff", label: "Open Diff Tool", hint: "Compare old and new payloads" },
         { id: "jwt", label: "Open JWT Decoder", hint: "Decode token payload" },
@@ -514,6 +515,9 @@ export function useLiveJsonWorkspace() {
         break;
       case "convert":
         openConverterWorkspace();
+        break;
+      case "table":
+        openWorkspace("table");
         break;
       case "diff":
         openWorkspace("diff");

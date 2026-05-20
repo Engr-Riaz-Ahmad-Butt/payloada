@@ -38,6 +38,12 @@ export function ShareModal({
     <div
       className="fixed inset-0 z-[86] overflow-y-auto bg-[rgba(10,10,14,0.8)] p-4"
       onClick={onClose}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          onClose();
+        }
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="share-json-title"
