@@ -16,9 +16,28 @@ import { WorkspaceModeStrip } from "./workspace/editor/workspace-mode-strip";
 import { WorkspaceSidebar } from "./workspace/editor/workspace-sidebar";
 import { WorkspaceTopbar } from "./workspace/editor/workspace-topbar";
 import { useLiveJsonWorkspace } from "./workspace/core/use-live-json-workspace";
+import type {
+  ConverterTab,
+  InspectorView,
+  WorkspaceView,
+} from "./workspace/core/types";
 
-export function LiveJsonWorkspace() {
-  const { refs, state, derived, actions } = useLiveJsonWorkspace();
+type LiveJsonWorkspaceProps = {
+  initialWorkspaceView?: WorkspaceView;
+  initialInspectorView?: InspectorView;
+  initialConverterTab?: ConverterTab;
+};
+
+export function LiveJsonWorkspace({
+  initialWorkspaceView,
+  initialInspectorView,
+  initialConverterTab,
+}: LiveJsonWorkspaceProps = {}) {
+  const { refs, state, derived, actions } = useLiveJsonWorkspace({
+    initialWorkspaceView,
+    initialInspectorView,
+    initialConverterTab,
+  });
   const { editorRef, fileInputRef, commandInputRef } = refs;
   const {
     workspaceView,

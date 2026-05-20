@@ -38,16 +38,28 @@ import {
 } from "../shared/utils";
 import { decompressString } from "../shared";
 
-export function useLiveJsonWorkspace() {
+type UseLiveJsonWorkspaceOptions = {
+  initialWorkspaceView?: WorkspaceView;
+  initialInspectorView?: InspectorView;
+  initialConverterTab?: ConverterTab;
+};
+
+export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) {
   const editorRef = useRef<EditorInstance | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const commandInputRef = useRef<HTMLInputElement | null>(null);
+  const {
+    initialWorkspaceView = "editor",
+    initialInspectorView = "status",
+    initialConverterTab = "TypeScript",
+  } = options;
 
-  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("editor");
-  const [previousWorkspaceView, setPreviousWorkspaceView] = useState<WorkspaceView>("editor");
+  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>(initialWorkspaceView);
+  const [previousWorkspaceView, setPreviousWorkspaceView] =
+    useState<WorkspaceView>(initialWorkspaceView);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [roleMode, setRoleMode] = useState<RoleMode>("General");
-  const [inspectorView, setInspectorView] = useState<InspectorView>("status");
+  const [inspectorView, setInspectorView] = useState<InspectorView>(initialInspectorView);
   const [source, setSource] = useState(SAMPLE_JSON);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -63,7 +75,7 @@ export function useLiveJsonWorkspace() {
   const [historyItems, setHistoryItems] = useLocalStorage<HistoryItem[]>("jsonova-history", []);
   const [diffOld, setDiffOld] = useState(SAMPLE_DIFF_OLD);
   const [diffNew, setDiffNew] = useState(SAMPLE_DIFF_NEW);
-  const [converterTab, setConverterTab] = useState<ConverterTab>("TypeScript");
+  const [converterTab, setConverterTab] = useState<ConverterTab>(initialConverterTab);
   const [jwtInput, setJwtInput] = useState(SAMPLE_JWT);
 
   const [parseResult, setParseResult] = useState<JsonParseResult | null>(() => {
