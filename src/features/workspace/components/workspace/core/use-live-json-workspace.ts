@@ -177,6 +177,7 @@ export function useLiveJsonWorkspace() {
         { id: "jwt", label: "Open JWT Decoder", hint: "Decode token payload" },
         { id: "search", label: "Search JSONPath", hint: "Open search inspector" },
         { id: "mask", label: "Mask Sensitive Fields", hint: "Replace secrets with [masked]" },
+        { id: "sort", label: "Sort Object Keys", hint: "Sort keys alphabetically" },
         { id: "download", label: "Download JSON", hint: "Save current output" },
       ] as const,
     [],
@@ -524,6 +525,9 @@ export function useLiveJsonWorkspace() {
         break;
       case "mask":
         handleMaskSensitive();
+        break;
+      case "sort":
+        handleSortKeys();
         break;
       case "download":
         handleDownload(
