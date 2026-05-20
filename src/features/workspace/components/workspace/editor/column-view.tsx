@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Braces, ChevronRight, Hash, Type, HelpCircle, FileText, ToggleLeft, Clipboard, Check, Calendar } from "lucide-react";
+import { ChevronRight, Hash, Type, HelpCircle, FileText, ToggleLeft, Clipboard, Check, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { JsonValue } from "../core/types";
 
