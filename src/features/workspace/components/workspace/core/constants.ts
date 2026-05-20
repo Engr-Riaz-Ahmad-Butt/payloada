@@ -1,4 +1,4 @@
-import { Braces, FileDiff, FolderClock, LockKeyhole, WandSparkles } from "lucide-react";
+import { Braces, FileDiff, FolderClock, LockKeyhole, WandSparkles, Cpu } from "lucide-react";
 
 import type { ConverterTab, NavItem, RoleMode, RoleModeInfo } from "./types";
 
@@ -103,6 +103,7 @@ export const ROLE_MODE_INFO: RoleModeInfo = {
 export const NAV_ITEMS: NavItem[] = [
   { id: "editor", label: "Editor", icon: Braces },
   { id: "jwt", label: "JWT Decoder", icon: LockKeyhole },
+  { id: "ai", label: "AI", icon: Cpu },
   { id: "diff", label: "JSON Diff", icon: FileDiff },
   { id: "converters", label: "Converters", icon: WandSparkles },
   { id: "history", label: "History", icon: FolderClock },

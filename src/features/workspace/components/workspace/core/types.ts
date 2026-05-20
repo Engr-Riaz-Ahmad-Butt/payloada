@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-export type WorkspaceView = "editor" | "jwt" | "diff" | "converters" | "history";
+export type WorkspaceView = "editor" | "jwt" | "diff" | "converters" | "history" | "ai";
 export type InspectorView =
   | "none"
   | "status"
