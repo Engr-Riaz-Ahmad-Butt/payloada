@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { getJsonStats, parseJsonSafe } from "@/lib/json";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import type { JsonParseResult } from "@/types/json";
+import type { JsonWorkerResponse } from "@/workers/json-worker";
 
 import {
   ROLE_MODE_INFO,
