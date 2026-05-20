@@ -46,3 +46,7 @@ next-env.d.ts
 
 # editor
 .vscode/
+
+# planning
+/planning/*.md
+*.md

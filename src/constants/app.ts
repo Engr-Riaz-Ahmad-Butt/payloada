@@ -1,4 +1,4 @@
-export const APP_NAME = "jsonLines";
+export const APP_NAME = "JSONova";
 export const APP_TAGLINE = "Privacy-first JSON debugging workspace";
 export const APP_DESCRIPTION =
   "Format, validate, inspect, and understand JSON with a workflow built for developers.";

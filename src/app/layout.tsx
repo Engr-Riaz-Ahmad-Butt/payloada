@@ -15,13 +15,13 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "jsonLines - The modern JSON workspace for developers",
+  title: "JSONova - The modern JSON workspace for developers",
   description:
     "Format JSON, decode JWTs, compare payloads, and generate developer-ready outputs in a fast, privacy-first workspace.",
   keywords: ["JSON", "editor", "formatter", "JWT decoder", "JSON diff", "developer tools"],
   authors: [{ name: "Riaz Ahmad Butt" }],
   openGraph: {
-    title: "jsonLines - The modern JSON workspace for developers",
+    title: "JSONova - The modern JSON workspace for developers",
     description: "Format, validate, decode, and compare JSON in a fast, privacy-first workspace.",
     type: "website",
   },

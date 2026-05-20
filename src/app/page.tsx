@@ -19,7 +19,7 @@ const useCases = [
 
 const faqs = [
   [
-    "Is jsonLines free to use?",
+    "Is JSONova free to use?",
     "Yes. The core formatting, diffing, decoding, and inspection workflow is available without signup.",
   ],
   [
@@ -28,7 +28,7 @@ const faqs = [
   ],
   [
     "Can I decode JWTs and compare JSON in one product?",
-    "Yes. jsonLines combines formatter, JWT decoder, diff workspace, converters, and validation in one flow.",
+    "Yes. JSONova combines formatter, JWT decoder, diff workspace, converters, and validation in one flow.",
   ],
   [
     "Can I generate TypeScript from JSON?",
@@ -37,7 +37,7 @@ const faqs = [
 ] as const;
 
 const comparisons = [
-  ["Formatter only", "jsonLines workspace"],
+  ["Formatter only", "JSONova workspace"],
   ["One action per page", "Multiple developer workflows together"],
   ["Little privacy messaging", "Local-first and privacy-forward"],
   ["Raw output only", "Readable summaries and guided inspection"],
@@ -256,7 +256,7 @@ export default function Home() {
                 className="mt-4"
                 style={{ color: "#8B92A8", fontSize: "15px", lineHeight: "28px" }}
               >
-                jsonLines combines JSON formatting, JWT decoding, JSON diffing, type generation,
+                JSONova combines JSON formatting, JWT decoding, JSON diffing, type generation,
                 search, and safety checks in one modern workspace. That makes it easier to
                 understand for users and clearer for search engines too.
               </p>

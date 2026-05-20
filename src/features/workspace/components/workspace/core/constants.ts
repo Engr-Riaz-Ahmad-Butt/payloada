@@ -34,8 +34,9 @@ export const SAMPLE_DIFF_NEW = `{
   }
 }`;
 
+// Payload: {"sub":"1234567890","name":"JSONova Demo","role":"developer","iat":1516239022}
 export const SAMPLE_JWT =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Impzb25MaW5lcyBEZW1vIiwicm9sZSI6ImRldmVsb3BlciIsImlhdCI6MTUxNjIzOTAyMn0.FN8owgmjXX0Qo5py9fJ6ii3UsA5S5HL90CcN8yzZY4w";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ikpzb25vdmEgRGVtbyIsInJvbGUiOiJkZXZlbG9wZXIiLCJpYXQiOjE1MTYyMzkwMjJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
 export const ROLE_MODES: RoleMode[] = ["General", "Frontend", "Backend", "QA", "Student"];
 
