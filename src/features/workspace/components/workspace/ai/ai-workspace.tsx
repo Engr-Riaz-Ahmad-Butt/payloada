@@ -198,7 +198,7 @@ export function AiWorkspace({
         ))}
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {!hasJson ? (
           <EmptyNoJson />
         ) : aiState.status === "idle" ? (
@@ -422,7 +422,7 @@ function ResultState({
   const sendButtonLabel = activeTab === "generate" ? "Use in editor" : "Send to editor";
 
   return (
-    <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
+    <div className="flex flex-col gap-3 p-4 sm:p-5">
       <div className="flex items-center justify-between">
         <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-[#3A4060]">
           Response
@@ -477,7 +477,7 @@ function ResultState({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto rounded-xl border-[0.5px] border-ui-border bg-[#0A0C0F] p-4">
+      <div className="rounded-xl border-[0.5px] border-ui-border bg-[#0A0C0F] p-4">
         <RenderedResponse text={result} />
       </div>
     </div>

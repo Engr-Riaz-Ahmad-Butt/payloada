@@ -45,10 +45,7 @@ const comparisons = [
 
 export default function Home() {
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      style={{ backgroundColor: "#080808", color: "#F5F1EA", fontFamily: "Inter, sans-serif" }}
-    >
+    <div className="flex min-h-screen flex-col bg-obsidian-base font-sans text-text-primary">
       <Navbar />
 
       <main className="flex flex-1 flex-col items-center overflow-x-hidden">
@@ -61,7 +58,7 @@ export default function Home() {
               lineHeight: "1.05",
               fontWeight: 700,
               letterSpacing: "-0.02em",
-              color: "#E8EAF0",
+              color: "var(--color-on-surface)",
             }}
           >
             The modern JSON workspace for <span style={{ color: "#C07040" }}>serious</span>{" "}
@@ -75,7 +72,7 @@ export default function Home() {
               fontSize: "clamp(16px, 2.2vw, 18px)",
               lineHeight: "1.6",
               fontWeight: 400,
-              color: "#8B92A8",
+              color: "var(--color-text-secondary)",
             }}
           >
             Format JSON, decode JWTs, compare payloads, and generate developer-ready outputs in a

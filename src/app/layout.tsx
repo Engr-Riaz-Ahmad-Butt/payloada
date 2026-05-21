@@ -63,7 +63,19 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans`}>
+      <head>
+        <Script
+          id="jsonova-theme-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('jsonova-theme');var v=t?JSON.parse(t):'dark';document.documentElement.classList.remove('dark','light');document.documentElement.classList.add(v);}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body
+        suppressHydrationWarning
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased font-sans`}
+      >
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN ? (
           <Script
             defer

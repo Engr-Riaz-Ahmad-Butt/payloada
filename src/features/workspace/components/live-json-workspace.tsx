@@ -2,6 +2,8 @@
 
 import React from "react";
 
+import { cn } from "@/lib/utils";
+import { NAV_ITEMS } from "./workspace/core/constants";
 import { CommandPalette, ShareModal, ShortcutsModal } from "./workspace/shared";
 import { ConverterWorkspace } from "./workspace/converters/converter-workspace";
 import { DiffWorkspace } from "./workspace/diff/diff-workspace";
@@ -16,11 +18,7 @@ import { WorkspaceModeStrip } from "./workspace/editor/workspace-mode-strip";
 import { WorkspaceSidebar } from "./workspace/editor/workspace-sidebar";
 import { WorkspaceTopbar } from "./workspace/editor/workspace-topbar";
 import { useLiveJsonWorkspace } from "./workspace/core/use-live-json-workspace";
-import type {
-  ConverterTab,
-  InspectorView,
-  WorkspaceView,
-} from "./workspace/core/types";
+import type { ConverterTab, InspectorView, WorkspaceView } from "./workspace/core/types";
 
 type LiveJsonWorkspaceProps = {
   initialWorkspaceView?: WorkspaceView;
@@ -131,7 +129,7 @@ export function LiveJsonWorkspace({
           onToggleCollapse={() => setIsSidebarCollapsed((current) => !current)}
         />
 
-        <div className="flex min-w-0 flex-col">
+        <div className="flex min-w-0 flex-col pb-16 xl:pb-0">
           <WorkspaceTopbar
             workspaceView={workspaceView}
             searchTerm={searchTerm}
@@ -276,6 +274,30 @@ export function LiveJsonWorkspace({
           </div>
         </div>
       </div>
+
+      {/* Mobile bottom tab bar — hidden on xl where the sidebar handles navigation */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-stretch border-t-[0.5px] border-ui-border bg-surface-elevated xl:hidden">
+        {NAV_ITEMS.map(({ id, label, icon: Icon }) => {
+          const SHORT: Record<string, string> = {
+            editor: "Edit", jwt: "JWT", ai: "AI", table: "Table",
+            mock: "Mock", diff: "Diff", converters: "Convert", history: "History",
+          };
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => openWorkspace(id)}
+              className={cn(
+                "flex flex-1 flex-col items-center justify-center gap-0.5 transition-colors",
+                workspaceView === id ? "text-copper-accent" : "text-on-surface-variant",
+              )}
+            >
+              <Icon className="size-5" />
+              <span className="text-[9px] font-medium leading-none">{SHORT[id] ?? label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
       {showCommandPalette ? (
         <CommandPalette

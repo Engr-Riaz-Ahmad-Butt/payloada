@@ -4,6 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 import type { ConverterTab, JsonValue } from "../core/types";
@@ -52,6 +53,7 @@ export function ConverterWorkspace({
   source: string;
   setSource: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const { monacoTheme } = useTheme();
   const selectedDescription = converterTab ? FORMAT_META[converterTab] : "Choose a target format";
 
   return (
@@ -61,7 +63,7 @@ export function ConverterWorkspace({
           <MonacoEditor
             height="100%"
             language="json"
-            theme="vs-dark"
+            theme={monacoTheme}
             value={source}
             onChange={(value) => setSource(value ?? "")}
             options={{

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { Plus, Trash2, Copy, Download, RefreshCw, Send, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useTheme } from "@/hooks/use-theme";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -96,6 +97,7 @@ export function MockWorkspace({
   onSendToEditor: (json: string) => void;
   onCopy: (value: string, message?: string) => Promise<void>;
 }) {
+  const { monacoTheme } = useTheme();
   const [fields, setFields] = useState<SchemaField[]>(PRESET_TEMPLATES.users.fields);
   const [count, setCount] = useState<number>(10);
   const [output, setOutput] = useState<string>("");
@@ -310,7 +312,7 @@ export function MockWorkspace({
           <MonacoEditor
             height="100%"
             language="json"
-            theme="vs-dark"
+            theme={monacoTheme}
             value={output}
             options={{
               readOnly: true,

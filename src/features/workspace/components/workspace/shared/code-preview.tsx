@@ -6,7 +6,7 @@ export function CodePreview({ value, className }: { value: string; className?: s
   return (
     <pre
       className={cn(
-        "overflow-auto rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] p-4 font-mono text-xs leading-6 text-[#f5f1ea]",
+        "overflow-auto rounded-sm border-[0.5px] border-ui-border bg-obsidian-base p-4 font-mono text-xs leading-6 text-text-primary",
         className,
       )}
     >

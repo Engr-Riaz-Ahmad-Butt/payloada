@@ -1,6 +1,8 @@
 "use client";
 
-import { CircleHelp, Search } from "lucide-react";
+import { CircleHelp, Moon, Search, Sun } from "lucide-react";
+
+import { useTheme } from "@/hooks/use-theme";
 
 import type { WorkspaceView } from "../core/types";
 
@@ -61,6 +63,7 @@ export function WorkspaceTopbar({
   onOpenShare: () => void;
 }) {
   const workspaceMeta = WORKSPACE_TITLES[workspaceView];
+  const { isDark, toggle } = useTheme();
 
   return (
     <header className="flex flex-col gap-4 border-b-[0.5px] border-ui-border bg-obsidian-base px-4 py-4 sm:px-5 lg:px-8 xl:px-10">
@@ -73,15 +76,24 @@ export function WorkspaceTopbar({
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={toggle}
+            aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDark ? "Light mode" : "Dark mode"}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-surface-elevated text-text-secondary transition-colors hover:border-ui-border-hover hover:text-text-primary focus-visible:border-[#C07040] focus-visible:outline-none"
+          >
+            {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+          </button>
+          <button
+            type="button"
             onClick={onOpenShare}
-            className="inline-flex h-9 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#101010] px-3 text-[12px] font-medium text-[#E8EAF0] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+            className="inline-flex h-9 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-surface-elevated px-3 text-[12px] font-medium text-text-primary transition-colors hover:border-ui-border-hover focus-visible:border-[#C07040] focus-visible:outline-none"
           >
             Share
           </button>
           <button
             type="button"
             onClick={onOpenShortcuts}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#101010] text-[#8B92A8] transition-colors hover:border-[#2A2F42] hover:text-[#E8EAF0] focus-visible:border-[#C07040] focus-visible:outline-none"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-surface-elevated text-text-secondary transition-colors hover:border-ui-border-hover hover:text-text-primary focus-visible:border-[#C07040] focus-visible:outline-none"
             aria-label="Open keyboard shortcuts"
             title="Keyboard shortcuts"
           >
@@ -91,8 +103,8 @@ export function WorkspaceTopbar({
       </div>
 
       {workspaceView === "editor" ? (
-        <div className="flex min-w-0 items-center gap-3 rounded-sm border-[0.5px] border-ui-border bg-[#101010] px-3 py-3 sm:gap-4">
-          <Search className="size-5 shrink-0 text-[#d6c3b5]" />
+        <div className="flex min-w-0 items-center gap-3 rounded-sm border-[0.5px] border-ui-border bg-surface-elevated px-3 py-3 sm:gap-4">
+          <Search className="size-5 shrink-0 text-text-secondary" />
           <input
             value={searchTerm}
             onChange={(event) => {

@@ -4,8 +4,8 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ── jsonLines Design Tokens ── */
-@theme inline {
+/* ── JSONova Design Tokens ── */
+@theme {
   /* Colors */
   --color-obsidian-base: #080808;
   --color-surface: #131313;
@@ -96,8 +96,8 @@
   }
 
   body {
-    background-color: #080808;
-    color: #f5f1ea;
+    background-color: var(--color-obsidian-base);
+    color: var(--color-text-primary);
     font-family: "Inter", sans-serif;
     min-height: 100vh;
     display: flex;
@@ -125,14 +125,43 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #080808;
+  background: var(--color-obsidian-base);
 }
 ::-webkit-scrollbar-thumb {
-  background: #262626;
+  background: var(--color-surface-container-high);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #c07040;
+}
+
+/* ── Light mode overrides ── */
+.light {
+  --color-obsidian-base: #ffffff;
+  --color-surface: #f5f7fa;
+  --color-surface-dim: #eef0f5;
+  --color-surface-elevated: #eceef3;
+  --color-surface-container: #e5e8ef;
+  --color-surface-container-low: #eaecf1;
+  --color-surface-container-high: #d5d9e4;
+  --color-surface-container-highest: #c8cdd8;
+  --color-surface-variant: #d5d9e4;
+  --color-surface-bright: #ffffff;
+  --color-ui-border: #d0d5e3;
+  --color-ui-border-hover: #a0a8bc;
+  --color-focus-accent: #c07040;
+  --color-outline: #7a6a64;
+  --color-outline-variant: #b8a8a2;
+  --color-background: #f5f7fa;
+  --color-on-background: #111318;
+  --color-on-surface: #111318;
+  --color-on-surface-variant: #3c4459;
+  --color-inverse-surface: #111318;
+  --color-inverse-on-surface: #e5e8ef;
+  --color-surface-tint: #c07040;
+  --color-text-primary: #111318;
+  --color-gold-number: #8a6830;
+  --color-sage-string: #2d6e2d;
 }
 
 .jsonlines-diff-line-removed {

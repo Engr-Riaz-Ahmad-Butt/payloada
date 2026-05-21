@@ -65,7 +65,9 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
   const [searchTerm, setSearchTerm] = useState("");
   const [urlValue, setUrlValue] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);
-  const [urlLoadingState, setUrlLoadingState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [urlLoadingState, setUrlLoadingState] = useState<"idle" | "loading" | "success" | "error">(
+    "idle",
+  );
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -85,19 +87,22 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
   const workerRef = useRef<Worker | null>(null);
   const activeRequestIdRef = useRef<string | null>(null);
 
-  const addHistory = useCallback((label: string, detail: string) => {
-    setHistoryItems((current) => {
-      const next = [
-        {
-          id: `${Date.now()}-${Math.random()}`,
-          label,
-          detail,
-        },
-        ...current,
-      ];
-      return next.slice(0, 50);
-    });
-  }, [setHistoryItems]);
+  const addHistory = useCallback(
+    (label: string, detail: string) => {
+      setHistoryItems((current) => {
+        const next = [
+          {
+            id: `${Date.now()}-${Math.random()}`,
+            label,
+            detail,
+          },
+          ...current,
+        ];
+        return next.slice(0, 50);
+      });
+    },
+    [setHistoryItems],
+  );
 
   // Load shared JSON from URL if present
   useEffect(() => {
@@ -139,9 +144,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
   }, [addHistory]);
 
   useEffect(() => {
-    const worker = new Worker(
-      new URL("../../../../../workers/json-worker.ts", import.meta.url)
-    );
+    const worker = new Worker(new URL("../../../../../workers/json-worker.ts", import.meta.url));
 
     worker.onmessage = (event: MessageEvent<JsonWorkerResponse>) => {
       const { id, valid, data, error, line, column } = event.data;
@@ -318,7 +321,6 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
     }
   }, [showCommandPalette]);
 
-
   const clearHistory = () => {
     setHistoryItems([]);
     toast.success("History cleared");
@@ -415,7 +417,9 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
     // BUG-008: guard against huge files before reading into memory
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
     if (file.size > MAX_FILE_SIZE) {
-      toast.error(`File is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 5 MB.`);
+      toast.error(
+        `File is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 5 MB.`,
+      );
       event.target.value = "";
       return;
     }
@@ -547,7 +551,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
         toast.error("Unable to load JSON from that URL — check CORS settings or the URL");
       }
     }
-  };;
+  };
 
   const handleRunCommand = (commandId: string) => {
     setShowCommandPalette(false);

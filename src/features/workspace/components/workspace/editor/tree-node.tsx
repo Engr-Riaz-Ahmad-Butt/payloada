@@ -56,12 +56,12 @@ export function TreeNode({
         className={cn(
           "group flex min-w-0 items-start gap-2 rounded-sm px-2 py-1.5 transition-colors",
           isActiveMatch
-            ? "border-[0.5px] border-[#C07040] bg-[#2A1508]"
+            ? "border-[0.5px] border-copper-accent bg-[#2A1508]"
             : isSelected
-            ? "bg-[#1f1f1f]"
+            ? "bg-surface-container-low"
             : isMatch && hasSearch
             ? "bg-[#1F140C]"
-            : "hover:bg-[#111111]",
+            : "hover:bg-surface-container-low",
           hasSearch && !isVisibleInSearch ? "opacity-30" : "",
         )}
       >
@@ -69,7 +69,7 @@ export function TreeNode({
           <button
             type="button"
             onClick={() => setOpen((current) => !current)}
-            className="mt-0.5 shrink-0 text-[#a89589]"
+            className="mt-0.5 shrink-0 text-on-surface-variant"
           >
             {open ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
           </button>
@@ -86,21 +86,21 @@ export function TreeNode({
             text={label}
             tone="key"
             query={treeSearchTerm ?? ""}
-            defaultClassName="text-[#d69463]"
+            defaultClassName="text-copper-accent"
           />
-          <span className="text-[#6d655f]">: </span>
+          <span className="text-outline-variant">: </span>
           <HighlightedTreeText
             text={preview}
             tone="value"
             query={treeSearchTerm ?? ""}
-            defaultClassName="text-[#f5f1ea]"
+            defaultClassName="text-text-primary"
           />
         </button>
 
         <button
           type="button"
           onClick={() => onCopy(path, "Copied JSONPath")}
-          className="hidden shrink-0 text-[#7f766f] group-hover:block"
+          className="hidden shrink-0 text-outline-variant group-hover:block"
         >
           <Copy className="size-3.5" />
         </button>

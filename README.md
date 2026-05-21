@@ -46,15 +46,15 @@ npm run check
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `GEMINI_API_KEY` | Yes for AI | Gemini API key for the AI assistant |
-| `GEMINI_MODEL` | No | Defaults to `gemini-2.5-flash-lite` |
-| `NEXT_PUBLIC_APP_NAME` | No | Public app label |
-| `NEXT_PUBLIC_APP_URL` | No | Canonical app URL |
-| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | No | Enables Plausible analytics |
-| `UPSTASH_REDIS_REST_URL` | No | Shared rate limiter backend for production |
-| `UPSTASH_REDIS_REST_TOKEN` | No | Shared rate limiter backend token |
+| Variable                       | Required   | Purpose                                    |
+| ------------------------------ | ---------- | ------------------------------------------ |
+| `GEMINI_API_KEY`               | Yes for AI | Gemini API key for the AI assistant        |
+| `GEMINI_MODEL`                 | No         | Defaults to `gemini-2.5-flash-lite`        |
+| `NEXT_PUBLIC_APP_NAME`         | No         | Public app label                           |
+| `NEXT_PUBLIC_APP_URL`          | No         | Canonical app URL                          |
+| `NEXT_PUBLIC_PLAUSIBLE_DOMAIN` | No         | Enables Plausible analytics                |
+| `UPSTASH_REDIS_REST_URL`       | No         | Shared rate limiter backend for production |
+| `UPSTASH_REDIS_REST_TOKEN`     | No         | Shared rate limiter backend token          |
 
 ## Project structure
 

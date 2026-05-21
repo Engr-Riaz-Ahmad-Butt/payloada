@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { FileDiff } from "lucide-react";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 import { SidebarEmpty, SidebarSection, SmallAction } from "../shared";
@@ -34,6 +35,7 @@ export function DiffWorkspace({
   onCopy: (value: string, message?: string) => Promise<void>;
   onDownload: (content: string, filename: string) => void;
 }) {
+  const { monacoTheme } = useTheme();
   const isDesktopDiff = useMediaQuery("(min-width: 1024px)");
   const isWideSidebar = useMediaQuery("(min-width: 1536px)");
   const [syncScrolling, setSyncScrolling] = useState(true);
@@ -272,7 +274,7 @@ export function DiffWorkspace({
                     <MonacoEditor
                       height="100%"
                       language="json"
-                      theme="vs-dark"
+                      theme={monacoTheme}
                       value={diffOld}
                       onChange={(value) => setDiffOld(value ?? "")}
                       onMount={(editor) => {
@@ -303,7 +305,7 @@ export function DiffWorkspace({
                     <MonacoEditor
                       height="100%"
                       language="json"
-                      theme="vs-dark"
+                      theme={monacoTheme}
                       value={diffNew}
                       onChange={(value) => setDiffNew(value ?? "")}
                       onMount={(editor) => {
@@ -348,7 +350,7 @@ export function DiffWorkspace({
                   <MonacoEditor
                     height="100%"
                     language="json"
-                    theme="vs-dark"
+                    theme={monacoTheme}
                     value={diffOld}
                     onChange={(value) => setDiffOld(value ?? "")}
                     options={{
@@ -375,7 +377,7 @@ export function DiffWorkspace({
                   <MonacoEditor
                     height="100%"
                     language="json"
-                    theme="vs-dark"
+                    theme={monacoTheme}
                     value={diffNew}
                     onChange={(value) => setDiffNew(value ?? "")}
                     options={{

@@ -21,6 +21,7 @@ import { parseJsonSafe } from "@/lib/json";
 import { cn } from "@/lib/utils";
 import type { JsonStats } from "@/types/json";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useTheme } from "@/hooks/use-theme";
 
 import {
   CodePreview,
@@ -88,6 +89,7 @@ export function EditorWorkspace({
   onFetchFromUrl: () => void;
   isParsing?: boolean;
 }) {
+  const { monacoTheme } = useTheme();
   const hasDesktopInspectorLayout = useMediaQuery("(min-width: 1280px)");
   const showMobileGraphPanel = (inspectorView === "graph" || inspectorView === "columns") && !hasDesktopInspectorLayout;
   const [treeContainerElement, setTreeContainerElement] = useState<HTMLDivElement | null>(null);
@@ -158,9 +160,9 @@ export function EditorWorkspace({
         inspectorView === "none" ? "" : "border-r-[0.5px] border-ui-border",
       )}
     >
-      <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-[#171717] px-4 py-3 sm:px-5">
-        <span className="font-mono text-[13px] font-normal text-[#d6c3b5]">input.json</span>
-        <div className="flex items-center gap-2 text-[#d6c3b5]">
+      <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 sm:px-5">
+        <span className="font-mono text-[13px] font-normal text-on-surface-variant">input.json</span>
+        <div className="flex items-center gap-2 text-on-surface-variant">
           <button type="button" onClick={() => onCopy(source, "Copied editor content")}>
             <Copy className="size-4" />
           </button>
@@ -170,16 +172,16 @@ export function EditorWorkspace({
         </div>
       </div>
 
-      <div className="relative min-h-[360px] flex-1 bg-[#050505] md:min-h-[460px] xl:min-h-0">
+      <div className="relative min-h-[360px] flex-1 bg-obsidian-base md:min-h-[460px] xl:min-h-0">
         {!source.trim() ? (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#050505]/90 p-6">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-obsidian-base/90 p-6">
             <div className="space-y-4 text-center">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-[#1d1d1d]">
-                <FileJson2 className="size-5 text-[#d69463]" />
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-md bg-surface-container-low">
+                <FileJson2 className="size-5 text-copper-accent" />
               </div>
               <div>
-                <h3 className="text-[14px] font-medium text-[#E8EAF0]">Paste your JSON here</h3>
-                <p className="mt-2 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                <h3 className="text-[14px] font-medium text-text-primary">Paste your JSON here</h3>
+                <p className="mt-2 text-[13px] font-normal leading-[1.6] text-text-secondary">
                   You can also upload a file, load a URL, or try a sample.
                 </p>
               </div>
@@ -188,12 +190,12 @@ export function EditorWorkspace({
         ) : null}
 
         {isParsing ? (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#050505]/75 backdrop-blur-[2px]">
-            <div className="flex flex-col items-center gap-3 rounded-lg border border-[#2A2F42]/30 bg-[#0A0C0F]/90 px-6 py-5 text-center shadow-2xl">
-              <Loader2 className="size-6 animate-spin text-[#C07040]" />
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-obsidian-base/75 backdrop-blur-[2px]">
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-ui-border bg-surface px-6 py-5 text-center">
+              <Loader2 className="size-6 animate-spin text-copper-accent" />
               <div>
-                <p className="text-[13px] font-semibold text-[#E8EAF0]">Parsing large JSON</p>
-                <p className="mt-1 text-[11px] text-[#5A6070]">Executing inside a background thread worker...</p>
+                <p className="text-[13px] font-semibold text-text-primary">Parsing large JSON</p>
+                <p className="mt-1 text-[11px] text-outline-variant">Executing inside a background thread worker...</p>
               </div>
             </div>
           </div>
@@ -202,7 +204,7 @@ export function EditorWorkspace({
         <MonacoEditor
           height="100%"
           language="json"
-          theme="vs-dark"
+          theme={monacoTheme}
           value={source}
           onChange={(value) => setSource(value ?? "")}
           onMount={(instance) => {
@@ -229,7 +231,7 @@ export function EditorWorkspace({
         />
       </div>
 
-      <div className="flex flex-col gap-2 border-t-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[11px] font-normal text-[#5A6070] sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <div className="flex flex-col gap-2 border-t-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[11px] font-normal text-outline-variant sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex flex-wrap items-center gap-3 sm:gap-5">
           <span>UTF-8</span>
           <span>JSON</span>
@@ -241,10 +243,10 @@ export function EditorWorkspace({
       </div>
 
       {selectedNode ? (
-        <div className="flex flex-col gap-3 border-t-[0.5px] border-ui-border bg-[#171717] px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-3 border-t-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-[11px] font-medium tracking-[0.5px] text-[#5A6070]">Selected</p>
-            <p className="mt-1 font-mono text-[13px] font-normal text-[#C07040]">
+            <p className="text-[11px] font-medium tracking-[0.5px] text-outline-variant">Selected</p>
+            <p className="mt-1 font-mono text-[13px] font-normal text-copper-accent">
               {selectedNode.path}
             </p>
           </div>
@@ -271,9 +273,9 @@ export function EditorWorkspace({
 
   const inspectorPane =
     inspectorView !== "none" ? (
-      <aside className="flex min-h-[320px] flex-col overflow-y-auto border-t-[0.5px] border-ui-border bg-[#121212] xl:min-h-0 xl:border-t-0">
-        <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-[#171717] px-4 py-3">
-          <p className="text-[11px] font-medium tracking-[0.5px] text-[#5A6070]">
+      <aside className="flex min-h-[320px] flex-col overflow-y-auto border-t-[0.5px] border-ui-border bg-surface xl:min-h-0 xl:border-t-0">
+        <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3">
+          <p className="text-[11px] font-medium tracking-[0.5px] text-outline-variant">
             {inspectorView === "status"
               ? "Status"
               : inspectorView === "formatted"
@@ -291,7 +293,7 @@ export function EditorWorkspace({
           <button
             type="button"
             onClick={() => setInspectorView("none")}
-            className="rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-2 py-1 text-[11px] font-semibold text-[#d6c3b5] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+            className="rounded-sm border-[0.5px] border-ui-border bg-obsidian-base px-2 py-1 text-[11px] font-semibold text-on-surface-variant transition-colors hover:border-ui-border-hover hover:text-text-primary focus-visible:border-copper-accent focus-visible:outline-none"
           >
             Close
           </button>
@@ -299,31 +301,31 @@ export function EditorWorkspace({
         {!source.trim() ? (
           <div className="flex min-h-[420px] flex-1 items-center justify-center p-6">
             <div className="w-full max-w-[320px] space-y-4 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[12px] bg-[#1A1D24]">
-                <Braces className="size-7 text-[#C07040]" />
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[12px] bg-surface-container-low">
+                <Braces className="size-7 text-copper-accent" />
               </div>
-              <h3 className="text-[16px] font-medium text-[#8B92A8]">
+              <h3 className="text-[16px] font-medium text-text-secondary">
                 Paste your JSON to get started
               </h3>
               <div className="flex flex-col gap-2">
                 <button
                   type="button"
                   onClick={() => void onPaste()}
-                  className="h-10 rounded-[8px] bg-[#C07040] px-4 text-[14px] font-semibold text-white transition-colors hover:bg-[#D48050] focus-visible:outline-none"
+                  className="h-10 rounded-[8px] bg-copper-accent px-4 text-[14px] font-semibold text-white transition-colors hover:opacity-90 focus-visible:outline-none"
                 >
                   Paste from clipboard
                 </button>
                 <button
                   type="button"
                   onClick={onLoadSample}
-                  className="h-10 rounded-[8px] border-[0.5px] border-ui-border bg-[#161616] px-4 text-[14px] font-medium text-[#E8EAF0] transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+                  className="h-10 rounded-[8px] border-[0.5px] border-ui-border bg-surface-elevated px-4 text-[14px] font-medium text-text-primary transition-colors hover:border-ui-border-hover focus-visible:border-copper-accent focus-visible:outline-none"
                 >
                   Load sample JSON
                 </button>
                 <button
                   type="button"
                   onClick={onFetchFromUrl}
-                  className="h-10 rounded-[8px] px-4 text-[14px] font-medium text-[#8B92A8] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                  className="h-10 rounded-[8px] px-4 text-[14px] font-medium text-text-secondary transition-colors hover:text-text-primary focus-visible:text-text-primary focus-visible:outline-none"
                 >
                   Fetch from URL
                 </button>
@@ -401,9 +403,9 @@ export function EditorWorkspace({
           <SidebarSection title="Tree Explorer">
             {parseResult?.valid ? (
               <div className="space-y-2">
-                <div className="overflow-hidden rounded-[6px] border-[0.5px] border-ui-border bg-[#0F1117]">
-                  <div className="flex h-[34px] items-center gap-2 border-b-[0.5px] border-[#1E2433] px-3">
-                    <Search className="size-[14px] shrink-0 text-[#3A4060]" />
+                <div className="overflow-hidden rounded-[6px] border-[0.5px] border-ui-border bg-obsidian-base">
+                  <div className="flex h-[34px] items-center gap-2 border-b-[0.5px] border-ui-border px-3">
+                    <Search className="size-[14px] shrink-0 text-outline-variant" />
                     <input
                       value={treeSearchTerm}
                       onChange={(event) => setTreeSearchTerm(event.target.value)}
@@ -414,14 +416,14 @@ export function EditorWorkspace({
                         }
                       }}
                       placeholder="Search keys, values, paths..."
-                      className="w-full bg-transparent font-mono text-[12px] text-[#E8EAF0] outline-none placeholder:text-[#5A6070]"
+                      className="w-full bg-transparent font-mono text-[12px] text-text-primary outline-none placeholder:text-outline-variant"
                     />
                     {treeSearchTerm.trim() && treeSearchMatches.length ? (
                       <div className="flex items-center gap-1">
                         <button
                           type="button"
                           onClick={() => navigateTreeMatch("previous")}
-                          className="inline-flex h-5 w-5 items-center justify-center text-[#5A6070] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                          className="inline-flex h-5 w-5 items-center justify-center text-outline-variant transition-colors hover:text-text-primary focus-visible:text-text-primary focus-visible:outline-none"
                           aria-label="Previous tree match"
                         >
                           <ChevronLeft className="size-3.5" />
@@ -429,7 +431,7 @@ export function EditorWorkspace({
                         <button
                           type="button"
                           onClick={() => navigateTreeMatch("next")}
-                          className="inline-flex h-5 w-5 items-center justify-center text-[#5A6070] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                          className="inline-flex h-5 w-5 items-center justify-center text-outline-variant transition-colors hover:text-text-primary focus-visible:text-text-primary focus-visible:outline-none"
                           aria-label="Next tree match"
                         >
                           <ChevronRight className="size-3.5" />
@@ -440,13 +442,13 @@ export function EditorWorkspace({
                       <button
                         type="button"
                         onClick={() => setTreeSearchTerm("")}
-                        className="inline-flex h-5 w-5 items-center justify-center text-[#5A6070] transition-colors hover:text-[#E8EAF0] focus-visible:text-[#E8EAF0] focus-visible:outline-none"
+                        className="inline-flex h-5 w-5 items-center justify-center text-outline-variant transition-colors hover:text-text-primary focus-visible:text-text-primary focus-visible:outline-none"
                         aria-label="Clear tree search"
                       >
                         <X className="size-3.5" />
                       </button>
                     ) : null}
-                    <span className="shrink-0 font-mono text-[10px] text-[#5A6070]">
+                    <span className="shrink-0 font-mono text-[10px] text-outline-variant">
                       {treeSearchTerm.trim()
                         ? `${activeTreeMatchNumber} of ${treeSearchMatches.length}`
                         : ""}
@@ -454,15 +456,15 @@ export function EditorWorkspace({
                   </div>
                 </div>
 
-                <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                <p className="text-[13px] font-normal leading-[1.6] text-text-secondary">
                   Click any node to reveal its JSONPath and copy its value.
                 </p>
                 <div
                   ref={setTreeContainerElement}
-                  className="overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] p-3"
+                  className="overflow-x-auto rounded-sm border-[0.5px] border-ui-border bg-obsidian-base p-3"
                 >
                   {treeSearchTerm.trim() && !treeSearchMatches.length ? (
-                    <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-[#3A4060]">
+                    <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-outline-variant">
                       No matches for this search
                     </div>
                   ) : (
@@ -504,12 +506,12 @@ export function EditorWorkspace({
                         setInspectorView("tree");
                         setSelectedPath(match.path);
                       }}
-                      className="w-full rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-3 py-3 text-left transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+                      className="w-full rounded-sm border-[0.5px] border-ui-border bg-obsidian-base px-3 py-3 text-left transition-colors hover:border-ui-border-hover focus-visible:border-copper-accent focus-visible:outline-none"
                     >
                       <p className="font-mono text-[13px] font-normal text-text-primary">
                         {match.path}
                       </p>
-                      <p className="mt-1 text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                      <p className="mt-1 text-[13px] font-normal leading-[1.6] text-text-secondary">
                         {match.preview}
                       </p>
                     </button>
@@ -528,7 +530,7 @@ export function EditorWorkspace({
           <SidebarSection title="Graph View">
             {parseResult?.valid ? (
               <div className="space-y-3">
-                <p className="text-[13px] font-normal leading-[1.6] text-[#8B92A8]">
+                <p className="text-[13px] font-normal leading-[1.6] text-text-secondary">
                   Explore the JSON structure as a node graph. Drag, zoom, and inspect nested
                   relationships.
                 </p>
@@ -544,20 +546,20 @@ export function EditorWorkspace({
           <SidebarSection title="JSONPath">
             {parseResult?.valid ? (
               <div className="space-y-3">
-                <div className="rounded-[6px] border-[0.5px] border-ui-border bg-[#0A0C0F] p-3">
+                <div className="rounded-[6px] border-[0.5px] border-ui-border bg-obsidian-base p-3">
                   <input
                     value={jsonPathQuery}
                     onChange={(event) => setJsonPathQuery(event.target.value)}
                     placeholder="$.store.books[*].title"
-                    className="h-12 w-full rounded-[6px] border-[0.5px] border-[#2A2F42] bg-[#1A1D24] px-3 font-mono text-[13px] text-[#E8EAF0] outline-none placeholder:text-[#5A6070] focus-visible:border-[#C07040]"
+                    className="h-12 w-full rounded-[6px] border-[0.5px] border-ui-border bg-surface-elevated px-3 font-mono text-[13px] text-text-primary outline-none placeholder:text-outline-variant focus-visible:border-copper-accent"
                   />
-                  <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-[#3A4060]">
+                  <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-outline-variant">
                     {jsonPathExamples.map((example, index) => (
                       <React.Fragment key={example}>
                         <button
                           type="button"
                           onClick={() => setJsonPathQuery(example)}
-                          className="font-mono transition-colors hover:text-[#C07040] focus-visible:text-[#C07040] focus-visible:outline-none"
+                          className="font-mono transition-colors hover:text-copper-accent focus-visible:text-copper-accent focus-visible:outline-none"
                         >
                           {example}
                         </button>
@@ -567,7 +569,7 @@ export function EditorWorkspace({
                   </div>
                 </div>
 
-                <div className="rounded-[6px] border-[0.5px] border-ui-border bg-[#0A0C0F] p-3">
+                <div className="rounded-[6px] border-[0.5px] border-ui-border bg-obsidian-base p-3">
                   {jsonPathState.error ? (
                     <div className="rounded-[6px] border-[0.5px] border-[#FF5C6C] bg-[#2A0D10] px-4 py-3">
                       <p className="text-[13px] font-medium text-[#FF5C6C]">
@@ -592,24 +594,24 @@ export function EditorWorkspace({
                               key={match.path}
                               type="button"
                               onClick={() => setSelectedPath(match.path)}
-                              className="block w-full rounded-[6px] border-[0.5px] border-ui-border bg-[#111111] p-3 text-left transition-colors hover:border-[#2A2F42] focus-visible:border-[#C07040] focus-visible:outline-none"
+                              className="block w-full rounded-[6px] border-[0.5px] border-ui-border bg-surface-elevated p-3 text-left transition-colors hover:border-ui-border-hover focus-visible:border-copper-accent focus-visible:outline-none"
                             >
-                              <p className="font-mono text-[13px] text-[#C07040]">{match.path}</p>
+                              <p className="font-mono text-[13px] text-copper-accent">{match.path}</p>
                               <CodePreview
                                 value={JSON.stringify(match.value, null, 2)}
-                                className="mt-2 border-0 bg-transparent p-0 text-[#E8EAF0]"
+                                className="mt-2 border-0 bg-transparent p-0 text-text-primary"
                               />
                             </button>
                           ))}
                         </div>
                       </div>
                     ) : (
-                      <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-[#3A4060]">
+                      <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-outline-variant">
                         No matches for this path
                       </div>
                     )
                   ) : (
-                    <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-[#3A4060]">
+                    <div className="flex min-h-[180px] items-center justify-center text-center text-[13px] text-outline-variant">
                       Enter a JSONPath query to inspect matching values.
                     </div>
                   )}

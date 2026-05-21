@@ -32,7 +32,7 @@ export function WorkspaceActionToolbar({
   onJsonPath: () => void;
 }) {
   return (
-    <div className="flex flex-col gap-3 border-b-[0.5px] border-ui-border bg-[#080808] px-4 py-3 sm:px-5 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
+    <div className="flex flex-col gap-3 border-b-[0.5px] border-ui-border bg-obsidian-base px-4 py-3 sm:px-5 xl:flex-row xl:items-center xl:justify-between xl:gap-4">
       <div className="flex flex-wrap gap-3 xl:shrink-0">
         <ToolbarButton
           icon={<ClipboardPaste className="size-4" />}
@@ -64,45 +64,39 @@ export function WorkspaceActionToolbar({
       </div>
 
       <div className="flex flex-wrap items-center gap-2 text-[13px] font-semibold sm:gap-3 sm:text-[14px] xl:shrink-0">
-        <span className="text-[#4f4743]">Transform:</span>
-        <button
-          className="text-[#d69463] transition-colors hover:text-[#f5f1ea]"
-          onClick={onFormat}
-        >
+        <span className="text-outline-variant">Transform:</span>
+        <button className="text-copper-accent transition-colors hover:text-text-primary" onClick={onFormat}>
           Format
         </button>
-        <span className="text-[#363636]">•</span>
+        <span className="text-outline-variant">•</span>
         <button
-          className="text-[#d6c3b5] transition-colors hover:text-[#f5f1ea]"
+          className="text-on-surface-variant transition-colors hover:text-text-primary"
           onClick={onMinify}
         >
           Minify
         </button>
-        <span className="text-[#363636]">•</span>
+        <span className="text-outline-variant">•</span>
         <button
-          className="text-[#d6c3b5] transition-colors hover:text-[#f5f1ea]"
+          className="text-on-surface-variant transition-colors hover:text-text-primary"
           onClick={onRepair}
         >
           Repair
         </button>
-        <span className="text-[#363636]">•</span>
-        <button
-          className="text-[#d6c3b5] transition-colors hover:text-[#f5f1ea]"
-          onClick={onSort}
-        >
+        <span className="text-outline-variant">•</span>
+        <button className="text-on-surface-variant transition-colors hover:text-text-primary" onClick={onSort}>
           Sort
         </button>
-        <span className="text-[#363636]">•</span>
+        <span className="text-outline-variant">•</span>
         <button
-          className="inline-flex items-center gap-1 text-[#d6c3b5] transition-colors hover:text-[#f5f1ea]"
+          className="inline-flex items-center gap-1 text-on-surface-variant transition-colors hover:text-text-primary"
           onClick={onOpenConverters}
         >
           Convert to
           <ChevronDown className="size-4" />
         </button>
-        <span className="text-[#363636]">•</span>
+        <span className="text-outline-variant">•</span>
         <button
-          className="text-[#d6c3b5] transition-colors hover:text-[#f5f1ea]"
+          className="text-on-surface-variant transition-colors hover:text-text-primary"
           onClick={onJsonPath}
         >
           JSONPath

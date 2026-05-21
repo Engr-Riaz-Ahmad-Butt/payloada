@@ -36,12 +36,12 @@ export function StatTile({
   tone?: "default" | "gold";
 }) {
   return (
-    <div className="rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] px-4 py-4">
-      <p className="text-[10px] font-normal uppercase tracking-[0.5px] text-[#5A6070]">{label}</p>
+    <div className="rounded-sm border-[0.5px] border-ui-border bg-obsidian-base px-4 py-4">
+      <p className="text-[10px] font-normal uppercase tracking-[0.5px] text-outline-variant">{label}</p>
       <p
         className={cn(
           "mt-2 text-[36px] font-semibold leading-none",
-          tone === "gold" ? "text-[#d4b483]" : "text-[#f5f1ea]",
+          tone === "gold" ? "text-gold-number" : "text-text-primary",
         )}
       >
         {value}
