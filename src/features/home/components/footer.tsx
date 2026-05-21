@@ -3,19 +3,41 @@ import Link from "next/link";
 const footerGroups = [
   {
     title: "Tools",
-    links: ["JSON Formatter", "JWT Decoder", "JSON Diff", "JSONPath Finder", "Sensitive Scanner"],
+    links: [
+      { label: "JSON Formatter", href: "/json-formatter" },
+      { label: "JSON Validator", href: "/json-validator" },
+      { label: "JWT Decoder", href: "/jwt-decoder" },
+      { label: "JSON Diff", href: "/json-diff" },
+      { label: "Graph Visualizer", href: "/json-graph-visualizer" },
+    ],
   },
   {
     title: "Converters",
-    links: ["JSON to TypeScript", "JSON to Zod", "JSON to CSV", "JSON to YAML", "JSON to XML"],
+    links: [
+      { label: "JSON to TypeScript", href: "/json-to-typescript" },
+      { label: "JSON to Zod", href: "/zod-schema-generator" },
+      { label: "JSON to CSV", href: "/json-to-csv" },
+      { label: "JSON Schema", href: "/json-schema-generator" },
+      { label: "Mock JSON Generator", href: "/mock-json-generator" },
+    ],
   },
   {
     title: "Resources",
-    links: ["What is JSON?", "Common JSON Errors", "JWT Guide", "JSONPath Guide", "Questions"],
+    links: [
+      { label: "Workspace", href: "/workspace" },
+      { label: "JSON Formatter", href: "/json-formatter" },
+      { label: "JSON Validator", href: "/json-validator" },
+      { label: "JWT Decoder", href: "/jwt-decoder" },
+      { label: "JSON Diff", href: "/json-diff" },
+    ],
   },
   {
     title: "Company",
-    links: ["Privacy", "Terms", "Contact", "GitHub", "Changelog"],
+    links: [
+      { label: "Privacy", href: "/privacy" },
+      { label: "Terms", href: "/terms" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
 ] as const;
 
@@ -94,8 +116,8 @@ export default function Footer() {
               <div className="space-y-3">
                 {group.links.map((link) => (
                   <Link
-                    key={link}
-                    href="#"
+                    key={link.label}
+                    href={link.href}
                     className="block transition-colors hover:text-text-primary"
                     style={{
                       color: "var(--color-on-surface-variant)",
@@ -103,7 +125,7 @@ export default function Footer() {
                       fontSize: "14px",
                     }}
                   >
-                    {link}
+                    {link.label}
                   </Link>
                 ))}
               </div>
