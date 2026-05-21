@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "JSONova Workspace",
+  title: "Payloada Workspace",
 };
 
 export default function WorkspaceLayout({ children }: { children: React.ReactNode }) {

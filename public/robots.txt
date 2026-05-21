@@ -4,4 +4,4 @@ Allow: /
 # Disallow workspace routes from indexing (app content, not landing pages)
 Disallow: /workspace/
 
-Sitemap: https://jsonova.dev/sitemap.xml
+Sitemap: https://payloada.dev/sitemap.xml

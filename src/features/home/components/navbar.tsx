@@ -25,7 +25,7 @@ export default function Navbar() {
             className="text-xl font-black tracking-tight sm:text-2xl"
             style={{ color: "#C07040", fontFamily: "Inter, sans-serif" }}
           >
-            JSONova
+            Payloada
           </span>
 
           <div className="hidden items-center gap-5 lg:flex xl:gap-6">

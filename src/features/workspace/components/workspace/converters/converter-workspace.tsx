@@ -112,7 +112,7 @@ export function ConverterWorkspace({
           />
           <SmallAction
             label="Download"
-            onClick={() => onDownload(output, `jsonova-${converterTab}.txt`)}
+            onClick={() => onDownload(output, `payloada-${converterTab}.txt`)}
           />
           <SmallAction label="Regenerate" onClick={() => toast.success("Output regenerated")} />
           <SmallAction
@@ -302,7 +302,7 @@ function highlightTypeSystemLine(line: string) {
       );
     }
 
-    if (/^[A-Z][A-Za-z0-9_]*$/.test(token) || /^jsonovaRecord$/.test(token)) {
+    if (/^[A-Z][A-Za-z0-9_]*$/.test(token) || /^payloadaRecord$/.test(token)) {
       return (
         <span key={index} style={{ color: "#C07040" }}>
           {token}

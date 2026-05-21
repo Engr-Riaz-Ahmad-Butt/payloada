@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://jsonova.dev";
+  const baseUrl = "https://payloada.dev";
   const toolPages = [
     "json-formatter",
     "json-validator",

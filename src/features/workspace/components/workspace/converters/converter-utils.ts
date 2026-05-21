@@ -33,9 +33,9 @@ export function getConverterOutput(tab: ConverterTab, value: JsonValue | null) {
     case "Schema":
       return JSON.stringify(generateJsonSchema(value), null, 2);
     case "Prisma":
-      return generatePrismaModel("jsonovaRecord", value);
+      return generatePrismaModel("payloadaRecord", value);
     case "Mongoose":
-      return generateMongooseSchema("jsonovaRecord", value);
+      return generateMongooseSchema("payloadaRecord", value);
     default:
       return "";
   }

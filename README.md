@@ -1,6 +1,6 @@
-# JSONova
+# Payloada
 
-JSONova is a modern JSON workspace for developers. It brings editing, validation, diffing, conversion, JWT inspection, AI assistance, graph exploration, mock generation, and table workflows into one privacy-first product.
+Payloada is a modern JSON workspace for developers. It brings editing, validation, diffing, conversion, JWT inspection, AI assistance, graph exploration, mock generation, and table workflows into one privacy-first product.
 
 ## Features
 

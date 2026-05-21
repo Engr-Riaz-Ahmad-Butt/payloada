@@ -54,7 +54,7 @@ export default function FeaturesSection() {
             lineHeight: "26px",
           }}
         >
-          JSONova is more than a beautifier. It brings formatting, decoding, diffing, searching,
+          Payloada is more than a beautifier. It brings formatting, decoding, diffing, searching,
           generation, and safety checks into one focused workflow.
         </p>
       </div>

@@ -136,7 +136,7 @@ function buildSvgFromFlow(rfInstance: ReturnType<typeof useReactFlow>): string |
   <defs><pattern id="dots" x="0" y="0" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="#1f1f1f"/></pattern></defs>
   <rect width="${IMAGE_WIDTH}" height="${IMAGE_HEIGHT}" fill="url(#dots)"/>
   <g transform="translate(${vx},${vy}) scale(${zoom})">${svgEdges}${svgNodes}</g>
-  <text x="${IMAGE_WIDTH - 16}" y="${IMAGE_HEIGHT - 12}" font-family="monospace" font-size="11" fill="#2A2F42" text-anchor="end">JSONova</text>
+  <text x="${IMAGE_WIDTH - 16}" y="${IMAGE_HEIGHT - 12}" font-family="monospace" font-size="11" fill="#2A2F42" text-anchor="end">Payloada</text>
 </svg>`;
 }
 
@@ -196,10 +196,10 @@ function ExportPanel() {
     if (!svg) { toast.error("No graph to export"); return; }
     try {
       if (format === "svg") {
-        downloadSvg(svg, "jsonova-graph.svg");
+        downloadSvg(svg, "payloada-graph.svg");
         toast.success("Graph exported as SVG");
       } else {
-        await downloadPng(svg, "jsonova-graph.png");
+        await downloadPng(svg, "payloada-graph.png");
         toast.success("Graph exported as PNG");
       }
     } catch {

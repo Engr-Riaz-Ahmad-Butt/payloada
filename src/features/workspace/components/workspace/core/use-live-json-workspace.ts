@@ -74,7 +74,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
   const [commandQuery, setCommandQuery] = useState("");
   const [commandIndex, setCommandIndex] = useState(0);
   const [linePosition, setLinePosition] = useState({ line: 1, column: 1 });
-  const [historyItems, setHistoryItems] = useLocalStorage<HistoryItem[]>("jsonova-history", []);
+  const [historyItems, setHistoryItems] = useLocalStorage<HistoryItem[]>("payloada-history", []);
   const [diffOld, setDiffOld] = useState(SAMPLE_DIFF_OLD);
   const [diffNew, setDiffNew] = useState(SAMPLE_DIFF_NEW);
   const [converterTab, setConverterTab] = useState<ConverterTab>(initialConverterTab);
@@ -595,7 +595,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
       case "download":
         handleDownload(
           workspaceView === "converters" ? converterOutput : formattedOutput || source,
-          "jsonova-output.txt",
+          "payloada-output.txt",
         );
         break;
       default:

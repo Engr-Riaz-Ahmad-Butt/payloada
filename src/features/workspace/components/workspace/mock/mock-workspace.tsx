@@ -57,7 +57,7 @@ const NAMES = [
   "Kevin Bacon", "Laura Croft", "Michael Scott", "Nancy Drew", "Oscar Wilde"
 ];
 
-const DOMAINS = ["example.com", "testmail.org", "jsonova.dev", "company.net", "services.io"];
+const DOMAINS = ["example.com", "testmail.org", "payloada.dev", "company.net", "services.io"];
 const STATUSES = ["pending", "success", "failed", "active", "inactive"];
 
 function generateFakeValue(type: FieldType): string | number | boolean {

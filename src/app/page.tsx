@@ -19,7 +19,7 @@ const useCases = [
 
 const faqs = [
   [
-    "Is JSONova free to use?",
+    "Is Payloada free to use?",
     "Yes. The core formatting, diffing, decoding, and inspection workflow is available without signup.",
   ],
   [
@@ -28,7 +28,7 @@ const faqs = [
   ],
   [
     "Can I decode JWTs and compare JSON in one product?",
-    "Yes. JSONova combines formatter, JWT decoder, diff workspace, converters, and validation in one flow.",
+    "Yes. Payloada combines formatter, JWT decoder, diff workspace, converters, and validation in one flow.",
   ],
   [
     "Can I generate TypeScript from JSON?",
@@ -37,7 +37,7 @@ const faqs = [
 ] as const;
 
 const comparisons = [
-  ["Formatter only", "JSONova workspace"],
+  ["Formatter only", "Payloada workspace"],
   ["One action per page", "Multiple developer workflows together"],
   ["Little privacy messaging", "Local-first and privacy-forward"],
   ["Raw output only", "Readable summaries and guided inspection"],
@@ -123,7 +123,7 @@ export default function Home() {
                 className="mt-4"
                 style={{ color: "var(--color-text-secondary)", fontSize: "15px", lineHeight: "28px" }}
               >
-                JSONova is designed for payloads that developers actually care about. Formatting,
+                Payloada is designed for payloads that developers actually care about. Formatting,
                 validation, tree exploration, JWT decoding, diffing, and generation all happen in a
                 privacy-first workspace without forcing you through signup.
               </p>
@@ -253,7 +253,7 @@ export default function Home() {
                 className="mt-4"
                 style={{ color: "var(--color-text-secondary)", fontSize: "15px", lineHeight: "28px" }}
               >
-                JSONova combines JSON formatting, JWT decoding, JSON diffing, type generation,
+                Payloada combines JSON formatting, JWT decoding, JSON diffing, type generation,
                 search, and safety checks in one modern workspace. That makes it easier to
                 understand for users and clearer for search engines too.
               </p>

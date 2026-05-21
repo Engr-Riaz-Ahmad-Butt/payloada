@@ -18,8 +18,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://jsonova.dev"),
-  title: "JSONova - The modern JSON workspace for developers",
+  metadataBase: new URL("https://payloada.dev"),
+  title: "Payloada - The modern JSON workspace for developers",
   description:
     "Format JSON, decode JWTs, compare payloads, and generate developer-ready outputs in a fast, privacy-first workspace.",
   keywords: [
@@ -41,16 +41,16 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Riaz Ahmad Butt" }],
   openGraph: {
-    title: "JSONova - The modern JSON workspace for developers",
+    title: "Payloada - The modern JSON workspace for developers",
     description: "Format, validate, decode, and compare JSON in a fast, privacy-first workspace.",
     type: "website",
-    url: "https://jsonova.dev",
-    siteName: "JSONova",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "JSONova" }],
+    url: "https://payloada.dev",
+    siteName: "Payloada",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Payloada" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "JSONova - The modern JSON workspace for developers",
+    title: "Payloada - The modern JSON workspace for developers",
     description: "Format, validate, decode, and compare JSON in a fast, privacy-first workspace.",
     creator: "@riazahmadbutt",
     images: ["/opengraph-image"],
@@ -63,13 +63,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <Script
-          id="jsonova-theme-init"
+          id="payloada-theme-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('jsonova-theme');var v=t?JSON.parse(t):'dark';document.documentElement.classList.remove('dark','light');document.documentElement.classList.add(v);}catch(e){}})()`,
+            __html: `(function(){try{var t=localStorage.getItem('payloada-theme');var v=t?JSON.parse(t):'dark';document.documentElement.classList.remove('dark','light');document.documentElement.classList.add(v);}catch(e){}})()`,
           }}
         />
       </head>

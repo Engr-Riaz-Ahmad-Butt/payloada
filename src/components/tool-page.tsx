@@ -41,7 +41,7 @@ export function ToolPage({ title, subtitle, description, faqs, children }: ToolP
               href="/"
               className="text-sm text-text-tertiary transition-colors hover:text-brand"
             >
-              Back to JSONova
+              Back to Payloada
             </Link>
             <h1 className="mt-3 text-3xl font-semibold tracking-[-0.02em] text-text-primary">
               {title}

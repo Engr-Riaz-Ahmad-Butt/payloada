@@ -34,7 +34,7 @@ export default function Footer() {
                 fontWeight: 800,
               }}
             >
-              JSONova
+              Payloada
             </h2>
             <p
               className="mt-4"
@@ -117,7 +117,7 @@ export default function Footer() {
           className="mx-auto flex w-full max-w-300 flex-col gap-3 px-4 py-4 text-center sm:px-6 md:flex-row md:items-center md:justify-between md:px-8 md:text-left"
           style={{ fontFamily: "JetBrains Mono, monospace", fontSize: "12px", lineHeight: "18px" }}
         >
-          <span style={{ color: "var(--color-text-secondary)" }}>© 2026 JSONova. All rights reserved.</span>
+          <span style={{ color: "var(--color-text-secondary)" }}>© 2026 Payloada. All rights reserved.</span>
           <div className="flex flex-wrap items-center gap-4" style={{ color: "var(--color-text-secondary)" }}>
             <span>Local-only processing</span>
             <span>No signup required</span>

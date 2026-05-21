@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "JSONova - The modern JSON workspace for developers";
+export const alt = "Payloada - The modern JSON workspace for developers";
 export const size = {
   width: 1200,
   height: 630,
@@ -26,7 +26,7 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ fontSize: 82, fontWeight: 700, letterSpacing: "-2px" }}>
-          JSON<span style={{ color: "#C07040" }}>ova</span>
+          Payload<span style={{ color: "#C07040" }}>a</span>
         </div>
         <div style={{ marginTop: 18, fontSize: 30, color: "#8B92A8" }}>
           The modern JSON workspace for developers

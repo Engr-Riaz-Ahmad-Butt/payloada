@@ -1,10 +1,18 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 
 export type Theme = "dark" | "light";
 
-const STORAGE_KEY = "jsonova-theme";
+const STORAGE_KEY = "payloada-theme";
+const THEME_EVENT = "payloada-theme-change";
 
 interface ThemeContextType {
   theme: Theme;
@@ -16,50 +24,83 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Always default to "dark" during hydration to perfectly match server render
-  const [theme, setThemeState] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? (JSON.parse(raw) as string) : null;
+function readStoredTheme(): Theme {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored) as Theme;
       if (parsed === "dark" || parsed === "light") {
-        setThemeState(parsed);
+        return parsed;
       }
-    } catch {}
-    setMounted(true);
-  }, []);
+    }
+  } catch {
+    // Ignore invalid localStorage data.
+  }
+
+  return "dark";
+}
+
+function subscribe(onStoreChange: () => void) {
+  const handleStorage = () => onStoreChange();
+  const handleThemeEvent = () => onStoreChange();
+
+  window.addEventListener("storage", handleStorage);
+  window.addEventListener(THEME_EVENT, handleThemeEvent);
+
+  return () => {
+    window.removeEventListener("storage", handleStorage);
+    window.removeEventListener(THEME_EVENT, handleThemeEvent);
+  };
+}
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const theme = useSyncExternalStore(
+    subscribe,
+    readStoredTheme,
+    () => "dark" as Theme,
+  );
 
   useEffect(() => {
-    if (!mounted) return;
-    document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(theme);
+    const root = document.documentElement;
+    root.classList.remove("dark", "light");
+    root.classList.add(theme);
+
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(theme));
-    } catch {}
-  }, [theme, mounted]);
+    } catch {
+      // Ignore write failures.
+    }
+  }, [theme]);
 
-  const toggle = () => setThemeState((t) => (t === "dark" ? "light" : "dark"));
+  const setTheme = useCallback((value: Theme | ((current: Theme) => Theme)) => {
+    const current = readStoredTheme();
+    const next = typeof value === "function" ? value(current) : value;
 
-  const setTheme = (value: Theme | ((current: Theme) => Theme)) => {
-    setThemeState((t) => (typeof value === "function" ? value(t) : value));
-  };
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Ignore write failures.
+    }
 
-  const contextValue: ThemeContextType = {
-    theme,
-    setTheme,
-    toggle,
-    isDark: theme === "dark",
-    monacoTheme: theme === "dark" ? "vs-dark" : "vs",
-  };
+    window.dispatchEvent(new Event(THEME_EVENT));
+  }, []);
 
-  return (
-    <ThemeContext.Provider value={contextValue}>
-      {children}
-    </ThemeContext.Provider>
+  const toggle = useCallback(() => {
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
+  }, [setTheme]);
+
+  const contextValue = useMemo<ThemeContextType>(
+    () => ({
+      theme,
+      setTheme,
+      toggle,
+      isDark: theme === "dark",
+      monacoTheme: theme === "dark" ? "vs-dark" : "vs",
+    }),
+    [setTheme, theme, toggle],
   );
+
+  return <ThemeContext.Provider value={contextValue}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

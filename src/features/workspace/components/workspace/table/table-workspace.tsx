@@ -159,7 +159,7 @@ export function TableWorkspace({
         })
         .join(","),
     );
-    onDownload([header, ...csvRows].join("\n"), "jsonova-table.csv");
+    onDownload([header, ...csvRows].join("\n"), "payloada-table.csv");
   }
 
   function copyRowJson(row: FlatRow) {

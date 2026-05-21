@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ── JSONova Design Tokens ── */
+/* ── Payloada Design Tokens ── */
 @theme {
   /* Colors */
   --color-obsidian-base: #080808;
