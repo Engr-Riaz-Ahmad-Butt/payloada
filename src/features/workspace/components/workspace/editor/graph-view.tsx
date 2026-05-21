@@ -5,37 +5,27 @@ import dynamic from "next/dynamic";
 
 import type { JsonValue } from "../core/types";
 
-// ---------------------------------------------------------------------------
-// Lazy-load the heavy React Flow bundle — only downloaded when the graph opens.
-// ---------------------------------------------------------------------------
-
 const ReactFlowGraph = dynamic(
   () => import("./graph-view-inner").then((mod) => ({ default: mod.ReactFlowGraph })),
   {
     ssr: false,
     loading: () => (
-      <div className="flex h-[26rem] items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] sm:h-[32rem] xl:h-130">
+      <div className="flex h-[26rem] items-center justify-center rounded-sm border-[0.5px] border-ui-border bg-obsidian-base sm:h-[32rem] xl:h-130">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#1E2433] border-t-[#C07040]" />
-          <p className="font-mono text-[12px] text-[#5A6070]">Loading graph…</p>
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-ui-border border-t-copper-accent" />
+          <p className="font-mono text-[12px] text-text-secondary">Loading graph...</p>
         </div>
       </div>
     ),
   },
 );
 
-// ---------------------------------------------------------------------------
-// Build the raw node tree — imported lazily to avoid bundling buildFullTree
-// in the server bundle unnecessarily. We import it here (not in inner) so
-// the graph shape is computed once in the parent before passing down.
-// ---------------------------------------------------------------------------
-
-// Inline a lightweight version of buildFullTree here so it doesn't create
-// a circular dependency with graph-view-inner.
 function previewVal(value: JsonValue): string {
   if (value === null) return "null";
   if (typeof value === "boolean") return value ? "true" : "false";
-  if (typeof value === "string") return value.length > 24 ? `"${value.slice(0, 24)}…"` : `"${value}"`;
+  if (typeof value === "string") {
+    return value.length > 24 ? `"${value.slice(0, 24)}..."` : `"${value}"`;
+  }
   if (typeof value === "number") return String(value);
   return "";
 }
@@ -77,8 +67,8 @@ function buildRawNodes(value: JsonValue): RawGraphNode[] {
     const subtitle = isArray
       ? `Array(${current.length})`
       : isObject
-      ? `Object(${childCount} keys)`
-      : previewVal(current);
+        ? `Object(${childCount} keys)`
+        : previewVal(current);
 
     nodes.push({
       id,
@@ -107,10 +97,6 @@ function buildRawNodes(value: JsonValue): RawGraphNode[] {
   visit(value, "root", 0, "root", null);
   return nodes;
 }
-
-// ---------------------------------------------------------------------------
-// Public component
-// ---------------------------------------------------------------------------
 
 export function JsonGraphView({ value }: { value: JsonValue }) {
   const rawNodes = useMemo(() => buildRawNodes(value), [value]);

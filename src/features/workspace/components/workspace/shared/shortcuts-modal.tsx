@@ -29,7 +29,7 @@ const SHORTCUT_COLUMNS = [
     items: [
       ["Ctrl + C", "Copy (on node = copy node JSON)"],
       ["Ctrl + Shift + C", "Copy JSON path"],
-      ["Ctrl + Shift + S", "Share — generate link"],
+      ["Ctrl + Shift + S", "Share - generate link"],
     ],
   },
 ] as const;
@@ -44,17 +44,17 @@ export function ShortcutsModal({ onClose }: { onClose: () => void }) {
       aria-labelledby="keyboard-shortcuts-title"
     >
       <div
-        className="mx-auto mt-[10vh] w-full max-w-[520px] rounded-[16px] border-[0.5px] border-[#2A2F42] bg-[#13161E]"
+        className="mx-auto mt-[10vh] w-full max-w-[520px] rounded-[16px] border-[0.5px] border-ui-border bg-surface"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b-[0.5px] border-ui-border px-5 py-4">
-          <h2 id="keyboard-shortcuts-title" className="text-[16px] font-semibold text-[#E8EAF0]">
+          <h2 id="keyboard-shortcuts-title" className="text-[16px] font-semibold text-text-primary">
             Keyboard shortcuts
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-[6px] border-[0.5px] border-[#2A2F42] bg-[#1A1D24] p-2 text-[#8B92A8] transition-colors hover:border-[#C07040] hover:text-[#E8EAF0] focus-visible:border-[#C07040] focus-visible:outline-none"
+            className="rounded-[6px] border-[0.5px] border-ui-border bg-surface-elevated p-2 text-text-secondary transition-colors hover:border-copper-accent hover:text-text-primary focus-visible:border-copper-accent focus-visible:outline-none"
             aria-label="Close keyboard shortcuts"
           >
             <X className="size-4" />
@@ -64,16 +64,16 @@ export function ShortcutsModal({ onClose }: { onClose: () => void }) {
         <div className="grid gap-5 px-5 py-5 md:grid-cols-3">
           {SHORTCUT_COLUMNS.map((column) => (
             <div key={column.title}>
-              <p className="mb-3 text-[11px] font-medium tracking-[0.03em] text-[#5A6070]">
+              <p className="mb-3 text-[11px] font-medium tracking-[0.03em] text-text-secondary">
                 {column.title}
               </p>
               <div className="space-y-2.5">
                 {column.items.map(([shortcut, label]) => (
                   <div key={shortcut} className="space-y-1">
-                    <span className="inline-flex rounded-[4px] border-[0.5px] border-[#2A2F42] bg-[#1A1D24] px-[6px] py-[2px] font-mono text-[10px] text-[#8B92A8]">
+                    <span className="inline-flex rounded-[4px] border-[0.5px] border-ui-border bg-surface-elevated px-[6px] py-[2px] font-mono text-[10px] text-text-secondary">
                       {shortcut}
                     </span>
-                    <p className="text-[12px] font-normal leading-[1.5] text-[#8B92A8]">{label}</p>
+                    <p className="text-[12px] font-normal leading-[1.5] text-text-secondary">{label}</p>
                   </div>
                 ))}
               </div>

@@ -42,8 +42,7 @@ export function DiffWorkspace({
   onDownload: (content: string, filename: string) => void;
 }) {
   const { monacoTheme, isDark } = useTheme();
-  const isDesktopDiff = useMediaQuery("(min-width: 1024px)");
-  const isWideSidebar = useMediaQuery("(min-width: 1536px)");
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [syncScrolling, setSyncScrolling] = useState(true);
   const [ignoreWhitespace, setIgnoreWhitespace] = useState(false);
   const originalEditorRef = useRef<DiffPaneEditor | null>(null);
@@ -190,8 +189,30 @@ export function DiffWorkspace({
       ? `${item.kind}-${item.raw}`
       : `${item.kind}-${item.raw.path}`;
 
+  const summaryPanel = (
+    <SidebarSection title="Diff summary">
+      {summary ? (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            {statCards.map((card) => (
+              <DiffStatCard key={card.label} {...card} />
+            ))}
+          </div>
+          <div className="space-y-2">
+            {detailItems.map((item) => (
+              <DiffDetailItem key={detailItemKey(item)} item={item} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <SidebarEmpty text="Add original and updated JSON to compare changes." />
+      )}
+    </SidebarSection>
+  );
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-obsidian-base">
+      {/* Toolbar */}
       <div className="flex flex-col gap-4 border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 text-[14px] font-medium text-text-primary">
@@ -261,118 +282,44 @@ export function DiffWorkspace({
         </div>
       </div>
 
-      <div
-        className={cn(
-          "min-h-0 flex-1",
-          isWideSidebar ? "grid 2xl:grid-cols-[minmax(0,1fr)_320px]" : "flex flex-col",
-        )}
-      >
-        <div className={cn("min-h-0", isWideSidebar ? "border-r-[0.5px] border-ui-border" : "")}>
-          {isDesktopDiff ? (
-            <div className="flex h-full min-h-0 flex-col">
-              <div className="flex border-b-[0.5px] border-ui-border bg-surface-elevated font-mono text-[13px] font-normal text-on-surface-variant">
-                <div className="w-1/2 border-r-[0.5px] border-ui-border px-4 py-3 sm:px-5">
-                  Original JSON (prod-config-v1.json)
-                </div>
-                <div className="w-1/2 px-4 py-3 sm:px-5">Modified JSON (prod-config-v2.json)</div>
+      {/* Desktop layout: editors left, summary sidebar right */}
+      {isDesktop ? (
+        <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1fr)_300px] xl:grid-cols-[minmax(0,1fr)_320px]">
+          {/* Editors pane */}
+          <div className="flex min-h-0 flex-col border-r-[0.5px] border-ui-border">
+            <div className="flex border-b-[0.5px] border-ui-border bg-surface-elevated font-mono text-[13px] font-normal text-on-surface-variant">
+              <div className="w-1/2 border-r-[0.5px] border-ui-border px-4 py-3 sm:px-5">
+                Original JSON (prod-config-v1.json)
               </div>
-
-              <div className="flex h-[420px] flex-row md:h-[520px] xl:h-[620px] 2xl:h-[calc(100vh-240px)]">
-                <div className="flex min-h-0 w-1/2 flex-col overflow-hidden border-r-[0.5px] border-ui-border bg-obsidian-base">
-                  <div className="flex-1 overflow-hidden">
-                    <MonacoEditor
-                      height="100%"
-                      language="json"
-                      theme={monacoTheme}
-                      value={diffOld}
-                      onChange={(value) => setDiffOld(value ?? "")}
-                      onMount={(editor) => {
-                        originalEditorRef.current = editor as unknown as DiffPaneEditor;
-                        applyDecorations();
-                      }}
-                      options={{
-                        automaticLayout: true,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        lineNumbers: (lineNumber: number) =>
-                          removedLineSet.has(lineNumber) ? `-${lineNumber}` : `${lineNumber}`,
-                        lineNumbersMinChars: 4,
-                        lineDecorationsWidth: 12,
-                        glyphMargin: false,
-                        wordWrap: "off",
-                        padding: { top: 20, bottom: 20 },
-                        fontSize: 15,
-                        lineHeight: 28,
-                        tabSize: 2,
-                        fontFamily: "var(--font-mono)",
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex min-h-0 w-1/2 flex-col overflow-hidden bg-obsidian-base">
-                  <div className="flex-1 overflow-hidden">
-                    <MonacoEditor
-                      height="100%"
-                      language="json"
-                      theme={monacoTheme}
-                      value={diffNew}
-                      onChange={(value) => setDiffNew(value ?? "")}
-                      onMount={(editor) => {
-                        modifiedEditorRef.current = editor as unknown as DiffPaneEditor;
-                        applyDecorations();
-                      }}
-                      options={{
-                        automaticLayout: true,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        lineNumbers: (lineNumber: number) =>
-                          addedLineSet.has(lineNumber) ? `+${lineNumber}` : `${lineNumber}`,
-                        lineNumbersMinChars: 4,
-                        lineDecorationsWidth: 12,
-                        glyphMargin: false,
-                        wordWrap: "off",
-                        padding: { top: 20, bottom: 20 },
-                        fontSize: 15,
-                        lineHeight: 28,
-                        tabSize: 2,
-                        fontFamily: "var(--font-mono)",
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
+              <div className="w-1/2 px-4 py-3 sm:px-5">Modified JSON (prod-config-v2.json)</div>
             </div>
-          ) : (
-            <div className="space-y-4 bg-obsidian-base px-3 py-4 sm:px-4">
-              {summary ? (
-                <div className="grid grid-cols-2 gap-3">
-                  {statCards.map((card) => (
-                    <DiffStatCard key={card.label} {...card} />
-                  ))}
-                </div>
-              ) : null}
 
-              <div className="overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base">
-                <div className="border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[13px] font-normal text-on-surface-variant">
-                  Original JSON (prod-config-v1.json)
-                </div>
-                <div className="h-[260px]">
+            <div className="flex min-h-0 flex-1 flex-row">
+              <div className="flex min-h-0 w-1/2 flex-col overflow-hidden border-r-[0.5px] border-ui-border bg-obsidian-base">
+                <div className="flex-1 overflow-hidden">
                   <MonacoEditor
                     height="100%"
                     language="json"
                     theme={monacoTheme}
                     value={diffOld}
                     onChange={(value) => setDiffOld(value ?? "")}
+                    onMount={(editor) => {
+                      originalEditorRef.current = editor as unknown as DiffPaneEditor;
+                      applyDecorations();
+                    }}
                     options={{
                       automaticLayout: true,
                       minimap: { enabled: false },
                       scrollBeyondLastLine: false,
-                      lineNumbers: "on",
-                      wordWrap: "on",
-                      padding: { top: 14, bottom: 14 },
-                      fontSize: 13,
-                      lineHeight: 24,
+                      lineNumbers: (lineNumber: number) =>
+                        removedLineSet.has(lineNumber) ? `-${lineNumber}` : `${lineNumber}`,
+                      lineNumbersMinChars: 4,
+                      lineDecorationsWidth: 12,
+                      glyphMargin: false,
+                      wordWrap: "off",
+                      padding: { top: 20, bottom: 20 },
+                      fontSize: 14,
+                      lineHeight: 26,
                       tabSize: 2,
                       fontFamily: "var(--font-mono)",
                     }}
@@ -380,98 +327,117 @@ export function DiffWorkspace({
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base">
-                <div className="border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[13px] font-normal text-on-surface-variant">
-                  Modified JSON (prod-config-v2.json)
-                </div>
-                <div className="h-[260px]">
+              <div className="flex min-h-0 w-1/2 flex-col overflow-hidden bg-obsidian-base">
+                <div className="flex-1 overflow-hidden">
                   <MonacoEditor
                     height="100%"
                     language="json"
                     theme={monacoTheme}
                     value={diffNew}
                     onChange={(value) => setDiffNew(value ?? "")}
+                    onMount={(editor) => {
+                      modifiedEditorRef.current = editor as unknown as DiffPaneEditor;
+                      applyDecorations();
+                    }}
                     options={{
                       automaticLayout: true,
                       minimap: { enabled: false },
                       scrollBeyondLastLine: false,
-                      lineNumbers: "on",
-                      wordWrap: "on",
-                      padding: { top: 14, bottom: 14 },
-                      fontSize: 13,
-                      lineHeight: 24,
+                      lineNumbers: (lineNumber: number) =>
+                        addedLineSet.has(lineNumber) ? `+${lineNumber}` : `${lineNumber}`,
+                      lineNumbersMinChars: 4,
+                      lineDecorationsWidth: 12,
+                      glyphMargin: false,
+                      wordWrap: "off",
+                      padding: { top: 20, bottom: 20 },
+                      fontSize: 14,
+                      lineHeight: 26,
                       tabSize: 2,
                       fontFamily: "var(--font-mono)",
                     }}
                   />
                 </div>
               </div>
+            </div>
+          </div>
 
-              <div className="rounded-sm border-[0.5px] border-ui-border bg-surface-elevated">
-                <SidebarSection title="Diff details">
-                  {detailItems.length > 0 ? (
-                    <div className="space-y-2">
-                      {detailItems.map((item) => (
-                        <DiffDetailItem key={detailItemKey(item)} item={item} />
-                      ))}
-                    </div>
-                  ) : (
-                    <SidebarEmpty text="Add original and updated JSON to compare changes." />
-                  )}
-                </SidebarSection>
+          {/* Summary sidebar */}
+          <aside className="min-h-0 overflow-y-auto bg-surface-elevated">
+            {summaryPanel}
+          </aside>
+        </div>
+      ) : (
+        /* Mobile layout: stacked */
+        <div className="flex-1 overflow-y-auto">
+          <div className="space-y-4 bg-obsidian-base px-3 py-4 sm:px-4">
+            {summary ? (
+              <div className="grid grid-cols-2 gap-3">
+                {statCards.map((card) => (
+                  <DiffStatCard key={card.label} {...card} />
+                ))}
+              </div>
+            ) : null}
+
+            <div className="overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base">
+              <div className="border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[13px] font-normal text-on-surface-variant">
+                Original JSON (prod-config-v1.json)
+              </div>
+              <div className="h-[260px]">
+                <MonacoEditor
+                  height="100%"
+                  language="json"
+                  theme={monacoTheme}
+                  value={diffOld}
+                  onChange={(value) => setDiffOld(value ?? "")}
+                  options={{
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    lineNumbers: "on",
+                    wordWrap: "on",
+                    padding: { top: 14, bottom: 14 },
+                    fontSize: 13,
+                    lineHeight: 24,
+                    tabSize: 2,
+                    fontFamily: "var(--font-mono)",
+                  }}
+                />
               </div>
             </div>
-          )}
-        </div>
 
-        {isWideSidebar ? (
-          <aside className="min-h-0 overflow-y-auto bg-surface-elevated">
-            <SidebarSection title="Diff summary">
-              {summary ? (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-3">
-                    {statCards.map((card) => (
-                      <DiffStatCard key={card.label} {...card} />
-                    ))}
-                  </div>
-
-                  <div className="space-y-2">
-                    {detailItems.map((item) => (
-                      <DiffDetailItem key={detailItemKey(item)} item={item} />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <SidebarEmpty text="Add original and updated JSON to compare changes." />
-              )}
-            </SidebarSection>
-          </aside>
-        ) : null}
-      </div>
-
-      {!isWideSidebar && isDesktopDiff ? (
-        <div className="border-t-[0.5px] border-ui-border bg-surface-elevated">
-          <SidebarSection title="Diff summary">
-            {summary ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-                  {statCards.map((card) => (
-                    <DiffStatCard key={card.label} {...card} />
-                  ))}
-                </div>
-
-                <div className="space-y-2">
-                  {detailItems.map((item) => (
-                    <DiffDetailItem key={detailItemKey(item)} item={item} />
-                  ))}
-                </div>
+            <div className="overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base">
+              <div className="border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 font-mono text-[13px] font-normal text-on-surface-variant">
+                Modified JSON (prod-config-v2.json)
               </div>
-            ) : (
-              <SidebarEmpty text="Add original and updated JSON to compare changes." />
-            )}
-          </SidebarSection>
+              <div className="h-[260px]">
+                <MonacoEditor
+                  height="100%"
+                  language="json"
+                  theme={monacoTheme}
+                  value={diffNew}
+                  onChange={(value) => setDiffNew(value ?? "")}
+                  options={{
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    lineNumbers: "on",
+                    wordWrap: "on",
+                    padding: { top: 14, bottom: 14 },
+                    fontSize: 13,
+                    lineHeight: 24,
+                    tabSize: 2,
+                    fontFamily: "var(--font-mono)",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-sm border-[0.5px] border-ui-border bg-surface-elevated">
+              {summaryPanel}
+            </div>
+          </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }
