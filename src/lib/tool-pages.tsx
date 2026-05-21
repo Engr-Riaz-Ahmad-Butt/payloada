@@ -9,12 +9,16 @@ import type {
 } from "@/features/workspace/components/workspace/core/types";
 
 type ToolPageConfig = {
+  slug: string;
   metadataTitle: string;
   metadataDescription: string;
   title: string;
   subtitle: string;
   description: readonly string[];
   faqs: ReadonlyArray<{ q: string; a: string }>;
+  useCases?: readonly string[];
+  examples?: ReadonlyArray<{ title: string; input: string; outcome: string }>;
+  relatedTools?: ReadonlyArray<{ href: string; label: string; description: string }>;
   workspaceView: WorkspaceView;
   inspectorView?: InspectorView;
   converterTab?: ConverterTab;
@@ -24,6 +28,20 @@ export function createToolMetadata(config: ToolPageConfig): Metadata {
   return {
     title: config.metadataTitle,
     description: config.metadataDescription,
+    alternates: {
+      canonical: `/${config.slug}`,
+    },
+    openGraph: {
+      title: config.metadataTitle,
+      description: config.metadataDescription,
+      url: `https://payloada.dev/${config.slug}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: config.metadataTitle,
+      description: config.metadataDescription,
+    },
   };
 }
 
@@ -34,6 +52,9 @@ export function renderToolPage(config: ToolPageConfig) {
       subtitle={config.subtitle}
       description={config.description}
       faqs={config.faqs}
+      useCases={config.useCases}
+      examples={config.examples}
+      relatedTools={config.relatedTools}
     >
       <LiveJsonWorkspace
         initialWorkspaceView={config.workspaceView}
@@ -51,8 +72,42 @@ const sharedFaqs = {
   },
 };
 
+const sharedRelatedTools = {
+  formatter: {
+    href: "/json-formatter",
+    label: "JSON formatter",
+    description: "Beautify raw payloads before validating, diffing, or exporting them.",
+  },
+  validator: {
+    href: "/json-validator",
+    label: "JSON validator",
+    description: "Catch syntax errors and line-level parse failures before continuing the workflow.",
+  },
+  jwt: {
+    href: "/jwt-decoder",
+    label: "JWT decoder",
+    description: "Inspect token headers, claims, expiry, and signature state in one place.",
+  },
+  diff: {
+    href: "/json-diff",
+    label: "JSON diff",
+    description: "Compare original and modified payloads side by side with semantic summaries.",
+  },
+  typescript: {
+    href: "/json-to-typescript",
+    label: "JSON to TypeScript",
+    description: "Turn a validated payload into clean TypeScript interfaces without leaving the workspace.",
+  },
+  zod: {
+    href: "/zod-schema-generator",
+    label: "JSON to Zod",
+    description: "Generate runtime-safe Zod schemas from the same JSON example.",
+  },
+} as const;
+
 export const TOOL_PAGES = {
   formatter: {
+    slug: "json-formatter",
     metadataTitle: "JSON Formatter & Beautifier Online - Free | Payloada",
     metadataDescription:
       "Format and beautify JSON instantly with a privacy-first editor, real validation, and readable output.",
@@ -61,6 +116,32 @@ export const TOOL_PAGES = {
     description: [
       "A good JSON formatter does more than add whitespace. It helps developers spot shape problems, understand nested payloads, and move between minified API output and readable structure without losing context. Payloada keeps formatting inside a real workspace, so after beautifying the payload you can keep validating, searching, converting, or exporting it in the same place.",
       "Unlike lightweight formatter-only sites, Payloada also shows parser errors, document stats, tree inspection, graph view, JSONPath, and developer-oriented follow-up actions. That makes it useful when you are debugging responses, preparing examples for documentation, or cleaning payloads before converting them into TypeScript or schema output.",
+    ],
+    useCases: [
+      "Beautify minified API responses before sharing them in tickets, docs, or Slack threads.",
+      "Reformat example payloads so frontend and backend teams can inspect nested objects quickly.",
+      "Clean JSON copied from logs or browser devtools before converting it into TypeScript, Zod, or CSV output.",
+      "Move from formatting into tree view, JSONPath, or diff without pasting the same payload again.",
+    ],
+    examples: [
+      {
+        title: "Minified API response",
+        input: '{"status":"ok","data":{"users":[{"id":1,"name":"Ava"}]}}',
+        outcome:
+          "Readable indentation, visible nesting, and a better starting point for validation or debugging.",
+      },
+      {
+        title: "Log payload cleanup",
+        input: '{"event":"checkout","meta":{"region":"us","items":3}}',
+        outcome:
+          "A cleaner payload you can review in tree view or copy into an issue without losing structure.",
+      },
+      {
+        title: "Prepare for code generation",
+        input: '{"user_id":42,"email":"dev@example.com","active":true}',
+        outcome:
+          "Formatted JSON that is easier to trust before generating TypeScript interfaces or schemas.",
+      },
     ],
     faqs: [
       {
@@ -77,10 +158,16 @@ export const TOOL_PAGES = {
         a: "Yes. Large JSON is parsed with a worker-backed flow so the UI stays responsive.",
       },
     ],
+    relatedTools: [
+      sharedRelatedTools.validator,
+      sharedRelatedTools.diff,
+      sharedRelatedTools.typescript,
+    ],
     workspaceView: "editor" as WorkspaceView,
     inspectorView: "formatted" as InspectorView,
   },
   validator: {
+    slug: "json-validator",
     metadataTitle: "JSON Validator Online - Free | Payloada",
     metadataDescription:
       "Validate JSON instantly, find exact syntax errors, and inspect structure in a privacy-first workspace.",
@@ -90,6 +177,32 @@ export const TOOL_PAGES = {
     description: [
       "JSON validation is most useful when the tool tells you exactly what is wrong and what to do next. Payloada highlights parse failures, points to line and column positions, and keeps the payload available for repair, formatting, inspection, or AI-assisted explanation after validation. That makes it practical for debugging real API responses instead of only checking whether a document is technically valid.",
       "The validator view also benefits from the rest of the workspace: stats, tree exploration, sensitive-field detection, JSONPath, and converters. Instead of pasting the same payload into multiple disconnected tools, you can validate once and continue the rest of the workflow from there.",
+    ],
+    useCases: [
+      "Check pasted API responses before sending them to teammates or using them as test fixtures.",
+      "Find exact line and column failures in malformed JSON copied from logs, webhooks, or docs.",
+      "Validate payloads before generating TypeScript, Zod, Prisma, or CSV output.",
+      "Repair common mistakes like trailing commas without losing the rest of your workflow context.",
+    ],
+    examples: [
+      {
+        title: "Trailing comma error",
+        input: '{"name":"Ava","roles":["admin",],}',
+        outcome:
+          "A clear parse error with the broken line and column so you can fix the JSON immediately.",
+      },
+      {
+        title: "Broken quote in logs",
+        input: '{"status":"ok","message":"User "signed in""}',
+        outcome:
+          "Fast feedback that explains why the JSON is invalid instead of silently failing.",
+      },
+      {
+        title: "Pre-conversion validation",
+        input: '{"id":1,"email":"dev@example.com","active":true}',
+        outcome:
+          "Confidence that the payload is valid before turning it into code or schema output.",
+      },
     ],
     faqs: [
       {
@@ -106,10 +219,16 @@ export const TOOL_PAGES = {
         a: "Yes. It is designed for real developer payloads, including large nested responses.",
       },
     ],
+    relatedTools: [
+      sharedRelatedTools.formatter,
+      sharedRelatedTools.diff,
+      sharedRelatedTools.typescript,
+    ],
     workspaceView: "editor" as WorkspaceView,
     inspectorView: "status" as InspectorView,
   },
   jwt: {
+    slug: "jwt-decoder",
     metadataTitle: "JWT Decoder & Verifier Online - Free | Payloada",
     metadataDescription:
       "Decode JWT tokens, inspect claims, and verify HS256 signatures in a cleaner developer workspace.",
@@ -119,6 +238,32 @@ export const TOOL_PAGES = {
     description: [
       "JWT decoding is most useful when the token is presented in a way that is easy to trust. Payloada separates header, payload, signature, and claims clearly, shows expiry information, and brings signature state to the top of the decoded panel instead of hiding it in a small status chip. That makes it easier to see whether a token is valid, expired, unverified, or potentially unsafe.",
       "Because JWT debugging often happens in the middle of API work, the decoder lives inside the same product as formatting, diffing, validation, and converters. Teams can inspect a token, return to the editor, and continue working on related JSON payloads without switching tools.",
+    ],
+    useCases: [
+      "Decode access tokens during authentication debugging without sending them to a third-party service.",
+      "Check expiry claims before investigating why a session or API request failed.",
+      "Verify HS256 signatures locally when you have the matching shared secret.",
+      "Inspect custom claims while staying in the same workspace as the rest of your JSON debugging flow.",
+    ],
+    examples: [
+      {
+        title: "Check token expiry",
+        input: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+        outcome:
+          "A readable header and payload view with issued and expiry state surfaced clearly.",
+      },
+      {
+        title: "Verify a shared-secret token",
+        input: "HS256 token + secret",
+        outcome:
+          "An explicit verified or invalid signature banner instead of a subtle status chip.",
+      },
+      {
+        title: "Inspect custom claims",
+        input: '{"sub":"42","role":"admin","org":"acme"}',
+        outcome:
+          "Standard claims stand out from custom claims, making the token easier to review.",
+      },
     ],
     faqs: [
       {
@@ -135,9 +280,15 @@ export const TOOL_PAGES = {
         a: "No. JWT decoding and verification happen locally in the workspace.",
       },
     ],
+    relatedTools: [
+      sharedRelatedTools.validator,
+      sharedRelatedTools.formatter,
+      sharedRelatedTools.diff,
+    ],
     workspaceView: "jwt" as WorkspaceView,
   },
   diff: {
+    slug: "json-diff",
     metadataTitle: "JSON Diff Tool - Compare Two JSON Files | Payloada",
     metadataDescription:
       "Compare two JSON payloads side by side with summary cards, readable changes, and export actions.",
@@ -166,6 +317,7 @@ export const TOOL_PAGES = {
     workspaceView: "diff" as WorkspaceView,
   },
   typescript: {
+    slug: "json-to-typescript",
     metadataTitle: "JSON to TypeScript Interface Generator | Payloada",
     metadataDescription:
       "Generate TypeScript interfaces from JSON with readable output and converter-focused workflow.",
@@ -195,6 +347,7 @@ export const TOOL_PAGES = {
     converterTab: "TypeScript" as ConverterTab,
   },
   zod: {
+    slug: "zod-schema-generator",
     metadataTitle: "JSON to Zod Schema Generator | Payloada",
     metadataDescription:
       "Generate Zod schemas from JSON with a converter workspace built for modern TypeScript apps.",
@@ -224,6 +377,7 @@ export const TOOL_PAGES = {
     converterTab: "Zod" as ConverterTab,
   },
   graph: {
+    slug: "json-graph-visualizer",
     metadataTitle: "JSON Graph Visualizer - Visual JSON Explorer | Payloada",
     metadataDescription:
       "Visualize JSON as an interactive node graph with layout controls inside a developer-focused workspace.",
@@ -253,6 +407,7 @@ export const TOOL_PAGES = {
     inspectorView: "graph" as InspectorView,
   },
   csv: {
+    slug: "json-to-csv",
     metadataTitle: "JSON to CSV Converter Online - Free | Payloada",
     metadataDescription:
       "Convert arrays of JSON objects into CSV with clear feedback and a converter-focused workflow.",
@@ -282,6 +437,7 @@ export const TOOL_PAGES = {
     converterTab: "CSV" as ConverterTab,
   },
   schema: {
+    slug: "json-schema-generator",
     metadataTitle: "JSON Schema Generator (Draft-07) | Payloada",
     metadataDescription:
       "Generate JSON Schema from example payloads with readable output and converter-focused tooling.",
@@ -311,6 +467,7 @@ export const TOOL_PAGES = {
     converterTab: "Schema" as ConverterTab,
   },
   mock: {
+    slug: "mock-json-generator",
     metadataTitle: "Mock JSON Generator - Generate Fake JSON Data | Payloada",
     metadataDescription:
       "Generate realistic mock JSON from a sample object and send it back into the editor instantly.",

@@ -6,15 +6,39 @@ type FaqItem = {
   a: string;
 };
 
+type ExampleItem = {
+  title: string;
+  input: string;
+  outcome: string;
+};
+
+type RelatedTool = {
+  href: string;
+  label: string;
+  description: string;
+};
+
 type ToolPageProps = {
   title: string;
   subtitle: string;
   description: readonly string[];
   faqs: readonly FaqItem[];
+  useCases?: readonly string[];
+  examples?: readonly ExampleItem[];
+  relatedTools?: readonly RelatedTool[];
   children: ReactNode;
 };
 
-export function ToolPage({ title, subtitle, description, faqs, children }: ToolPageProps) {
+export function ToolPage({
+  title,
+  subtitle,
+  description,
+  faqs,
+  useCases,
+  examples,
+  relatedTools,
+  children,
+}: ToolPageProps) {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -65,6 +89,52 @@ export function ToolPage({ title, subtitle, description, faqs, children }: ToolP
             ))}
           </div>
 
+          {useCases?.length ? (
+            <div className="mt-12">
+              <h2 className="text-2xl font-semibold tracking-[-0.02em] text-text-primary">
+                Common use cases
+              </h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {useCases.map((useCase) => (
+                  <div
+                    key={useCase}
+                    className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5"
+                  >
+                    <p className="text-sm leading-7 text-text-secondary">{useCase}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {examples?.length ? (
+            <div className="mt-12">
+              <h2 className="text-2xl font-semibold tracking-[-0.02em] text-text-primary">
+                Practical examples
+              </h2>
+              <div className="mt-6 grid gap-4 lg:grid-cols-3">
+                {examples.map((example) => (
+                  <div
+                    key={example.title}
+                    className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5"
+                  >
+                    <h3 className="text-base font-medium text-text-primary">{example.title}</h3>
+                    <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.06em] text-text-tertiary">
+                      Example input
+                    </p>
+                    <code className="mt-2 block rounded-md border-[0.5px] border-ui-border bg-obsidian-base px-3 py-2 font-mono text-[11px] leading-6 text-copper-accent">
+                      {example.input}
+                    </code>
+                    <p className="mt-3 text-[11px] font-medium uppercase tracking-[0.06em] text-text-tertiary">
+                      What you get
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-text-secondary">{example.outcome}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
           <div className="mt-12">
             <h2 className="text-2xl font-semibold tracking-[-0.02em] text-text-primary">
               Frequently asked questions
@@ -81,6 +151,28 @@ export function ToolPage({ title, subtitle, description, faqs, children }: ToolP
               ))}
             </div>
           </div>
+
+          {relatedTools?.length ? (
+            <div className="mt-12">
+              <h2 className="text-2xl font-semibold tracking-[-0.02em] text-text-primary">
+                Related tools
+              </h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-3">
+                {relatedTools.map((tool) => (
+                  <Link
+                    key={tool.href}
+                    href={tool.href}
+                    className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5 transition-colors hover:border-copper-accent/40"
+                  >
+                    <h3 className="text-base font-medium text-text-primary">{tool.label}</h3>
+                    <p className="mt-2 text-sm leading-6 text-text-secondary">
+                      {tool.description}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </section>
       </main>
     </>
