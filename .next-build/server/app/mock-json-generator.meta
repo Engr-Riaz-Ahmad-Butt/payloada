@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(tools)/layout,_N_T_/(tools)/mock-json-generator/layout,_N_T_/(tools)/mock-json-generator/page,_N_T_/mock-json-generator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHRvb2xzKQ/mock-json-generator/__PAGE__",
+    "/!KHRvb2xzKQ/mock-json-generator",
+    "/!KHRvb2xzKQ",
+    "/_index",
+    "/_head"
+  ]
+}

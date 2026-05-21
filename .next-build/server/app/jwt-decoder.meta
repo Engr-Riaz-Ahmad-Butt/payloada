@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(tools)/layout,_N_T_/(tools)/jwt-decoder/layout,_N_T_/(tools)/jwt-decoder/page,_N_T_/jwt-decoder"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHRvb2xzKQ/jwt-decoder/__PAGE__",
+    "/!KHRvb2xzKQ/jwt-decoder",
+    "/!KHRvb2xzKQ",
+    "/_index",
+    "/_head"
+  ]
+}

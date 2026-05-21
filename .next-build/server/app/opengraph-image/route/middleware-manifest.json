@@ -1,0 +1,55 @@
+{
+  "sorted_middleware": [
+    "/opengraph-image/route"
+  ],
+  "middleware": {},
+  "instrumentation": null,
+  "functions": {
+    "/opengraph-image/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "required-server-files.js",
+        "server/server-reference-manifest.js",
+        "server/app/opengraph-image/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_opengraph-image_route_actions_064c5ks.js",
+        "server/edge/chunks/node_modules_next_dist_esm_00.h.6o._.js",
+        "server/edge/chunks/[root-of-the-server]__0rvdglp._.js",
+        "server/edge/chunks/node_modules_next_dist_compiled_@vercel_og_11csqje._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_09n.ghm.js"
+      ],
+      "name": "app/opengraph-image/route",
+      "page": "/opengraph-image/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_09n.ghm.js",
+      "matchers": [
+        {
+          "regexp": "^/opengraph-image(?:/)?$",
+          "originalSource": "/opengraph-image"
+        }
+      ],
+      "wasm": [
+        {
+          "name": "wasm_10a187050363648b49a36c79d5266d2c",
+          "filePath": "server/edge/chunks/node_modules_next_dist_compiled_@vercel_og_yoga_0656eb_.wasm"
+        },
+        {
+          "name": "wasm_151b7f7b511bd6dda63695d2c75c87a3",
+          "filePath": "server/edge/chunks/node_modules_next_dist_compiled_@vercel_og_resvg_0656eb_.wasm"
+        }
+      ],
+      "assets": [
+        {
+          "name": "server/edge/assets/Geist-Regular.01xk7kbsv57y-.ttf",
+          "filePath": "server/edge/assets/Geist-Regular.01xk7kbsv57y-.ttf"
+        }
+      ],
+      "env": {
+        "__NEXT_BUILD_ID": "3k8bXaYW4Jhpg-AfBce93",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "PeH3TCE4tWmhVqigqY+H0xJhvmOKQtmgQAQAuKSqe0I=",
+        "__NEXT_PREVIEW_MODE_ID": "3e054dcd197dc7d41c8b048004a89576",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "a6888339bada4b8770a84e8b48bb22ce1276d447e902019d66b8a85d09f8783c",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "11b290e80ccc25d0cbdcf70e3811224c07d4b79a0ea719addeedf02e73fe2701"
+      }
+    }
+  }
+}

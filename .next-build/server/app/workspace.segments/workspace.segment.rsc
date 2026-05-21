@@ -1,0 +1,6 @@
+1:I[39756,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"LoadingBoundaryProvider"]
+2:"$Sreact.fragment"
+3:I[39756,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
+4:I[72041,["/_next/static/chunks/0~97upud7gkay.js","/_next/static/chunks/0x8bq1b_x5ttv.js"],"default"]
+5:I[37457,["/_next/static/chunks/01xlw8hd842-c.js","/_next/static/chunks/0d3shmwh5_nmn.js"],"default"]
+0:{"rsc":["$","$L1",null,{"loading":[["$","div","l",{"className":"flex h-screen w-full items-center justify-center bg-[#080808] text-[#d9c2b6]","children":["$","div",null,{"className":"flex flex-col items-center gap-4","children":[["$","div",null,{"className":"size-10 animate-spin rounded-full border-2 border-[#C07040] border-t-transparent"}],["$","p",null,{"className":"font-mono text-sm tracking-[0.02em]","children":"Initializing terminal..."}]]}]}],[],[]],"children":["$","$2","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$4","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/_next/static/chunks/0x8bq1b_x5ttv.js","async":true}]],"template":["$","$L5",null,{}]}]]}]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"3k8bXaYW4Jhpg-AfBce93"}

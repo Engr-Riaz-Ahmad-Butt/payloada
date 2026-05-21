@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(tools)/layout,_N_T_/(tools)/json-graph-visualizer/layout,_N_T_/(tools)/json-graph-visualizer/page,_N_T_/json-graph-visualizer"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHRvb2xzKQ/json-graph-visualizer/__PAGE__",
+    "/!KHRvb2xzKQ/json-graph-visualizer",
+    "/!KHRvb2xzKQ",
+    "/_index",
+    "/_head"
+  ]
+}

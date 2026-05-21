@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(tools)/layout,_N_T_/(tools)/json-validator/layout,_N_T_/(tools)/json-validator/page,_N_T_/json-validator"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHRvb2xzKQ/json-validator/__PAGE__",
+    "/!KHRvb2xzKQ/json-validator",
+    "/!KHRvb2xzKQ",
+    "/_index",
+    "/_head"
+  ]
+}

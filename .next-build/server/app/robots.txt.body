@@ -1,0 +1,6 @@
+User-Agent: *
+Allow: /
+Disallow: /workspace/
+Disallow: /api/
+
+Sitemap: https://payloada.dev/sitemap.xml

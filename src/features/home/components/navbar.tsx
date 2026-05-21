@@ -1,16 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, CircleUserRound, Menu, Moon, Sun, X } from "lucide-react";
+import { Menu, Moon, Sun, X } from "lucide-react";
 import { useState } from "react";
 
 import { useTheme } from "@/hooks/use-theme";
 
 const navLinks = [
-  { label: "Workspace", href: "#", active: true },
-  { label: "Tools", href: "#" },
-  { label: "API", href: "#" },
-  { label: "Docs", href: "#" },
+  { label: "Workspace", href: "/workspace", active: true },
 ];
 
 export default function Navbar() {
@@ -57,17 +54,6 @@ export default function Navbar() {
           >
             {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
           </button>
-          <button
-            className="rounded px-3 py-2 text-xs font-semibold tracking-[0.04em] text-white transition-all hover:brightness-110 active:scale-90 sm:px-4"
-            style={{ backgroundColor: "#C07040" }}
-            type="button"
-          >
-            Deploy
-          </button>
-          <div className="ml-1 hidden items-center gap-2 text-on-surface-variant lg:flex">
-            <Bell className="size-5 cursor-pointer transition-colors hover:text-text-primary" />
-            <CircleUserRound className="size-5 cursor-pointer transition-colors hover:text-text-primary" />
-          </div>
         </div>
 
         <button
@@ -95,28 +81,15 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr_auto_auto] sm:items-center">
-              <button
-                type="button"
-                onClick={toggle}
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                title={isDark ? "Light mode" : "Dark mode"}
-                className="inline-flex h-11 items-center justify-center rounded-sm border border-ui-border bg-surface-elevated text-on-surface-variant transition-colors hover:border-ui-border-hover hover:text-text-primary"
-              >
-                {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
-              </button>
-              <button
-                className="rounded-sm px-4 py-3 text-sm font-semibold tracking-[0.02em] text-white transition-all hover:brightness-110"
-                type="button"
-                style={{ backgroundColor: "#C07040" }}
-              >
-                Deploy
-              </button>
-              <div className="flex items-center gap-3 text-on-surface-variant sm:justify-end">
-                <Bell className="size-5" />
-                <CircleUserRound className="size-5" />
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              title={isDark ? "Light mode" : "Dark mode"}
+              className="inline-flex h-11 items-center justify-center rounded-sm border border-ui-border bg-surface-elevated text-on-surface-variant transition-colors hover:border-ui-border-hover hover:text-text-primary"
+            >
+              {isDark ? <Sun className="size-5" /> : <Moon className="size-5" />}
+            </button>
           </div>
         </div>
       ) : null}

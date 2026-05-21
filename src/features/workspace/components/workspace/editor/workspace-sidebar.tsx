@@ -1,6 +1,6 @@
 "use client";
 
-import { Braces, ChevronLeft, ChevronRight, HelpCircle, Plus, Settings } from "lucide-react";
+import { Braces, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -143,32 +143,6 @@ export function WorkspaceSidebar({
         })}
       </nav>
 
-      <div
-        className={cn(
-          "hidden border-t-[0.5px] border-ui-border pt-6 xl:mt-8 xl:block",
-          isCollapsed ? "xl:space-y-2" : "xl:space-y-1.5",
-        )}
-      >
-        {[
-          { label: "Settings", icon: Settings },
-          { label: "Support", icon: HelpCircle },
-        ].map(({ label, icon: Icon }) => (
-          <button
-            key={label}
-            type="button"
-            title={label}
-            className="group relative flex w-full items-center gap-4 rounded-sm px-4 py-3 text-left text-on-surface-variant transition-all duration-300 ease-out hover:bg-surface-container-low hover:text-text-primary"
-          >
-            <Icon className="size-5" />
-            {!isCollapsed ? <span className="text-[15px] font-medium">{label}</span> : null}
-            {isCollapsed ? (
-              <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-md border-[0.5px] border-ui-border bg-surface-container-low px-3 py-2 text-xs font-semibold text-text-primary group-hover:flex">
-                {label}
-              </span>
-            ) : null}
-          </button>
-        ))}
-      </div>
     </aside>
   );
 }

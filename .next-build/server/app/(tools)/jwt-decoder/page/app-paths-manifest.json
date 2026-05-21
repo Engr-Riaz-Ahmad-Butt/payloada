@@ -1,0 +1,3 @@
+{
+  "/(tools)/jwt-decoder/page": "app/(tools)/jwt-decoder/page.js"
+}
