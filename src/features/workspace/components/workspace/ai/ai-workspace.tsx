@@ -1,26 +1,18 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowDownToLine, Copy, Cpu, RotateCcw, Send } from "lucide-react";
+import { ArrowDownToLine, Copy, RotateCcw, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 
 type AiTask = "explain" | "fix" | "query" | "generate";
 
-type AiState =
-  | { status: "idle" }
-  | { status: "loading" }
-  | { status: "done"; result: string; remaining: number }
-  | {
-      status: "error";
-      message: string;
-      code?: string;
-      retryAfter?: number;
-      provider?: string;
-      model?: string;
-      upstreamMessage?: string;
-    };
+type ChatMsg =
+  | { id: string; role: "user"; content: string; task: AiTask }
+  | { id: string; role: "assistant"; content: string; task: AiTask; json: string | null; jsonPath: string | null }
+  | { id: string; role: "loading" }
+  | { id: string; role: "error"; message: string; code?: string; retryAfter?: number };
 
 type AiApiResponse = {
   result?: string;
@@ -33,37 +25,36 @@ type AiApiResponse = {
   upstreamMessage?: string;
 };
 
-const TABS: { id: AiTask; label: string }[] = [
-  { id: "explain", label: "Explain" },
-  { id: "fix", label: "Fix" },
-  { id: "query", label: "Query" },
-  { id: "generate", label: "Generate" },
-];
+let _uid = 0;
+const uid = () => String(++_uid);
 
-const QUICK_ACTIONS: { task: AiTask; label: string; question?: string }[] = [
-  { task: "explain", label: "Explain this JSON" },
-  { task: "fix", label: "Fix all errors" },
-  {
-    task: "query",
-    label: "Find sensitive fields",
-    question: "Find all fields that look like passwords, tokens, API keys, or secrets",
-  },
-  { task: "generate", label: "Generate 5 similar records", question: "5 realistic records" },
-];
+const TASKS: AiTask[] = ["explain", "fix", "query", "generate"];
 
-const TAB_HINTS: Record<AiTask, string> = {
-  explain: "Get a plain-English breakdown of your JSON - structure, fields, and purpose.",
-  fix: "Detect and repair invalid JSON, or flag type mismatches and naming issues.",
-  query: "Ask a natural-language question - get the matching data and its JSONPath.",
-  generate: "Create realistic mock records that mirror your current JSON structure.",
+const TASK_LABEL: Record<AiTask, string> = {
+  explain: "Explain",
+  fix: "Fix",
+  query: "Query",
+  generate: "Generate",
 };
 
 const PLACEHOLDERS: Record<AiTask, string> = {
-  explain: "Ask anything about this JSON...",
-  fix: "Describe what to improve, or just press send...",
+  explain: "Ask anything about this JSON…",
+  fix: "Describe what to fix, or press send…",
   query: "e.g. Find all users where active is true",
   generate: "e.g. 10 records with varied statuses",
 };
+
+const SUGGESTIONS = [
+  { task: "explain" as AiTask, label: "Explain this JSON", icon: "📖", q: undefined as string | undefined },
+  { task: "fix" as AiTask, label: "Fix all errors", icon: "🔧", q: undefined as string | undefined },
+  {
+    task: "query" as AiTask,
+    label: "Find sensitive fields",
+    icon: "🔍",
+    q: "Find all fields that look like passwords, tokens, API keys, or secrets",
+  },
+  { task: "generate" as AiTask, label: "Generate 5 similar records", icon: "✨", q: "5 realistic records" },
+];
 
 export function AiWorkspace({
   source,
@@ -74,411 +65,372 @@ export function AiWorkspace({
   onSendToEditor: (json: string) => void;
   onCopy: (value: string, message?: string) => Promise<void>;
 }) {
-  const [activeTab, setActiveTab] = useState<AiTask>("explain");
-  const [question, setQuestion] = useState("");
-  const [aiState, setAiState] = useState<AiState>({ status: "idle" });
+  const [msgs, setMsgs] = useState<ChatMsg[]>([]);
+  const [task, setTask] = useState<AiTask>("explain");
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
-  const [retryCountdown, setRetryCountdown] = useState(0);
+  const [countdown, setCountdown] = useState(0);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
   const hasJson = source.trim().length > 0;
-  const showRemaining = remaining !== null && remaining >= 0 && remaining <= 10;
 
   useEffect(() => {
-    if (retryCountdown <= 0) {
-      return;
-    }
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs]);
 
-    const timer = window.setInterval(() => {
-      setRetryCountdown((current) => (current > 1 ? current - 1 : 0));
-    }, 1000);
+  useEffect(() => {
+    if (countdown <= 0) return;
+    const t = setInterval(() => setCountdown((c) => (c > 1 ? c - 1 : 0)), 1000);
+    return () => clearInterval(t);
+  }, [countdown]);
 
-    return () => window.clearInterval(timer);
-  }, [retryCountdown]);
-
-  function resetPanel() {
-    setAiState({ status: "idle" });
-    setQuestion("");
-    setRetryCountdown(0);
-  }
-
-  async function runTask(task: AiTask, overrideQuestion?: string) {
+  async function send(t: AiTask, q?: string) {
     if (!hasJson) {
       toast.error("Paste JSON in the Editor first");
       return;
     }
 
-    const q = overrideQuestion ?? (question.trim() || undefined);
-    setAiState({ status: "loading" });
+    const content = q ?? input.trim();
+    setInput("");
+    setLoading(true);
+
+    const loadId = uid();
+    setMsgs((p) => [
+      ...p,
+      { id: uid(), role: "user", content: content || TASK_LABEL[t], task: t },
+      { id: loadId, role: "loading" },
+    ]);
 
     try {
       const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task, json: source, question: q }),
+        body: JSON.stringify({ task: t, json: source, question: content || undefined }),
       });
 
       const data = (await res.json()) as AiApiResponse;
+      if (data.remaining !== undefined) setRemaining(data.remaining);
 
       if (!res.ok) {
-        setRetryCountdown(data.retryAfter ?? 0);
-        setAiState({
-          status: "error",
-          message: data.error ?? "Something went wrong",
-          code: data.code,
-          retryAfter: data.retryAfter,
-          provider: data.provider,
-          model: data.model,
-          upstreamMessage: data.upstreamMessage,
-        });
+        setCountdown(data.retryAfter ?? 0);
+        setMsgs((p) =>
+          p.map((m) =>
+            m.id === loadId
+              ? {
+                  id: loadId,
+                  role: "error" as const,
+                  message: data.error ?? "Something went wrong",
+                  code: data.code,
+                  retryAfter: data.retryAfter,
+                }
+              : m,
+          ),
+        );
         return;
       }
 
-      if (data.remaining !== undefined) {
-        setRemaining(data.remaining);
-      }
-
-      setRetryCountdown(0);
-      setAiState({
-        status: "done",
-        result: data.result ?? "",
-        remaining: data.remaining ?? 0,
-      });
+      const result = data.result ?? "";
+      setMsgs((p) =>
+        p.map((m) =>
+          m.id === loadId
+            ? {
+                id: loadId,
+                role: "assistant" as const,
+                content: result,
+                task: t,
+                json: extractFirstJsonBlock(result),
+                jsonPath: extractJsonPath(result),
+              }
+            : m,
+        ),
+      );
+      setCountdown(0);
     } catch {
-      setRetryCountdown(0);
-      setAiState({
-        status: "error",
-        message: "Could not reach the AI service. Check your connection.",
-      });
+      setMsgs((p) =>
+        p.map((m) =>
+          m.id === loadId
+            ? { id: loadId, role: "error" as const, message: "Could not reach the AI service." }
+            : m,
+        ),
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
-  function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    void runTask(activeTab);
+  function clearChat() {
+    setMsgs([]);
+    setCountdown(0);
+    setLoading(false);
   }
 
-  const doneResult = aiState.status === "done" ? aiState.result : null;
-  const extractedJson = doneResult ? extractFirstJsonBlock(doneResult) : null;
-  const extractedJsonPath = doneResult ? extractJsonPath(doneResult) : null;
-
   return (
-    <div className="flex h-full min-h-0 flex-col bg-obsidian-base">
+    <div className="flex h-full flex-col bg-obsidian-base">
+      {/* Header */}
       <div className="flex shrink-0 items-center justify-between border-b-[0.5px] border-ui-border bg-surface/60 px-4 py-3 sm:px-5">
-        <div className="flex items-center gap-2">
-          <Cpu className="size-4 text-copper-accent" />
-          <h2 className="text-[14px] font-medium text-text-primary">AI Assistant</h2>
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-copper-accent/15">
+            <Sparkles className="size-3.5 text-copper-accent" />
+          </div>
+          <span className="text-[14px] font-semibold text-text-primary">AI Assistant</span>
           <span className="rounded-full border-[0.5px] border-copper-accent/30 bg-copper-accent/10 px-2 py-0.5 text-[10px] font-medium text-copper-accent">
             Beta
           </span>
         </div>
-        {showRemaining ? (
-          <span className="text-[11px] text-text-secondary">{remaining} of 10 free today</span>
-        ) : null}
+        <div className="flex items-center gap-3">
+          {remaining !== null && remaining <= 10 && (
+            <span className="text-[11px] text-text-secondary">{remaining}/10 today</span>
+          )}
+          {msgs.length > 0 && (
+            <button
+              type="button"
+              onClick={clearChat}
+              className="flex items-center gap-1 text-[11px] text-text-secondary transition-colors hover:text-text-primary"
+            >
+              <RotateCcw className="size-3" />
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="flex shrink-0 border-b-[0.5px] border-ui-border">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => {
-              setActiveTab(tab.id);
-              resetPanel();
-            }}
-            className={cn(
-              "flex-1 py-2.5 text-[12px] font-medium transition-colors",
-              activeTab === tab.id
-                ? "border-b-2 border-copper-accent text-text-primary"
-                : "text-text-secondary hover:text-text-primary",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      {/* Chat messages */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
         {!hasJson ? (
           <EmptyNoJson />
-        ) : aiState.status === "idle" ? (
-          <IdleState
-            activeTab={activeTab}
-            onQuickAction={(action) => void runTask(action.task, action.question)}
-          />
-        ) : aiState.status === "loading" ? (
-          <LoadingState />
-        ) : aiState.status === "error" ? (
-          <ErrorState
-            message={aiState.message}
-            code={aiState.code}
-            retryAfter={retryCountdown}
-            provider={aiState.provider}
-            model={aiState.model}
-            upstreamMessage={aiState.upstreamMessage}
-            onRetry={retryCountdown > 0 ? undefined : () => void runTask(activeTab)}
-          />
+        ) : msgs.length === 0 ? (
+          <WelcomeScreen onSuggest={(s) => void send(s.task, s.q)} />
         ) : (
-          <ResultState
-            result={aiState.result}
-            activeTab={activeTab}
-            onReset={resetPanel}
-            onCopy={() => void onCopy(aiState.result, "Copied AI response")}
-            onCopyJsonPath={
-              extractedJsonPath && activeTab === "query"
-                ? () => void onCopy(extractedJsonPath, "Copied JSONPath")
-                : undefined
-            }
-            onSendToEditor={
-              extractedJson && (activeTab === "fix" || activeTab === "generate")
-                ? () => {
-                    onSendToEditor(extractedJson);
-                    resetPanel();
-                  }
-                : undefined
-            }
-          />
+          <div className="flex flex-col gap-5 px-4 py-5 sm:px-5">
+            {msgs.map((m) => {
+              if (m.role === "user") {
+                return (
+                  <div key={m.id} className="flex justify-end">
+                    <div className="max-w-[82%] rounded-2xl rounded-tr-sm border-[0.5px] border-ui-border bg-surface-container-high px-4 py-3">
+                      <p className="text-[13px] leading-relaxed text-text-primary">{m.content}</p>
+                      <p className="mt-1.5 text-right text-[10px] font-medium uppercase tracking-wider text-copper-accent/60">
+                        {TASK_LABEL[m.task]}
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (m.role === "loading") {
+                return (
+                  <div key={m.id} className="flex items-start gap-2.5">
+                    <AiAvatar />
+                    <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border-[0.5px] border-ui-border bg-surface-elevated px-4 py-4">
+                      {[0, 1, 2].map((i) => (
+                        <span
+                          key={i}
+                          className="h-1.5 w-1.5 rounded-full bg-copper-accent"
+                          style={{ animation: `dot-b 1.2s ease-in-out ${i * 0.15}s infinite` }}
+                        />
+                      ))}
+                      <style>{`@keyframes dot-b{0%,80%,100%{opacity:.2;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}`}</style>
+                    </div>
+                  </div>
+                );
+              }
+
+              if (m.role === "error") {
+                return (
+                  <div key={m.id} className="flex items-start gap-2.5">
+                    <AiAvatar error />
+                    <div className="max-w-[82%] rounded-2xl rounded-tl-sm border-[0.5px] border-red-500/20 bg-red-500/5 px-4 py-3">
+                      <p className="text-[12px] font-semibold text-red-500 dark:text-red-400">Error</p>
+                      <p className="mt-1 text-[12px] leading-relaxed text-text-secondary">{m.message}</p>
+                      {countdown > 0 ? (
+                        <p className="mt-2 text-[11px] text-text-secondary">Retry in {countdown}s</p>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => void send(task)}
+                          className="mt-2 text-[11px] font-medium text-copper-accent transition-opacity hover:opacity-75"
+                        >
+                          Try again →
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+
+              if (m.role === "assistant") {
+                return (
+                  <div key={m.id} className="flex items-start gap-2.5">
+                    <AiAvatar />
+                    <div className="min-w-0 flex-1">
+                      <div className="rounded-2xl rounded-tl-sm border-[0.5px] border-ui-border bg-surface-elevated px-4 py-4">
+                        <RenderedResponse text={m.content} />
+                      </div>
+                      <div className="mt-2 flex flex-wrap items-center gap-1.5 pl-0.5">
+                        <MsgBtn onClick={() => void onCopy(m.content, "Copied response")}>
+                          <Copy className="size-3" /> Copy
+                        </MsgBtn>
+                        {m.jsonPath && m.task === "query" && (
+                          <MsgBtn onClick={() => void onCopy(m.jsonPath!, "Copied JSONPath")} accent>
+                            <Copy className="size-3" /> Copy JSONPath
+                          </MsgBtn>
+                        )}
+                        {m.json && (m.task === "fix" || m.task === "generate") && (
+                          <MsgBtn onClick={() => onSendToEditor(m.json!)} green>
+                            <ArrowDownToLine className="size-3" />
+                            {m.task === "generate" ? "Use in editor" : "Send to editor"}
+                          </MsgBtn>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return null;
+            })}
+            <div ref={bottomRef} />
+          </div>
         )}
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="shrink-0 border-t-[0.5px] border-ui-border bg-surface-container px-4 py-3 sm:px-5"
-      >
-        <div className="flex gap-2">
+      {/* Input bar */}
+      <div className="shrink-0 border-t-[0.5px] border-ui-border bg-surface px-4 py-3 sm:px-5">
+        {/* Task chips */}
+        <div className="mb-2.5 flex gap-1.5 overflow-x-auto pb-0.5">
+          {TASKS.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTask(t)}
+              className={cn(
+                "shrink-0 rounded-full border-[0.5px] px-3 py-1 text-[11px] font-medium transition-colors",
+                task === t
+                  ? "border-copper-accent bg-copper-accent/15 text-copper-accent"
+                  : "border-ui-border bg-surface-elevated text-text-secondary hover:border-ui-border-hover hover:text-text-primary",
+              )}
+            >
+              {TASK_LABEL[t]}
+            </button>
+          ))}
+        </div>
+
+        {/* Input row */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void send(task);
+          }}
+          className="flex gap-2"
+        >
           <input
             ref={inputRef}
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            placeholder={PLACEHOLDERS[activeTab]}
-            disabled={aiState.status === "loading" || retryCountdown > 0}
-            className="h-9 min-w-0 flex-1 rounded-md border-[0.5px] border-ui-border bg-obsidian-base px-3 text-[13px] text-text-primary outline-none placeholder:text-text-secondary/50 focus-visible:border-copper-accent disabled:opacity-50"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={PLACEHOLDERS[task]}
+            disabled={loading || countdown > 0 || !hasJson}
+            className="h-10 min-w-0 flex-1 rounded-xl border-[0.5px] border-ui-border bg-obsidian-base px-4 text-[13px] text-text-primary outline-none placeholder:text-text-secondary/50 transition-colors focus-visible:border-copper-accent disabled:opacity-50"
           />
           <button
             type="submit"
-            disabled={aiState.status === "loading" || !hasJson || retryCountdown > 0}
-            aria-label="Send"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-copper-accent text-white transition-colors hover:bg-copper-accent/90 disabled:opacity-40 focus-visible:outline-none"
+            disabled={loading || !hasJson || countdown > 0}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-copper-accent text-white transition-all hover:bg-copper-accent/85 disabled:opacity-40 focus-visible:outline-none"
           >
-            <Send className="size-3.5" />
+            <Send className="size-4" />
           </button>
-        </div>
-        <p className="mt-2 text-[10px] leading-normal text-text-secondary/75">
-          Queries are processed by Gemini. Do not send passwords, private keys, or personal
-          data.
+        </form>
+
+        <p className="mt-2 text-[10px] text-text-secondary/60">
+          Powered by Gemini · Don&apos;t share passwords or private keys
         </p>
-      </form>
+      </div>
     </div>
+  );
+}
+
+function AiAvatar({ error = false }: { error?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
+        error ? "bg-red-500/15" : "bg-copper-accent/15",
+      )}
+    >
+      <Sparkles className={cn("size-3.5", error ? "text-red-500 dark:text-red-400" : "text-copper-accent")} />
+    </div>
+  );
+}
+
+function MsgBtn({
+  children,
+  onClick,
+  accent,
+  green,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  accent?: boolean;
+  green?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "flex items-center gap-1 rounded-md border-[0.5px] px-2.5 py-1 text-[10px] font-medium transition-colors hover:opacity-80",
+        accent
+          ? "border-copper-accent/30 bg-copper-accent/10 text-copper-accent"
+          : green
+            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+            : "border-ui-border bg-surface-elevated text-text-secondary hover:text-text-primary",
+      )}
+    >
+      {children}
+    </button>
   );
 }
 
 function EmptyNoJson() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-elevated">
-        <Cpu className="size-6 text-text-secondary" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-elevated">
+        <Sparkles className="size-6 text-text-secondary" />
       </div>
       <div>
-        <p className="text-[15px] font-medium text-text-secondary">No JSON loaded</p>
-        <p className="mt-1.5 text-[13px] leading-[1.6] text-text-secondary/75">
-          Paste or upload JSON in the Editor, then return here to analyze it.
+        <p className="text-[15px] font-semibold text-text-primary">No JSON loaded</p>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary">
+          Paste or upload JSON in the Editor first.
         </p>
       </div>
     </div>
   );
 }
 
-function IdleState({
-  activeTab,
-  onQuickAction,
-}: {
-  activeTab: AiTask;
-  onQuickAction: (action: (typeof QUICK_ACTIONS)[number]) => void;
-}) {
-  const visibleActions = QUICK_ACTIONS.filter((action) =>
-    activeTab === "explain"
-      ? action.task === "explain" || action.task === "query"
-      : action.task === activeTab,
-  );
-
+function WelcomeScreen({ onSuggest }: { onSuggest: (s: (typeof SUGGESTIONS)[number]) => void }) {
   return (
-    <div className="flex flex-1 flex-col gap-5 p-4 sm:p-5">
-      <p className="text-[13px] leading-[1.6] text-text-secondary">{TAB_HINTS[activeTab]}</p>
-
-      <div>
-        <p className="mb-2.5 text-[11px] font-medium uppercase tracking-[0.06em] text-text-secondary/85">
-          Quick actions
-        </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {visibleActions.map((action) => (
-            <button
-              key={action.label}
-              type="button"
-              onClick={() => onQuickAction(action)}
-              className="flex items-center gap-2.5 rounded-xl border-[0.5px] border-ui-border bg-surface-elevated px-3 py-2.5 text-left text-[12px] font-medium text-text-secondary transition-colors hover:border-copper-accent/40 hover:bg-copper-accent/10 dark:hover:bg-copper-accent/20 hover:text-text-primary"
-            >
-              <span className="text-copper-accent">*</span>
-              {action.label}
-            </button>
-          ))}
+    <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
+      <div className="text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-copper-accent/15">
+          <Sparkles className="size-5 text-copper-accent" />
         </div>
+        <p className="text-[16px] font-semibold text-text-primary">Ask anything about your JSON</p>
+        <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary">
+          Explain, fix, query, or generate mock data.
+        </p>
       </div>
-    </div>
-  );
-}
 
-function LoadingState() {
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8">
-      <div className="flex gap-1.5">
-        {[0, 1, 2].map((index) => (
-          <span
-            key={index}
-            className="h-1.5 w-1.5 rounded-full bg-copper-accent"
-            style={{ animation: `ai-pulse 1.2s ease-in-out ${index * 0.2}s infinite` }}
-          />
+      <div className="grid w-full max-w-xs gap-2">
+        {SUGGESTIONS.map((s) => (
+          <button
+            key={s.label}
+            type="button"
+            onClick={() => onSuggest(s)}
+            className="flex items-center gap-3 rounded-xl border-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 text-left transition-all hover:border-copper-accent/30 hover:bg-copper-accent/5"
+          >
+            <span className="text-base leading-none">{s.icon}</span>
+            <span className="text-[13px] font-medium text-text-secondary">{s.label}</span>
+          </button>
         ))}
-      </div>
-      <p className="text-[13px] text-text-secondary">Thinking...</p>
-      <style>{`@keyframes ai-pulse{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}`}</style>
-    </div>
-  );
-}
-
-function ErrorState({
-  message,
-  code,
-  retryAfter,
-  provider,
-  model,
-  upstreamMessage,
-  onRetry,
-}: {
-  message: string;
-  code?: string;
-  retryAfter?: number;
-  provider?: string;
-  model?: string;
-  upstreamMessage?: string;
-  onRetry?: () => void;
-}) {
-  const isUpstreamRateLimit = code === "rate_limited_upstream";
-
-  return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-      <div className="w-full max-w-sm rounded-xl border-[0.5px] border-red-500/20 dark:border-red-900/30 bg-red-500/5 dark:bg-red-950/20 px-4 py-3">
-        <p className="text-[13px] font-medium text-red-600 dark:text-red-400">Error</p>
-        <p className="mt-1 text-[12px] leading-[1.6] text-text-secondary">{message}</p>
-        {isUpstreamRateLimit ? (
-          <div className="mt-3 rounded-lg border-[0.5px] border-ui-border bg-surface-container px-3 py-2 text-left">
-            <p className="font-mono text-[11px] text-text-secondary">
-              Provider: <span className="text-text-primary">{provider ?? "gemini"}</span>
-            </p>
-            <p className="mt-1 font-mono text-[11px] text-text-secondary">
-              Model: <span className="text-text-primary">{model ?? "unknown"}</span>
-            </p>
-            {upstreamMessage ? (
-              <p className="mt-1 break-words font-mono text-[11px] leading-[1.6] text-text-secondary">
-                Upstream: {upstreamMessage}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-      </div>
-      {onRetry ? (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="flex items-center gap-1.5 text-[12px] font-medium text-copper-accent hover:opacity-85"
-        >
-          <RotateCcw className="size-3" />
-          Try again
-        </button>
-      ) : retryAfter && retryAfter > 0 ? (
-        <div className="flex items-center gap-1.5 text-[12px] font-medium text-text-secondary">
-          <RotateCcw className="size-3" />
-          Retry available in {retryAfter}s
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function ResultState({
-  result,
-  activeTab,
-  onReset,
-  onCopy,
-  onCopyJsonPath,
-  onSendToEditor,
-}: {
-  result: string;
-  activeTab: AiTask;
-  onReset: () => void;
-  onCopy: () => void;
-  onCopyJsonPath?: () => void;
-  onSendToEditor?: () => void;
-}) {
-  const sendButtonLabel = activeTab === "generate" ? "Use in editor" : "Send to editor";
-
-  return (
-    <div className="flex flex-col gap-3 p-4 sm:p-5">
-      <div className="flex items-center justify-between">
-        <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-text-secondary">
-          Response
-        </p>
-        <div className="flex items-center gap-2">
-          {onSendToEditor && activeTab === "fix" ? (
-            <button
-              type="button"
-              onClick={onSendToEditor}
-              className="flex items-center gap-1.5 rounded-md border-[0.5px] border-emerald-500/20 dark:border-emerald-900/30 bg-emerald-500/5 dark:bg-emerald-950/20 px-2.5 py-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 transition-colors hover:opacity-80"
-            >
-              <ArrowDownToLine className="size-3" />
-              {sendButtonLabel}
-            </button>
-          ) : null}
-          {onSendToEditor && activeTab === "generate" ? (
-            <button
-              type="button"
-              onClick={onSendToEditor}
-              className="flex items-center gap-1.5 rounded-md border-[0.5px] border-emerald-500/20 dark:border-emerald-900/30 bg-emerald-500/5 dark:bg-emerald-950/20 px-2.5 py-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 transition-colors hover:opacity-80"
-            >
-              <ArrowDownToLine className="size-3" />
-              {sendButtonLabel}
-            </button>
-          ) : null}
-          {onCopyJsonPath ? (
-            <button
-              type="button"
-              onClick={onCopyJsonPath}
-              className="flex items-center gap-1.5 rounded-md border-[0.5px] border-copper-accent/30 bg-copper-accent/10 dark:bg-copper-accent/20 px-2.5 py-1.5 text-[11px] font-medium text-copper-accent transition-colors hover:opacity-80"
-            >
-              <Copy className="size-3" />
-              Copy JSONPath
-            </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={onCopy}
-            className="flex items-center gap-1.5 rounded-md border-[0.5px] border-ui-border bg-surface-elevated px-2.5 py-1.5 text-[11px] font-medium text-text-secondary transition-colors hover:text-text-primary"
-          >
-            <Copy className="size-3" />
-            Copy
-          </button>
-          <button
-            type="button"
-            onClick={onReset}
-            className="flex items-center gap-1.5 rounded-md border-[0.5px] border-ui-border bg-surface-elevated px-2.5 py-1.5 text-[11px] font-medium text-text-secondary transition-colors hover:text-text-primary"
-          >
-            <RotateCcw className="size-3" />
-            New
-          </button>
-        </div>
-      </div>
-
-      <div className="rounded-xl border-[0.5px] border-ui-border bg-surface-container p-4">
-        <RenderedResponse text={result} />
       </div>
     </div>
   );
@@ -486,14 +438,13 @@ function ResultState({
 
 function RenderedResponse({ text }: { text: string }) {
   const parts = splitOnCodeBlocks(text);
-
   return (
     <div className="space-y-3 text-[13px] leading-[1.7] text-text-secondary">
       {parts.map((part, index) =>
         part.type === "code" ? (
           <pre
             key={index}
-            className="overflow-x-auto rounded-md bg-obsidian-base border-[0.5px] border-ui-border p-3 font-mono text-[12px] leading-6 text-emerald-600 dark:text-emerald-400"
+            className="overflow-x-auto rounded-lg border-[0.5px] border-ui-border bg-obsidian-base p-3 font-mono text-[12px] leading-6 text-emerald-600 dark:text-emerald-400"
           >
             <code>{part.content}</code>
           </pre>
@@ -509,25 +460,22 @@ function InlineText({ text }: { text: string }) {
   return (
     <div className="space-y-1.5">
       {text.split("\n").map((line, index) => {
-        const trimmedLine = line.trim();
+        const t = line.trim();
+        if (!t) return null;
 
-        if (!trimmedLine) {
-          return null;
-        }
-
-        if (/^\*\*JSONPath:\*\*/.test(trimmedLine)) {
+        if (/^\*\*JSONPath:\*\*/.test(t)) {
           return (
             <div
               key={index}
               className="rounded-md border-[0.5px] border-ui-border bg-surface-container px-3 py-2 font-mono text-[11px] text-copper-accent"
             >
-              {renderInlineMarkup(trimmedLine)}
+              {renderInlineMarkup(t)}
             </div>
           );
         }
 
-        if (isSectionHeading(trimmedLine)) {
-          const tone = getHeadingTone(trimmedLine);
+        if (isSectionHeading(t)) {
+          const tone = getHeadingTone(t);
           return (
             <p
               key={index}
@@ -540,32 +488,30 @@ function InlineText({ text }: { text: string }) {
                     : "text-text-primary",
               )}
             >
-              {renderInlineMarkup(trimmedLine)}
+              {renderInlineMarkup(t)}
             </p>
           );
         }
 
-        if (/^[-*]\s/.test(trimmedLine)) {
+        if (/^[-*]\s/.test(t)) {
           return (
             <div key={index} className="flex gap-2">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-copper-accent" />
-              <span>{renderInlineMarkup(trimmedLine.replace(/^[-*]\s/, ""))}</span>
+              <span>{renderInlineMarkup(t.replace(/^[-*]\s/, ""))}</span>
             </div>
           );
         }
 
-        if (/^\d+\.\s/.test(trimmedLine)) {
+        if (/^\d+\.\s/.test(t)) {
           return (
             <div key={index} className="flex gap-2">
-              <span className="min-w-5 font-mono text-[11px] text-text-secondary">
-                {trimmedLine.match(/^\d+\./)?.[0]}
-              </span>
-              <span>{renderInlineMarkup(trimmedLine.replace(/^\d+\.\s/, ""))}</span>
+              <span className="min-w-5 font-mono text-[11px] text-text-secondary">{t.match(/^\d+\./)?.[0]}</span>
+              <span>{renderInlineMarkup(t.replace(/^\d+\.\s/, ""))}</span>
             </div>
           );
         }
 
-        return <p key={index}>{renderInlineMarkup(trimmedLine)}</p>;
+        return <p key={index}>{renderInlineMarkup(t)}</p>;
       })}
     </div>
   );
@@ -580,15 +526,16 @@ function renderInlineMarkup(text: string): React.ReactNode {
         </strong>
       );
     }
-
     if (/^`[^`]+`$/.test(part)) {
       return (
-        <code key={index} className="rounded bg-surface-elevated border-[0.5px] border-ui-border px-1 font-mono text-[11px] text-copper-accent">
+        <code
+          key={index}
+          className="rounded border-[0.5px] border-ui-border bg-surface-elevated px-1 font-mono text-[11px] text-copper-accent"
+        >
           {part.slice(1, -1)}
         </code>
       );
     }
-
     return part;
   });
 }
@@ -602,27 +549,18 @@ function splitOnCodeBlocks(text: string): TextPart[] {
   let match: RegExpExecArray | null;
 
   while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
-    }
-
+    if (match.index > lastIndex) parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
     parts.push({ type: "code", content: match[1].trim() });
     lastIndex = match.index + match[0].length;
   }
 
-  if (lastIndex < text.length) {
-    parts.push({ type: "text", content: text.slice(lastIndex) });
-  }
-
+  if (lastIndex < text.length) parts.push({ type: "text", content: text.slice(lastIndex) });
   return parts;
 }
 
 function extractFirstJsonBlock(text: string): string | null {
   const match = /```(?:json)?\n?([\s\S]*?)```/.exec(text);
-  if (!match) {
-    return null;
-  }
-
+  if (!match) return null;
   try {
     JSON.parse(match[1].trim());
     return match[1].trim();
@@ -632,25 +570,17 @@ function extractFirstJsonBlock(text: string): string | null {
 }
 
 function extractJsonPath(text: string): string | null {
-  const match = /\*\*JSONPath:\*\*\s*`([^`]+)`/.exec(text);
-  return match?.[1] ?? null;
+  return /\*\*JSONPath:\*\*\s*`([^`]+)`/.exec(text)?.[1] ?? null;
 }
 
 function isSectionHeading(line: string) {
   return (
-    /^\*\*[^*]+\*\*$/.test(line) ||
-    /^(Key fields|Watchouts|What changed|Issues found)$/i.test(line)
+    /^\*\*[^*]+\*\*$/.test(line) || /^(Key fields|Watchouts|What changed|Issues found)$/i.test(line)
   );
 }
 
 function getHeadingTone(line: string) {
-  if (/^(Watchouts|Issues found)$/i.test(line.replace(/\*/g, ""))) {
-    return "alert" as const;
-  }
-
-  if (/^What changed$/i.test(line.replace(/\*/g, ""))) {
-    return "success" as const;
-  }
-
+  if (/^(Watchouts|Issues found)$/i.test(line.replace(/\*/g, ""))) return "alert" as const;
+  if (/^What changed$/i.test(line.replace(/\*/g, ""))) return "success" as const;
   return "default" as const;
 }

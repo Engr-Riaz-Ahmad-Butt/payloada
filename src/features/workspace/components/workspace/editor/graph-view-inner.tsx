@@ -17,6 +17,7 @@ import {
 import { ChevronRight, Download, ImageDown } from "lucide-react";
 import { toast } from "sonner";
 
+import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
 import type { GraphNodeData } from "../core/types";
@@ -190,6 +191,7 @@ function downloadSvg(svgString: string, filename: string): void {
 
 function ExportPanel() {
   const rfInstance = useReactFlow();
+  const { isDark } = useTheme();
 
   async function handleExport(format: "svg" | "png") {
     const svg = buildSvgFromFlow(rfInstance);
@@ -211,11 +213,21 @@ function ExportPanel() {
     <Panel position="top-right">
       <div className="flex items-center gap-1.5">
         <button type="button" onClick={() => void handleExport("svg")} title="Export as SVG"
-          className="flex items-center gap-1.5 rounded-md border-[0.5px] border-[#2A2F42] bg-[#111111]/90 px-2.5 py-1.5 text-[11px] font-medium text-[#8B92A8] backdrop-blur-sm transition-colors hover:border-[#C07040]/50 hover:text-[#E8EAF0] focus-visible:outline-none">
+          className={cn(
+            "flex items-center gap-1.5 rounded-md border-[0.5px] px-2.5 py-1.5 text-[11px] font-medium backdrop-blur-sm transition-colors focus-visible:outline-none",
+            isDark
+              ? "border-ui-border bg-obsidian-base/90 text-text-secondary hover:border-copper-accent/50 hover:text-text-primary"
+              : "border-ui-border bg-surface-elevated/90 text-text-secondary hover:border-copper-accent/50 hover:text-text-primary",
+          )}>
           <Download className="size-3" /> SVG
         </button>
         <button type="button" onClick={() => void handleExport("png")} title="Export as PNG"
-          className="flex items-center gap-1.5 rounded-md border-[0.5px] border-[#2A2F42] bg-[#111111]/90 px-2.5 py-1.5 text-[11px] font-medium text-[#8B92A8] backdrop-blur-sm transition-colors hover:border-[#C07040]/50 hover:text-[#E8EAF0] focus-visible:outline-none">
+          className={cn(
+            "flex items-center gap-1.5 rounded-md border-[0.5px] px-2.5 py-1.5 text-[11px] font-medium backdrop-blur-sm transition-colors focus-visible:outline-none",
+            isDark
+              ? "border-ui-border bg-obsidian-base/90 text-text-secondary hover:border-copper-accent/50 hover:text-text-primary"
+              : "border-ui-border bg-surface-elevated/90 text-text-secondary hover:border-copper-accent/50 hover:text-text-primary",
+          )}>
           <ImageDown className="size-3" /> PNG
         </button>
       </div>
@@ -242,16 +254,25 @@ function GraphControlsPanel({
   layoutMode: "LR" | "TB";
   onChangeLayoutMode: (mode: "LR" | "TB") => void;
 }) {
+  const { isDark } = useTheme();
+
   return (
     <Panel position="top-left">
-      <div className="flex items-center gap-1.5 rounded-md border-[0.5px] border-[#2A2F42] bg-[#111111]/90 p-1.5 backdrop-blur-sm">
-        <div className="flex items-center gap-1 border-r border-[#2A2F42] pr-1.5 mr-0.5">
+      <div
+        className={cn(
+          "flex items-center gap-1.5 rounded-md border-[0.5px] p-1.5 backdrop-blur-sm",
+          isDark
+            ? "border-ui-border bg-obsidian-base/90"
+            : "border-ui-border bg-surface-elevated/90",
+        )}
+      >
+        <div className="mr-0.5 flex items-center gap-1 border-r border-ui-border pr-1.5">
           <button
             type="button"
             onClick={onCollapseAll}
             disabled={collapsedCount === totalCollapsible}
             title="Collapse all nodes"
-            className="rounded px-2 py-1 text-[11px] font-medium text-[#8B92A8] transition-colors hover:bg-[#1A1D24] hover:text-[#E8EAF0] disabled:opacity-30 focus-visible:outline-none"
+            className="rounded px-2 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:bg-surface-container hover:text-text-primary disabled:opacity-30 focus-visible:outline-none"
           >
             Collapse all
           </button>
@@ -260,18 +281,25 @@ function GraphControlsPanel({
             onClick={onExpandAll}
             disabled={collapsedCount === 0}
             title="Expand all nodes"
-            className="rounded px-2 py-1 text-[11px] font-medium text-[#8B92A8] transition-colors hover:bg-[#1A1D24] hover:text-[#E8EAF0] disabled:opacity-30 focus-visible:outline-none"
+            className="rounded px-2 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:bg-surface-container hover:text-text-primary disabled:opacity-30 focus-visible:outline-none"
           >
             Expand all
           </button>
           {collapsedCount > 0 ? (
-            <span className="ml-1 rounded-full border-[0.5px] border-[#C07040]/30 bg-[#1F140C]/90 px-2 py-0.5 text-[10px] font-medium text-[#C07040]">
+            <span className="ml-1 rounded-full border-[0.5px] border-copper-accent/30 bg-copper-accent/10 px-2 py-0.5 text-[10px] font-medium text-copper-accent">
               {collapsedCount} collapsed
             </span>
           ) : null}
         </div>
 
-        <div className="flex items-center gap-1 bg-[#1A1D24]/50 p-0.5 rounded border border-[#2A2F42]/30">
+        <div
+          className={cn(
+            "flex items-center gap-1 rounded border p-0.5",
+            isDark
+              ? "border-ui-border/40 bg-surface/70"
+              : "border-ui-border bg-surface-container/80",
+          )}
+        >
           <button
             type="button"
             onClick={() => onChangeLayoutMode("LR")}
@@ -279,8 +307,8 @@ function GraphControlsPanel({
             className={cn(
               "rounded px-2 py-0.5 text-[10px] font-semibold transition-colors focus-visible:outline-none",
               layoutMode === "LR"
-                ? "bg-[#C07040] text-white"
-                : "text-[#8B92A8] hover:text-[#E8EAF0]"
+                ? "bg-copper-accent text-white"
+                : "text-text-secondary hover:text-text-primary"
             )}
           >
             Horiz
@@ -292,8 +320,8 @@ function GraphControlsPanel({
             className={cn(
               "rounded px-2 py-0.5 text-[10px] font-semibold transition-colors focus-visible:outline-none",
               layoutMode === "TB"
-                ? "bg-[#C07040] text-white"
-                : "text-[#8B92A8] hover:text-[#E8EAF0]"
+                ? "bg-copper-accent text-white"
+                : "text-text-secondary hover:text-text-primary"
             )}
           >
             Vert
@@ -317,12 +345,28 @@ type CollapsibleNodeData = GraphNodeData & {
 };
 
 function JsonGraphNode({ data }: { data: CollapsibleNodeData }) {
+  const { isDark } = useTheme();
   const toneStyles =
     data.tone === "root"
-      ? { border: "#1E2433", title: "#c07040", subtitle: "#f5f1ea", background: "#14100d" }
+      ? {
+          border: "#1E2433",
+          title: "#c07040",
+          subtitle: isDark ? "#f5f1ea" : "#5A6070",
+          background: isDark ? "#14100d" : "#f7efe7",
+        }
       : data.tone === "container"
-      ? { border: "#1E2433", title: "#e3c290", subtitle: "#d9c2b6", background: "#111111" }
-      : { border: "#1E2433", title: "#7db87d", subtitle: "#f5f1ea", background: "#0f1410" };
+      ? {
+          border: "#1E2433",
+          title: isDark ? "#e3c290" : "#7b5b32",
+          subtitle: isDark ? "#d9c2b6" : "#5A6070",
+          background: isDark ? "#111111" : "#f6f7fa",
+        }
+      : {
+          border: "#1E2433",
+          title: isDark ? "#7db87d" : "#2f7a48",
+          subtitle: isDark ? "#f5f1ea" : "#5A6070",
+          background: isDark ? "#0f1410" : "#edf7f1",
+        };
 
   const isHorizontal = data.layoutMode === "LR";
 
@@ -340,7 +384,7 @@ function JsonGraphNode({ data }: { data: CollapsibleNodeData }) {
       <Handle
         type="target"
         position={isHorizontal ? Position.Left : Position.Top}
-        style={{ background: "#262626", border: "none" }}
+        style={{ background: isDark ? "#262626" : "#c9d1de", border: "none" }}
       />
 
       <div className="flex items-center justify-between gap-2">
@@ -391,6 +435,7 @@ type GraphProps = {
 };
 
 function ReactFlowGraphInner({ rawNodes }: GraphProps) {
+  const { isDark } = useTheme();
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [layoutMode, setLayoutMode] = useState<"LR" | "TB">("LR");
 
@@ -508,9 +553,9 @@ function ReactFlowGraphInner({ rawNodes }: GraphProps) {
           id: `${n.parentId}-${n.id}`,
           source: n.parentId!,
           target: n.id,
-          style: { stroke: "#3a3939", strokeWidth: 1.25 },
+          style: { stroke: isDark ? "#3a3939" : "#b8c0ce", strokeWidth: 1.25 },
         })),
-    [rawNodes, hiddenIds],
+    [rawNodes, hiddenIds, isDark],
   );
 
   return (
@@ -523,25 +568,36 @@ function ReactFlowGraphInner({ rawNodes }: GraphProps) {
       maxZoom={2}
       attributionPosition="bottom-left"
       proOptions={{ hideAttribution: true }}
-      className="bg-[#0a0a0a]"
+      className="bg-obsidian-base"
     >
-      <Background color="#1f1f1f" gap={18} />
+      <Background color={isDark ? "#1f1f1f" : "#d8deea"} gap={18} />
       <MiniMap
         pannable
         zoomable
-        style={{ background: "#111111", border: "0.5px solid #1E2433" }}
+        style={{
+          background: isDark ? "#111111" : "#f6f7fa",
+          border: "0.5px solid #1E2433",
+        }}
         nodeColor={(node) =>
           (node.data as CollapsibleNodeData)?.tone === "root"
             ? "#c07040"
             : (node.data as CollapsibleNodeData)?.tone === "container"
-            ? "#e3c290"
-            : "#7db87d"
+            ? isDark
+              ? "#e3c290"
+              : "#7b5b32"
+            : isDark
+              ? "#7db87d"
+              : "#2f7a48"
         }
-        maskColor="rgba(8,8,8,0.78)"
+        maskColor={isDark ? "rgba(8,8,8,0.78)" : "rgba(255,255,255,0.72)"}
       />
       <Controls
         showInteractive={false}
-        style={{ background: "#111111", border: "0.5px solid #1E2433", borderRadius: "2px" }}
+        style={{
+          background: isDark ? "#111111" : "#f6f7fa",
+          border: "0.5px solid #1E2433",
+          borderRadius: "2px",
+        }}
       />
       <GraphControlsPanel
         collapsedCount={collapsed.size}
@@ -558,7 +614,7 @@ function ReactFlowGraphInner({ rawNodes }: GraphProps) {
 
 export function ReactFlowGraph({ rawNodes }: GraphProps) {
   return (
-    <div className="h-[26rem] overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-[#0a0a0a] sm:h-[32rem] xl:h-130">
+    <div className="h-[26rem] overflow-hidden rounded-sm border-[0.5px] border-ui-border bg-obsidian-base sm:h-[32rem] xl:h-130">
       <ReactFlowProvider>
         <ReactFlowGraphInner rawNodes={rawNodes} />
       </ReactFlowProvider>
