@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
@@ -25,6 +25,7 @@ import type { JsonValue } from "../core/types";
 
 type SortDir = "asc" | "desc" | null;
 type SortState = { col: string; dir: SortDir };
+type SelectionState = { index: number; source: JsonValue | null };
 
 type FlatRow = Record<string, JsonValue>;
 
@@ -96,18 +97,14 @@ export function TableWorkspace({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [hiddenCols, setHiddenCols] = useState<Set<string>>(new Set());
-  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [selectedRow, setSelectedRow] = useState<SelectionState | null>(null);
 
   const visibleCols = useMemo(
     () => columns.filter((col) => !hiddenCols.has(col)),
     [columns, hiddenCols],
   );
 
-  // Reset selection when the underlying data or filters change so stale index
-  // doesn't silently point at a different row after a sort/search/data change.
-  useEffect(() => {
-    setSelectedRow(null);
-  }, [parsedValue, search, sort]);
+  const activeSelectedIndex = selectedRow?.source === parsedValue ? selectedRow.index : null;
 
   // Filter rows by global search
   const filteredRows = useMemo(() => {
@@ -136,6 +133,7 @@ export function TableWorkspace({
 
   function toggleSort(col: string) {
     setPage(1);
+    setSelectedRow(null);
     setSort((current) => {
       if (current.col !== col) return { col, dir: "asc" };
       if (current.dir === "asc") return { col, dir: "desc" };
@@ -144,6 +142,7 @@ export function TableWorkspace({
   }
 
   function toggleHideCol(col: string) {
+    setSelectedRow(null);
     setHiddenCols((current) => {
       const next = new Set(current);
       if (next.has(col)) next.delete(col);
@@ -201,6 +200,7 @@ export function TableWorkspace({
             onChange={(e) => {
               setSearch(e.target.value);
               setPage(1);
+              setSelectedRow(null);
             }}
             placeholder="Filter rows..."
             className="w-full bg-transparent font-mono text-[12px] text-text-primary outline-none placeholder:text-text-secondary/50"
@@ -307,11 +307,13 @@ export function TableWorkspace({
           <tbody>
             {pagedRows.map((row, rowIndex) => {
               const absoluteIndex = (page - 1) * pageSize + rowIndex;
-              const isSelected = selectedRow === absoluteIndex;
+              const isSelected = activeSelectedIndex === absoluteIndex;
               return (
                 <tr
                   key={rowIndex}
-                  onClick={() => setSelectedRow(isSelected ? null : absoluteIndex)}
+                  onClick={() =>
+                    setSelectedRow(isSelected ? null : { index: absoluteIndex, source: parsedValue })
+                  }
                   className={cn(
                     "cursor-pointer border-b-[0.5px] border-ui-border transition-colors",
                     isSelected
@@ -388,10 +390,10 @@ export function TableWorkspace({
       </div>
 
       {/* ------------------------------------------------------------------ Selected row detail */}
-      {selectedRow !== null && sortedRows[selectedRow] ? (
+      {activeSelectedIndex !== null && sortedRows[activeSelectedIndex] ? (
         <RowDetailPanel
-          row={sortedRows[selectedRow]}
-          rowIndex={selectedRow}
+          row={sortedRows[activeSelectedIndex]}
+          rowIndex={activeSelectedIndex}
           onClose={() => setSelectedRow(null)}
           onCopy={onCopy}
         />

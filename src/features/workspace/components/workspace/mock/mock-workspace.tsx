@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Plus, Trash2, Copy, Download, RefreshCw, Send, Check } from "lucide-react";
 import { toast } from "sonner";
@@ -90,6 +90,18 @@ function generateFakeValue(type: FieldType): string | number | boolean {
   }
 }
 
+function buildMockRecords(fields: SchemaField[], count: number) {
+  return Array.from({ length: count }, () => {
+    const item: Record<string, string | number | boolean> = {};
+    fields.forEach((field) => {
+      if (field.key.trim()) {
+        item[field.key.trim()] = generateFakeValue(field.type);
+      }
+    });
+    return item;
+  });
+}
+
 export function MockWorkspace({
   onSendToEditor,
   onCopy,
@@ -100,7 +112,9 @@ export function MockWorkspace({
   const { monacoTheme } = useTheme();
   const [fields, setFields] = useState<SchemaField[]>(PRESET_TEMPLATES.users.fields);
   const [count, setCount] = useState<number>(10);
-  const [output, setOutput] = useState<string>("");
+  const [output, setOutput] = useState<string>(() =>
+    JSON.stringify(buildMockRecords(PRESET_TEMPLATES.users.fields, 10), null, 2),
+  );
   const [copied, setCopied] = useState(false);
   const fieldCounterRef = useRef(PRESET_TEMPLATES.users.fields.length);
 
@@ -110,26 +124,12 @@ export function MockWorkspace({
       return;
     }
 
-    const records = Array.from({ length: count }, () => {
-      const item: Record<string, string | number | boolean> = {};
-      fields.forEach((field) => {
-        if (field.key.trim()) {
-          item[field.key.trim()] = generateFakeValue(field.type);
-        }
-      });
-      return item;
-    });
+    const records = buildMockRecords(fields, count);
 
     setOutput(JSON.stringify(records, null, 2));
     toast.success(`Successfully generated ${count} mock records!`);
   }, [fields, count]);
 
-  const handleGenerateRef = useRef(handleGenerate);
-  handleGenerateRef.current = handleGenerate;
-
-  useEffect(() => {
-    handleGenerateRef.current();
-  }, []); // only on mount — user clicks Regenerate button to refresh after editing fields
 
   const loadPreset = (presetKey: keyof typeof PRESET_TEMPLATES) => {
     const preset = PRESET_TEMPLATES[presetKey];
