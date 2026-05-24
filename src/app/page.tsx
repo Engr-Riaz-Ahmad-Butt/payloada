@@ -37,11 +37,7 @@ const faqs = [
   ],
   [
     "Does the AI assistant send my JSON to a server?",
-    "Yes — the AI tab sends your JSON to a secure API for processing. It is not stored or used for training. All other features (formatting, diff, JWT, converters) run entirely in your browser.",
-  ],
-  [
-    "Can I use Payloada offline?",
-    "The core tools — editor, formatter, diff, JWT decoder, and converters — work offline once the page loads. Only the AI assistant requires an internet connection.",
+    "Yes - the AI tab sends your JSON to a secure API for processing. Core tools like formatting, diff, JWT decoding, and converters stay in your browser.",
   ],
 ] as const;
 
@@ -103,30 +99,50 @@ export default function Home() {
             }}
           />
 
-          <h1
-            className="mb-5 max-w-[760px] leading-tight sm:mb-6"
-            style={{
-              fontFamily: "Inter, sans-serif",
-              fontSize: "clamp(36px, 7vw, 64px)",
-              lineHeight: "1.05",
-              fontWeight: 800,
-              letterSpacing: "-0.03em",
-              color: "var(--color-on-surface)",
-            }}
-          >
-            The modern JSON workspace for{" "}
-            <span 
-              style={{ 
-                background: "linear-gradient(135deg, #C97A3D 0%, #E89A3D 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontWeight: 900
+          <div className="relative mb-5 max-w-[760px] sm:mb-6">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-10 scale-[1.02] blur-[18px] opacity-45"
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "clamp(36px, 7vw, 64px)",
+                lineHeight: "1.05",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: "rgba(232, 234, 240, 0.28)",
+                textShadow: "0 0 36px rgba(232, 234, 240, 0.18), 0 0 70px rgba(192, 112, 64, 0.14)",
               }}
             >
-              serious
-            </span>{" "}
-            developers.
-          </h1>
+              The modern JSON workspace for serious developers.
+            </div>
+
+            <h1
+              className="relative leading-tight"
+              style={{
+                fontFamily: "Inter, sans-serif",
+                fontSize: "clamp(36px, 7vw, 64px)",
+                lineHeight: "1.05",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: "var(--color-on-surface)",
+                textShadow: "0 0 18px rgba(255, 255, 255, 0.04)",
+              }}
+            >
+              The modern JSON workspace for{" "}
+              <span
+                style={{
+                  background: "linear-gradient(135deg, #C97A3D 0%, #E89A3D 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  fontWeight: 900,
+                  filter: "drop-shadow(0 0 18px rgba(192, 112, 64, 0.28))",
+                }}
+              >
+                serious
+              </span>{" "}
+              developers.
+            </h1>
+          </div>
 
           <p
             className="mb-8 max-w-[560px] px-1 sm:px-0"
@@ -155,13 +171,13 @@ export default function Home() {
                 textDecoration: "none",
               }}
             >
-              Get started — it&apos;s free
+              Get started for free
             </Link>
           </div>
 
           {/* Premium Pill Trust Badges */}
           <div className="mb-14 flex flex-wrap items-center justify-center gap-3 sm:mb-16">
-            {["No signup required", "Local-only processing", "Free to use"].map((item) => (
+            {["No signup required", "Local-only processing", "Built for developers"].map((item) => (
               <span
                 key={item}
                 className="flex items-center gap-2 rounded-full border-[0.5px] border-ui-border/70 bg-surface-elevated/40 px-3.5 py-1.5 backdrop-blur-sm transition-colors hover:border-ui-border-hover"
@@ -194,7 +210,7 @@ export default function Home() {
         <section className="w-full max-w-300 px-4 py-8 sm:px-6 md:px-8">
           <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 md:p-8">
             <p className="text-center text-xs font-semibold uppercase tracking-[0.08em] text-[#C07040] mb-6">
-              The Synced Developer Workflow
+              From raw payload to usable output
             </p>
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-4">
               {[
@@ -214,7 +230,7 @@ export default function Home() {
                     </div>
                   </div>
                   {index < arr.length - 1 ? (
-                    <span className="hidden md:inline text-[#C07040] text-xl font-bold opacity-60">→</span>
+                    <span className="hidden md:inline text-[#C07040] text-xl font-bold opacity-60">&gt;</span>
                   ) : null}
                 </Fragment>
               ))}
@@ -257,7 +273,7 @@ export default function Home() {
               {[
                 "Local-only processing for core formatting and analysis",
                 "Sensitive data scanner for tokens, emails, and secret-like fields",
-                "No account needed — open the workspace and start using it immediately",
+                "No account needed - open the workspace and start using it immediately",
               ].map((item) => (
                 <div
                   key={item}
@@ -286,7 +302,7 @@ export default function Home() {
                 letterSpacing: "-0.02em",
               }}
             >
-              From solo developers to QA teams — everyone touches JSON.
+              Built for every team that touches JSON.
             </h2>
           </div>
 
@@ -294,7 +310,7 @@ export default function Home() {
             {useCases.map(([title, description]) => (
               <div
                 key={title}
-                className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5 sm:p-6"
+                className="group relative rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-5 sm:p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-ui-border-hover border-l-2 border-l-transparent hover:border-l-[#C07040]"
               >
                 <h3
                   style={{
@@ -322,7 +338,7 @@ export default function Home() {
             <p
               className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#C07040]"
             >
-              Demonstrated Value
+              Real workflows
             </p>
             <h2
               className="max-w-2xl text-left"

@@ -45,14 +45,27 @@ export default function FaqSection({ items }: { items: readonly FaqItem[] }) {
               />
             </button>
 
-            {isOpen ? (
-              <p
-                className="mt-2.5"
-                style={{ color: "var(--color-text-secondary)", fontSize: "14px", lineHeight: "24px" }}
-              >
-                {item.answer}
-              </p>
-            ) : null}
+            {/* Smooth CSS Grid Slide-Height Transition */}
+            <div 
+              className="grid transition-all duration-300 ease-in-out overflow-hidden"
+              style={{
+                gridTemplateRows: isOpen ? "1fr" : "0fr",
+                opacity: isOpen ? 1 : 0,
+                marginTop: isOpen ? "10px" : "0px",
+              }}
+            >
+              <div className="min-h-0">
+                <p
+                  style={{ 
+                    color: "var(--color-text-secondary)", 
+                    fontSize: "14px", 
+                    lineHeight: "24px" 
+                  }}
+                >
+                  {item.answer}
+                </p>
+              </div>
+            </div>
           </div>
         );
       })}
