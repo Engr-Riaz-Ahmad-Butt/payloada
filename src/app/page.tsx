@@ -81,30 +81,59 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }}
       />
       <Navbar />
-
       <main className="flex flex-1 flex-col items-center overflow-x-hidden">
-        <section className="mt-4 flex w-full max-w-300 flex-col items-center px-4 py-12 text-center sm:mt-6 sm:px-6 sm:py-14 md:mt-8 md:px-8 md:py-16">
+        <section className="relative mt-4 flex w-full max-w-300 flex-col items-center px-4 py-12 text-center sm:mt-6 sm:px-6 sm:py-14 md:mt-8 md:px-8 md:py-20 overflow-visible">
+          {/* Refined Developer Grid & Glow Backdrop */}
+          <div 
+            className="absolute inset-0 -z-10 opacity-[0.8] pointer-events-none"
+            style={{
+              backgroundImage: `
+                linear-gradient(to right, rgba(192, 112, 64, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(192, 112, 64, 0.04) 1px, transparent 1px)
+              `,
+              backgroundSize: "4.5rem 4.5rem",
+              maskImage: "radial-gradient(ellipse 60% 50% at 50% 50%, #000 65%, transparent 100%)",
+              WebkitMaskImage: "radial-gradient(ellipse 60% 50% at 50% 50%, #000 65%, transparent 100%)",
+            }}
+          />
+          <div 
+            className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[300px] w-[500px] max-w-full rounded-full opacity-30 blur-[100px] pointer-events-none"
+            style={{
+              background: "radial-gradient(circle, rgba(192, 112, 64, 0.25) 0%, transparent 70%)"
+            }}
+          />
+
           <h1
-            className="mb-5 max-w-[720px] leading-tight sm:mb-6"
+            className="mb-5 max-w-[760px] leading-tight sm:mb-6"
             style={{
               fontFamily: "Inter, sans-serif",
               fontSize: "clamp(36px, 7vw, 64px)",
               lineHeight: "1.05",
-              fontWeight: 700,
-              letterSpacing: "-0.02em",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
               color: "var(--color-on-surface)",
             }}
           >
-            The modern JSON workspace for <span style={{ color: "#C07040" }}>serious</span>{" "}
+            The modern JSON workspace for{" "}
+            <span 
+              style={{ 
+                background: "linear-gradient(135deg, #C97A3D 0%, #E89A3D 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: 900
+              }}
+            >
+              serious
+            </span>{" "}
             developers.
           </h1>
 
           <p
-            className="mb-8 max-w-[540px] px-1 sm:px-0"
+            className="mb-8 max-w-[560px] px-1 sm:px-0"
             style={{
               fontFamily: "Inter, sans-serif",
               fontSize: "clamp(16px, 2.2vw, 18px)",
-              lineHeight: "1.6",
+              lineHeight: "1.65",
               fontWeight: 400,
               color: "var(--color-text-secondary)",
             }}
@@ -113,10 +142,11 @@ export default function Home() {
             fast, privacy-first workspace.
           </p>
 
-          <div className="mb-6 flex w-full max-w-sm flex-col gap-3">
+          {/* Primary CTA */}
+          <div className="mb-8 flex w-full justify-center">
             <Link
               href="/workspace"
-              className="flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#C07040] px-7 text-center transition-colors hover:bg-[#D48050] active:scale-95"
+              className="flex h-12 min-w-[240px] items-center justify-center gap-2 rounded-[8px] bg-[#C07040] px-7 text-center transition-all hover:bg-[#D48050] active:scale-95 hover:shadow-[0_0_24px_rgba(192,112,64,0.35)]"
               style={{
                 color: "#FFFFFF",
                 fontFamily: "Inter, sans-serif",
@@ -127,35 +157,37 @@ export default function Home() {
             >
               Get started — it&apos;s free
             </Link>
-            <Link
-              href="/workspace"
-              className="flex h-11 items-center justify-center gap-2 rounded-[8px] border-[0.5px] border-ui-border bg-surface-elevated px-7 text-center transition-colors hover:border-[#C07040] hover:text-[#C07040]"
-              style={{
-                color: "var(--color-text-secondary)",
-                fontFamily: "Inter, sans-serif",
-                fontSize: "14px",
-                fontWeight: 500,
-                textDecoration: "none",
-              }}
-            >
-              Explore the workspace →
-            </Link>
           </div>
 
-          <div className="mb-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mb-12">
+          {/* Premium Pill Trust Badges */}
+          <div className="mb-14 flex flex-wrap items-center justify-center gap-3 sm:mb-16">
             {["No signup required", "Local-only processing", "Free to use"].map((item) => (
               <span
                 key={item}
-                className="flex items-center gap-1.5"
-                style={{ color: "var(--color-text-secondary)", fontFamily: "Inter, sans-serif", fontSize: "13px" }}
+                className="flex items-center gap-2 rounded-full border-[0.5px] border-ui-border/70 bg-surface-elevated/40 px-3.5 py-1.5 backdrop-blur-sm transition-colors hover:border-ui-border-hover"
+                style={{ 
+                  color: "var(--color-text-secondary)", 
+                  fontFamily: "Inter, sans-serif", 
+                  fontSize: "12px",
+                  fontWeight: 500,
+                }}
               >
-                <span style={{ color: "#3DD68C", fontWeight: 700 }}>✓</span>
+                <span className="flex h-1.5 w-1.5 rounded-full bg-[#3DD68C] shadow-[0_0_8px_#3DD68C]" />
                 {item}
               </span>
             ))}
           </div>
 
-          <WorkspaceMockup />
+          {/* Backlit Dimensional Mockup */}
+          <div className="relative w-full flex justify-center overflow-visible">
+            <div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[380px] w-[80%] rounded-full opacity-40 blur-[100px] pointer-events-none"
+              style={{
+                background: "radial-gradient(circle, rgba(192,112,64,0.18) 0%, transparent 70%)"
+              }}
+            />
+            <WorkspaceMockup />
+          </div>
         </section>
 
         {/* Visual Workflow Strip */}
@@ -182,7 +214,7 @@ export default function Home() {
                     </div>
                   </div>
                   {index < arr.length - 1 ? (
-                    <span className="hidden md:inline text-[#C07040] text-xl font-bold opacity-60">➔</span>
+                    <span className="hidden md:inline text-[#C07040] text-xl font-bold opacity-60">→</span>
                   ) : null}
                 </Fragment>
               ))}
@@ -391,3 +423,4 @@ export default function Home() {
     </div>
   );
 }
+

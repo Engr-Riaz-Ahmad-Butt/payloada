@@ -19,8 +19,18 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 w-full border-b border-ui-border bg-obsidian-base/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-300 items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
         <div className="flex items-center gap-5 lg:gap-8">
-          <Link href="/" className="flex items-center no-underline">
-            <img src="/payloada-logo-full.svg" alt="Payloada" className="h-10 w-auto" />
+          <Link href="/" className="flex items-center gap-2.5 no-underline transition-opacity hover:opacity-90">
+            {/* Premium Vector Icon */}
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm overflow-hidden border-[0.5px] border-ui-border/50 bg-surface-elevated/40 p-1">
+              <img src="/payloada-logo-icon.svg" alt="Payloada" className="h-full w-full object-contain" />
+            </div>
+            {/* Typographic Wordmark */}
+            <span
+              className="hidden sm:inline text-lg font-extrabold tracking-tight sm:text-xl"
+              style={{ color: "#F9FAFB", fontFamily: "Inter, sans-serif" }}
+            >
+              Payloada
+            </span>
           </Link>
 
           <div className="hidden items-center gap-5 lg:flex xl:gap-6">

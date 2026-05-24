@@ -34,7 +34,7 @@ Watch for:
 
 Constraints:
 - Do not echo the JSON back.
-- Keep the response under 220 words.`;
+- Keep the response under 300 words.`;
 
     case "fix":
       return `${intro("a JSON repair assistant")}
@@ -124,6 +124,9 @@ If the user message asks for an explanation or analysis, explain the payload usi
       return `Explain this JSON payload:\n\n\`\`\`json\n${json}\n\`\`\`${truncatedNote}`;
 
     case "fix":
+      if (question?.trim()) {
+        return `User request: ${question}\n\nJSON:\n\n\`\`\`json\n${json}\n\`\`\`${truncatedNote}`;
+      }
       return `Repair or review this JSON:\n\n\`\`\`json\n${json}\n\`\`\`${truncatedNote}`;
 
     case "query":

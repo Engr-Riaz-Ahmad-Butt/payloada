@@ -6,7 +6,7 @@ import { consumeRequest } from "@/lib/rate-limiter";
 const ALLOWED_TASKS = ["explain", "fix", "query", "generate"] as const;
 const MAX_JSON_LENGTH = 50_000;
 const TRUNCATE_AT = 20_000;
-const MAX_QUESTION_LENGTH = 500;
+const MAX_QUESTION_LENGTH = 2000;
 
 export async function POST(req: Request) {
   try {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     }
 
     if (question !== undefined && (typeof question !== "string" || question.length > MAX_QUESTION_LENGTH)) {
-      return NextResponse.json({ error: "Question is too long (max 500 chars)", code: "invalid_input" }, { status: 400 });
+      return NextResponse.json({ error: "Question is too long (max 2000 chars)", code: "invalid_input" }, { status: 400 });
     }
 
     // x-real-ip is set by trusted reverse proxies (Vercel, nginx) and cannot be
@@ -57,7 +57,8 @@ export async function POST(req: Request) {
     const system = getSystemPrompt(task);
     const prompt = buildUserPrompt(task, sentJson, typeof question === "string" ? question : undefined, truncated);
 
-    const { result, tokensUsed } = await callGemini({ system, prompt });
+    const maxTokens = task === "generate" ? 3000 : task === "fix" ? 2000 : 1500;
+    const { result, tokensUsed } = await callGemini({ system, prompt, maxTokens });
 
     return NextResponse.json({ result, tokensUsed, remaining: rl.remaining });
   } catch (err) {

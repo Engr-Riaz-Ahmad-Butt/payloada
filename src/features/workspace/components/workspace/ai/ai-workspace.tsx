@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowDownToLine, Copy, RotateCcw, Send, Sparkles } from "lucide-react";
+import { ArrowDownToLine, Copy, FileUp, RotateCcw, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -68,10 +68,12 @@ const SUGGESTIONS = [
 export function AiWorkspace({
   source,
   onSendToEditor,
+  onSetSource,
   onCopy,
 }: {
   source: string;
   onSendToEditor: (json: string) => void;
+  onSetSource?: (json: string) => void;
   onCopy: (value: string, message?: string) => Promise<void>;
 }) {
   const [msgs, setMsgs] = useState<ChatMsg[]>([]);
@@ -82,7 +84,31 @@ export function AiWorkspace({
   const [countdown, setCountdown] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const hasJson = source.trim().length > 0;
+
+  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.endsWith(".json") && file.type !== "application/json") {
+      toast.error("Please select a JSON file");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result;
+      if (typeof text !== "string") return;
+      try {
+        JSON.parse(text);
+        onSetSource?.(text);
+        toast.success(`Loaded ${file.name}`);
+      } catch {
+        toast.error("Invalid JSON file — could not parse");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  }
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -209,6 +235,43 @@ export function AiWorkspace({
             </button>
           )}
         </div>
+      </div>
+
+      <div className="flex shrink-0 items-center justify-between border-b-[0.5px] border-ui-border bg-surface-elevated/60 px-4 py-2 sm:px-5">
+        {hasJson ? (
+          <span className="flex items-center gap-2 font-mono text-[11px] text-text-secondary">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
+            Using editor JSON
+            <span style={{ color: "var(--color-text-secondary)" }}>
+              · {(new TextEncoder().encode(source).length / 1024).toFixed(1)} KB
+            </span>
+          </span>
+        ) : (
+          <span className="flex items-center gap-2 font-mono text-[11px] text-text-secondary">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
+            No JSON loaded
+          </span>
+        )}
+        {onSetSource ? (
+          <>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+            <button
+              type="button"
+              title="Load a JSON file directly into this workspace"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-1.5 rounded-md border-[0.5px] border-ui-border bg-obsidian-base px-2.5 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:text-text-primary"
+            >
+              <FileUp className="size-3" />
+              Upload JSON
+            </button>
+          </>
+        ) : null}
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">

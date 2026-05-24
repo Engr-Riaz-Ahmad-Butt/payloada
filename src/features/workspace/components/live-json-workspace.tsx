@@ -249,7 +249,7 @@ export function LiveJsonWorkspace({
               ) : null}
 
               {workspaceView === "ai" ? (
-                <AiWorkspace source={source} onSendToEditor={setSource} onCopy={handleCopy} />
+                <AiWorkspace source={source} onSendToEditor={setSource} onSetSource={setSource} onCopy={handleCopy} />
               ) : null}
 
               {workspaceView === "table" ? (
