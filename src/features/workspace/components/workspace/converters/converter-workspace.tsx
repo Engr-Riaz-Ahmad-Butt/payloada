@@ -100,7 +100,7 @@ export function ConverterWorkspace({
               fontSize: 15,
               lineHeight: 28,
               tabSize: 2,
-              fontFamily: "var(--font-geist-mono)",
+              fontFamily: "var(--font-mono)",
             }}
           />
         </div>
@@ -136,7 +136,7 @@ export function ConverterWorkspace({
                 type="button"
                 onClick={() => setXmlDirection("json-to-xml")}
                 className={cn(
-                  "h-7 rounded-[6px] border-[0.5px] px-3 text-[11px] font-medium transition-colors",
+                  "h-7 rounded-md border-[0.5px] px-3 text-[11px] font-medium transition-colors",
                   xmlDirection === "json-to-xml"
                     ? "border-copper-accent bg-copper-accent/10 text-copper-accent"
                     : "border-ui-border bg-surface-elevated text-text-secondary hover:border-ui-border-hover hover:text-text-primary"
@@ -148,7 +148,7 @@ export function ConverterWorkspace({
                 type="button"
                 onClick={() => setXmlDirection("xml-to-json")}
                 className={cn(
-                  "h-7 rounded-[6px] border-[0.5px] px-3 text-[11px] font-medium transition-colors",
+                  "h-7 rounded-md border-[0.5px] px-3 text-[11px] font-medium transition-colors",
                   xmlDirection === "xml-to-json"
                     ? "border-copper-accent bg-copper-accent/10 text-copper-accent"
                     : "border-ui-border bg-surface-elevated text-text-secondary hover:border-ui-border-hover hover:text-text-primary"
@@ -176,35 +176,84 @@ export function ConverterWorkspace({
           />
         </div>
 
-        <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-5">
-          {isXmlToJson ? (
-            xmlToJsonOutput ? (
-              <ConverterOutputPreview tab="TypeScript" value={xmlToJsonOutput} />
-            ) : xmlToJsonError ? (
-              <div className="rounded-[10px] border-[0.5px] border-red-500/20 bg-red-50 dark:bg-red-950/20 px-4 py-4">
-                <p className="text-[13px] font-medium text-red-600 dark:text-red-400">Cannot Parse XML</p>
-                <p className="mt-1 text-[12px] leading-[1.6] text-text-secondary whitespace-pre-line">
-                  {xmlToJsonError}
-                </p>
+        {(() => {
+          const codeOutput = isXmlToJson ? xmlToJsonOutput : output;
+          const showCode = Boolean(codeOutput) && (isXmlToJson || Boolean(parsedValue)) && converterTab !== "CSV";
+          const showCsv = converterTab === "CSV" && Boolean(output) && Boolean(parsedValue);
+
+          if (showCode) {
+            return (
+              <div className="min-h-70 flex-1 xl:min-h-0">
+                <MonacoEditor
+                  height="100%"
+                  language={getMonacoLanguage(isXmlToJson ? "Schema" : converterTab)}
+                  theme={monacoTheme}
+                  value={codeOutput}
+                  options={{
+                    readOnly: true,
+                    automaticLayout: true,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    padding: { top: 16, bottom: 16 },
+                    fontSize: 13,
+                    lineHeight: 22,
+                    tabSize: 2,
+                    fontFamily: "var(--font-mono)",
+                    domReadOnly: true,
+                    renderLineHighlight: "none",
+                    selectionHighlight: false,
+                    occurrencesHighlight: "off",
+                    cursorStyle: "line",
+                    hideCursorInOverviewRuler: true,
+                  }}
+                />
               </div>
-            ) : (
-              <SidebarEmpty text="Add valid XML to generate JSON output." />
-            )
-          ) : parsedValue ? (
-            output ? (
-              <ConverterOutputPreview tab={converterTab} value={output} />
-            ) : (
-              <SidebarEmpty text={`Add valid JSON to generate ${converterTab} output.`} />
-            )
-          ) : (
-            <SidebarEmpty
-              text={`Cannot generate ${converterTab} because the JSON is invalid. Fix it first.`}
-            />
-          )}
-        </div>
+            );
+          }
+
+          return (
+            <div className="min-h-0 flex-1 overflow-auto p-4 sm:p-5">
+              {isXmlToJson && xmlToJsonError ? (
+                <div className="rounded-[10px] border-[0.5px] border-red-500/20 bg-red-50 dark:bg-red-950/20 px-4 py-4">
+                  <p className="text-[13px] font-medium text-red-600 dark:text-red-400">Cannot Parse XML</p>
+                  <p className="mt-1 text-[12px] leading-[1.6] text-text-secondary whitespace-pre-line">{xmlToJsonError}</p>
+                </div>
+              ) : showCsv ? (
+                <ConverterOutputPreview tab="CSV" value={output} />
+              ) : parsedValue ? (
+                <SidebarEmpty text={`Add valid JSON to generate ${converterTab} output.`} />
+              ) : isXmlToJson ? (
+                <SidebarEmpty text="Add valid XML to generate JSON output." />
+              ) : (
+                <SidebarEmpty text={`Cannot generate ${converterTab} because the JSON is invalid. Fix it first.`} />
+              )}
+            </div>
+          );
+        })()}
       </aside>
     </div>
   );
+}
+
+function getMonacoLanguage(tab: ConverterTab): string {
+  switch (tab) {
+    case "TypeScript": return "typescript";
+    case "Zod": return "typescript";
+    case "Go": return "go";
+    case "Python": return "python";
+    case "Rust": return "rust";
+    case "C#": return "csharp";
+    case "Java": return "java";
+    case "Kotlin": return "kotlin";
+    case "Swift": return "swift";
+    case "YAML": return "yaml";
+    case "XML": return "xml";
+    case "Schema": return "json";
+    case "TOML": return "ini";
+    case "Prisma": return "typescript";
+    case "Mongoose": return "javascript";
+    default: return "plaintext";
+  }
 }
 
 function ConverterButtonGroup({
@@ -228,7 +277,7 @@ function ConverterButtonGroup({
             type="button"
             onClick={() => onSelect(tab)}
             className={cn(
-              "h-7 rounded-[6px] border-[0.5px] px-3 text-[12px] font-medium transition-colors",
+              "h-7 rounded-md border-[0.5px] px-3 text-[12px] font-medium transition-colors",
               activeTab === tab
                 ? "border-copper-accent bg-copper-accent/10 text-copper-accent"
                 : "border-ui-border bg-surface-elevated text-text-secondary hover:border-ui-border-hover hover:text-text-primary",

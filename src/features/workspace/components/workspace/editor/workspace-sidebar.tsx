@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Braces, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -23,7 +24,7 @@ export function WorkspaceSidebar({
   return (
     <aside
       className={cn(
-        "relative hidden xl:flex xl:h-full xl:flex-col xl:overflow-y-auto xl:border-b-0 xl:border-r-[0.5px] xl:border-ui-border xl:bg-surface-elevated xl:py-6 xl:transition-[padding] xl:duration-300 xl:ease-out",
+        "relative hidden xl:flex xl:h-full xl:flex-col xl:overflow-visible xl:border-b-0 xl:border-r-[0.5px] xl:border-ui-border xl:bg-surface-elevated xl:py-6 xl:transition-[padding] xl:duration-300 xl:ease-out",
         isCollapsed ? "xl:px-3" : "xl:px-5",
       )}
     >
@@ -52,8 +53,8 @@ export function WorkspaceSidebar({
           )}
         >
           <div className={cn("flex items-center gap-3", isCollapsed && "xl:flex-col")}>
-            <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-surface-container-low">
-              <Braces className="size-5 text-copper-accent" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-sm bg-surface-container-low overflow-hidden border-[0.5px] border-ui-border/50">
+              <img src="/payloada-logo-icon.svg" alt="Payloada" className="h-full w-full object-contain p-1.5" />
             </div>
             {!isCollapsed ? (
               <div>
@@ -61,7 +62,7 @@ export function WorkspaceSidebar({
                   Payloada
                 </h2>
                 <p className="text-[12px] font-medium tracking-[0.02em] text-on-surface-variant">
-                  Pro Workspace
+                  Developer Workspace
                 </p>
               </div>
             ) : null}
@@ -126,7 +127,7 @@ export function WorkspaceSidebar({
                 isCollapsed ? "xl:justify-center xl:px-0" : "xl:gap-4 xl:px-4",
                 active
                   ? "border-r-2 border-copper-accent bg-surface-container-high text-copper-accent"
-                  : "text-on-surface-variant hover:bg-surface-container-low hover:text-text-primary",
+                  : "text-on-surface-variant hover:-translate-y-px hover:bg-surface-container-low hover:text-text-primary",
               )}
             >
               <Icon className="size-4 xl:size-5" />

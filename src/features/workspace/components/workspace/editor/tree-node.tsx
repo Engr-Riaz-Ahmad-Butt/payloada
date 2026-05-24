@@ -3,6 +3,27 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronRight, Copy } from "lucide-react";
 
+function detectHexColor(v: string): string | null {
+  return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{8})$/.test(v) ? v : null;
+}
+
+function detectIsoDate(v: string): Date | null {
+  if (!/^\d{4}-\d{2}-\d{2}/.test(v)) return null;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function relativeTime(date: Date): string {
+  const diff = Date.now() - date.getTime();
+  const abs = Math.abs(diff);
+  const sign = diff < 0 ? "in " : "";
+  const suffix = diff < 0 ? "" : " ago";
+  if (abs < 60_000) return "just now";
+  if (abs < 3_600_000) return `${sign}${Math.round(abs / 60_000)}m${suffix}`;
+  if (abs < 86_400_000) return `${sign}${Math.round(abs / 3_600_000)}h${suffix}`;
+  return `${sign}${Math.round(abs / 86_400_000)}d${suffix}`;
+}
+
 import { cn } from "@/lib/utils";
 
 import type { JsonValue } from "../core/types";
@@ -95,6 +116,39 @@ export function TreeNode({
             query={treeSearchTerm ?? ""}
             defaultClassName="text-text-primary"
           />
+          {typeof value === "string" ? (() => {
+            const hex = detectHexColor(value);
+            if (hex) {
+              return (
+                <span
+                  title={hex}
+                  style={{
+                    display: "inline-block",
+                    width: 10,
+                    height: 10,
+                    borderRadius: 2,
+                    backgroundColor: hex,
+                    marginLeft: 5,
+                    verticalAlign: "middle",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    flexShrink: 0,
+                  }}
+                />
+              );
+            }
+            const date = detectIsoDate(value);
+            if (date) {
+              return (
+                <span
+                  title={`${date.toLocaleString()} · ${relativeTime(date)}`}
+                  style={{ marginLeft: 5, fontSize: 9, color: "#5A8A6A", letterSpacing: "0.04em" }}
+                >
+                  {relativeTime(date)}
+                </span>
+              );
+            }
+            return null;
+          })() : null}
         </button>
 
         <button

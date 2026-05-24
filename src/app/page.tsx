@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import Link from "next/link";
 
 import FeaturesSection from "@/features/home/components/features-section";
@@ -34,14 +35,17 @@ const faqs = [
     "Can I generate TypeScript from JSON?",
     "Yes. TypeScript, Zod, Schema, and other output generators are part of the product workflow.",
   ],
+  [
+    "Does the AI assistant send my JSON to a server?",
+    "Yes — the AI tab sends your JSON to a secure API for processing. It is not stored or used for training. All other features (formatting, diff, JWT, converters) run entirely in your browser.",
+  ],
+  [
+    "Can I use Payloada offline?",
+    "The core tools — editor, formatter, diff, JWT decoder, and converters — work offline once the page loads. Only the AI assistant requires an internet connection.",
+  ],
 ] as const;
 
-const comparisons = [
-  ["Formatter only", "Payloada workspace"],
-  ["One action per page", "Multiple developer workflows together"],
-  ["Little privacy messaging", "Local-first and privacy-forward"],
-  ["Raw output only", "Readable summaries and guided inspection"],
-] as const;
+
 
 export default function Home() {
   const schemas = [
@@ -109,7 +113,7 @@ export default function Home() {
             fast, privacy-first workspace.
           </p>
 
-          <div className="mb-10 grid w-full max-w-sm grid-cols-1 gap-3 sm:mb-12">
+          <div className="mb-6 flex w-full max-w-sm flex-col gap-3">
             <Link
               href="/workspace"
               className="flex h-12 items-center justify-center gap-2 rounded-[8px] bg-[#C07040] px-7 text-center transition-colors hover:bg-[#D48050] active:scale-95"
@@ -123,9 +127,67 @@ export default function Home() {
             >
               Get started — it&apos;s free
             </Link>
+            <Link
+              href="/workspace"
+              className="flex h-11 items-center justify-center gap-2 rounded-[8px] border-[0.5px] border-ui-border bg-surface-elevated px-7 text-center transition-colors hover:border-[#C07040] hover:text-[#C07040]"
+              style={{
+                color: "var(--color-text-secondary)",
+                fontFamily: "Inter, sans-serif",
+                fontSize: "14px",
+                fontWeight: 500,
+                textDecoration: "none",
+              }}
+            >
+              Explore the workspace →
+            </Link>
+          </div>
+
+          <div className="mb-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 sm:mb-12">
+            {["No signup required", "Local-only processing", "Free to use"].map((item) => (
+              <span
+                key={item}
+                className="flex items-center gap-1.5"
+                style={{ color: "var(--color-text-secondary)", fontFamily: "Inter, sans-serif", fontSize: "13px" }}
+              >
+                <span style={{ color: "#3DD68C", fontWeight: 700 }}>✓</span>
+                {item}
+              </span>
+            ))}
           </div>
 
           <WorkspaceMockup />
+        </section>
+
+        {/* Visual Workflow Strip */}
+        <section className="w-full max-w-300 px-4 py-8 sm:px-6 md:px-8">
+          <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 md:p-8">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.08em] text-[#C07040] mb-6">
+              The Synced Developer Workflow
+            </p>
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-4">
+              {[
+                { title: "Format", desc: "Clean & unminify" },
+                { title: "Validate", desc: "Scan syntax & safety" },
+                { title: "Diff", desc: "Spot schema conflicts" },
+                { title: "Convert", desc: "Export to TS, Zod & more" },
+              ].map((step, index, arr) => (
+                <Fragment key={step.title}>
+                  <div className="flex flex-1 items-center gap-4 rounded-[8px] bg-obsidian-base border-[0.5px] border-ui-border px-5 py-4 transition-colors hover:border-[#C07040]/30">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1F140C] font-mono text-[14px] font-bold text-[#C07040]">
+                      {index + 1}
+                    </span>
+                    <div className="text-left">
+                      <h4 className="font-semibold text-text-primary text-[14px]">{step.title}</h4>
+                      <p className="text-[12px] text-text-secondary mt-0.5">{step.desc}</p>
+                    </div>
+                  </div>
+                  {index < arr.length - 1 ? (
+                    <span className="hidden md:inline text-[#C07040] text-xl font-bold opacity-60">➔</span>
+                  ) : null}
+                </Fragment>
+              ))}
+            </div>
+          </div>
         </section>
 
         <FeaturesSection />
@@ -163,7 +225,7 @@ export default function Home() {
               {[
                 "Local-only processing for core formatting and analysis",
                 "Sensitive data scanner for tokens, emails, and secret-like fields",
-                "Clear outputs, readable structure, and faster debugging flow",
+                "No account needed — open the workspace and start using it immediately",
               ].map((item) => (
                 <div
                   key={item}
@@ -192,7 +254,7 @@ export default function Home() {
                 letterSpacing: "-0.02em",
               }}
             >
-              Built for the JSON work teams do every day.
+              From solo developers to QA teams — everyone touches JSON.
             </h2>
           </div>
 
@@ -224,77 +286,80 @@ export default function Home() {
         </section>
 
         <section className="w-full max-w-300 px-4 py-12 sm:px-6 md:px-8 md:py-14">
-          <div className="grid gap-5 lg:gap-6 xl:grid-cols-2">
-            <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 sm:p-7 lg:p-8">
-              <p
-                className="mb-3 text-[11px] font-medium tracking-[0.04em]"
-                style={{ color: "var(--color-text-secondary)" }}
-              >
-                Comparison
-              </p>
-              <h2
-                style={{
-                  fontSize: "clamp(22px, 4vw, 32px)",
-                  lineHeight: "1.15",
-                  fontWeight: 700,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                More than a one-off formatter on a generic tools page.
-              </h2>
+          <div className="mb-10 text-center md:text-left">
+            <p
+              className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#C07040]"
+            >
+              Demonstrated Value
+            </p>
+            <h2
+              className="max-w-2xl text-left"
+              style={{
+                fontSize: "clamp(26px, 4vw, 36px)",
+                lineHeight: "1.15",
+                fontWeight: 700,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              One payload, multiple workflows.
+            </h2>
+            <p className="mt-3 text-text-secondary max-w-xl text-[15px] text-left">
+              Why paste the same JSON into five different single-purpose websites? Payloada allows you to run your entire data flow in one synced state.
+            </p>
+          </div>
 
-              <div className="mt-6 space-y-3">
-                {comparisons.map(([left, right]) => (
-                  <div
-                    key={left}
-                    className="grid gap-2 rounded-[10px] border-[0.5px] border-ui-border bg-obsidian-base px-4 py-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-3"
-                  >
-                    <span style={{ color: "var(--color-text-secondary)", fontSize: "13px" }}>{left}</span>
-                    <span
-                      className="hidden sm:inline"
-                      style={{ color: "#C07040", fontSize: "13px", fontWeight: 700 }}
-                    >
-                      →
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                title: "Format and validate API responses",
+                desc: "Paste raw or minified JSON, instantly beautify structure, and isolate exact line-level syntax failures using worker-backed parser threads.",
+                badge: "Editor"
+              },
+              {
+                title: "Search nested fields with JSONPath",
+                desc: "Traverse complex arrays and deep objects instantly. Write standard JSONPath expressions with live matching values highlighted in real-time.",
+                badge: "JSONPath"
+              },
+              {
+                title: "Compare staging vs production payloads",
+                desc: "Catch schema drift, regression conflicts, and value changes side-by-side with full-screen diffs and semantic addition/removal counts.",
+                badge: "JSON Diff"
+              },
+              {
+                title: "Generate TypeScript or Zod output",
+                desc: "Convert clean JSON schemas into verified TypeScript interfaces, Zod validation models, Kotlin data classes, or Go structs instantly.",
+                badge: "Converters"
+              },
+              {
+                title: "Decode JWTs without leaving the editor",
+                desc: "Inspect token signatures, custom claims, standard expiration dates, and secret states cleanly inside the same developer workspace.",
+                badge: "JWT Decoder"
+              },
+              {
+                title: "Mock test datasets on trusted schemas",
+                desc: "Turn individual API examples into massive array fixtures with realistic names, emails, and UUID values generated on your actual shape.",
+                badge: "Mock Generator"
+              }
+            ].map((workflow) => (
+              <div
+                key={workflow.title}
+                className="group flex flex-col justify-between rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 transition-[border-color,transform] hover:border-[#C07040]"
+              >
+                <div className="text-left">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="rounded-[4px] bg-[#1F140C] px-2 py-0.5 font-mono text-[10px] font-bold text-[#C07040]">
+                      {workflow.badge}
                     </span>
-                    <span style={{ color: "var(--color-text-primary)", fontSize: "13px" }}>{right}</span>
                   </div>
-                ))}
+                  <h3 className="text-[17px] font-semibold text-text-primary group-hover:text-copper-accent transition-colors">
+                    {workflow.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-text-secondary">
+                    {workflow.desc}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            <div className="rounded-[12px] border-[0.5px] border-ui-border bg-surface-elevated p-6 sm:p-7 lg:p-8">
-              <p
-                className="mb-3 text-[11px] font-medium tracking-[0.04em]"
-                style={{ color: "var(--color-text-secondary)" }}
-              >
-                Search-friendly content
-              </p>
-              <h2
-                style={{
-                  fontSize: "clamp(26px, 4vw, 32px)",
-                  lineHeight: "1.15",
-                  fontWeight: 700,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                A homepage that shows the product clearly and supports discovery.
-              </h2>
-              <p
-                className="mt-4"
-                style={{ color: "var(--color-text-secondary)", fontSize: "15px", lineHeight: "28px" }}
-              >
-                Payloada combines JSON formatting, JWT decoding, JSON diffing, type generation,
-                search, and safety checks in one modern workspace. That makes it easier to
-                understand for users and clearer for search engines too.
-              </p>
-              <p
-                className="mt-4"
-                style={{ color: "var(--color-text-secondary)", fontSize: "15px", lineHeight: "28px" }}
-              >
-                Instead of feeling like a thin marketing wrapper, the homepage should show the real
-                product, explain why it matters, and surface the workflows people want to use most.
-              </p>
-            </div>
+            ))}
           </div>
         </section>
 

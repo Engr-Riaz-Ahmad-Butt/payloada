@@ -1,12 +1,12 @@
 "use client";
 
-import { Diff, FileCode2, KeyRound } from "lucide-react";
+import { ArrowRightLeft, Bot, Diff, FileCode2, KeyRound, TableProperties } from "lucide-react";
 
 const features = [
   {
     icon: FileCode2,
     title: "Precision editor",
-    description: "Flawless syntax highlighting with 8pt grid precision.",
+    description: "Format, validate, and navigate JSON with smart highlighting and live error detection.",
     label: "Editor workflow",
   },
   {
@@ -20,6 +20,24 @@ const features = [
     title: "Intelligent diff",
     description: "Compare JSON payloads side-by-side with smart conflict detection.",
     label: "Review workflow",
+  },
+  {
+    icon: ArrowRightLeft,
+    title: "Converter suite",
+    description: "Convert JSON to TypeScript, Zod schemas, CSV, YAML, and more with one click.",
+    label: "Converter workflow",
+  },
+  {
+    icon: TableProperties,
+    title: "Table view",
+    description: "Explore arrays of objects as a sortable, filterable table with column controls.",
+    label: "Exploration workflow",
+  },
+  {
+    icon: Bot,
+    title: "AI assistant",
+    description: "Ask questions about your JSON, detect issues, and get schema suggestions automatically.",
+    label: "AI workflow",
   },
 ] as const;
 
@@ -43,7 +61,7 @@ export default function FeaturesSection() {
             letterSpacing: "-0.02em",
           }}
         >
-          Built for the JSON work people actually do every day.
+          Eight tools. One workspace. Zero context switching.
         </h2>
         <p
           className="max-w-3xl"

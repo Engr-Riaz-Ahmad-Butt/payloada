@@ -13,7 +13,7 @@ export default function PrivacyPage() {
     <ContentPage
       eyebrow="Privacy"
       title="Privacy-first by default"
-      intro="Payloada is built to keep core JSON workflows local to your browser. This page explains what stays local, what can leave the browser, and when you are in control."
+      intro="Payloada is built to keep core JSON workflows local to your browser. This page explains what stays local, what can leave the browser, which features rely on external services, and what you should assume when using the product in beta."
     >
       <section className="space-y-3">
         <h2 className="text-xl font-semibold text-text-primary">What stays local</h2>
@@ -43,6 +43,33 @@ export default function PrivacyPage() {
       </section>
 
       <section className="space-y-3">
+        <h2 className="text-xl font-semibold text-text-primary">AI and external providers</h2>
+        <p>
+          AI features are optional. If you use them, the selected prompt and the JSON context sent
+          for analysis are processed by the configured model provider. That means AI actions should
+          be treated differently from local tools like formatting or validation.
+        </p>
+        <p>
+          If your payload contains credentials, secrets, personal data, or customer records, avoid
+          sending it to AI features unless you have already redacted the sensitive parts and are
+          comfortable with the external processing involved.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold text-text-primary">Sharing and saved links</h2>
+        <p>
+          Sharing is never assumed silently. If a deployment offers link creation or related
+          workflows, that data should be treated as intentionally transmitted rather than
+          automatically local-only.
+        </p>
+        <p>
+          During beta, you should assume shared data is only appropriate for non-sensitive payloads
+          unless the deployment clearly documents stronger privacy controls.
+        </p>
+      </section>
+
+      <section className="space-y-3">
         <h2 className="text-xl font-semibold text-text-primary">Analytics and logs</h2>
         <p>
           The app can be deployed with privacy-respecting analytics such as Plausible. Those
@@ -51,6 +78,19 @@ export default function PrivacyPage() {
         <p>
           Operational logs may include standard request metadata needed to keep the application
           secure and stable, especially for server-side AI or rate-limited routes.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold text-text-primary">Data retention and support</h2>
+        <p>
+          The core product is designed so normal browser-side JSON work does not require stored
+          documents on our side. Operational logs may still exist for uptime, debugging, abuse
+          prevention, and rate limiting on server-backed features.
+        </p>
+        <p>
+          If you have deployment-specific privacy questions, contact us before sending sensitive
+          production data through any network-backed feature.
         </p>
       </section>
 

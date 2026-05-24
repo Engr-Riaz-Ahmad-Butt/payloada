@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
@@ -18,12 +19,9 @@ export default function Navbar() {
     <nav className="sticky top-0 z-40 w-full border-b border-ui-border bg-obsidian-base/95 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-300 items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
         <div className="flex items-center gap-5 lg:gap-8">
-          <span
-            className="text-xl font-black tracking-tight sm:text-2xl"
-            style={{ color: "#C07040", fontFamily: "Inter, sans-serif" }}
-          >
-            Payloada
-          </span>
+          <Link href="/" className="flex items-center no-underline">
+            <img src="/payloada-logo-full.svg" alt="Payloada" className="h-10 w-auto" />
+          </Link>
 
           <div className="hidden items-center gap-5 lg:flex xl:gap-6">
             {navLinks.map((link) => (

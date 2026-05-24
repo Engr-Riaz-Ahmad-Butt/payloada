@@ -71,6 +71,21 @@ export function ToolPage({
               {title}
             </h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">{subtitle}</p>
+
+            <div className="mt-5 grid grid-cols-1 gap-x-6 gap-y-2 border-t border-ui-border/50 pt-4 sm:grid-cols-2 md:grid-cols-4">
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <span className="text-[#3DD68C] font-semibold">✓</span> 100% Client-Side Privacy
+              </span>
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <span className="text-[#3DD68C] font-semibold">✓</span> Web Worker Speed
+              </span>
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <span className="text-[#3DD68C] font-semibold">✓</span> No Account Required
+              </span>
+              <span className="flex items-center gap-2 text-[13px] text-text-secondary">
+                <span className="text-[#3DD68C] font-semibold">✓</span> Diff, Convert & Validate
+              </span>
+            </div>
           </div>
         </section>
 

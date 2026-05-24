@@ -83,11 +83,13 @@ export function IssueCard({
   icon,
   title,
   body,
+  action,
 }: {
   tone: "success" | "warning" | "error";
   icon: React.ReactNode;
   title: string;
   body: string;
+  action?: { label: string; onClick: () => void };
 }) {
   const toneClasses =
     tone === "error"
@@ -100,9 +102,18 @@ export function IssueCard({
     <div className={cn("rounded-sm border-[0.5px] px-4 py-4", toneClasses)}>
       <div className="flex items-start gap-3">
         <div className="mt-0.5">{icon}</div>
-        <div>
+        <div className="flex-1">
           <p className="text-[14px] font-semibold text-text-primary">{title}</p>
           <p className="mt-1 text-[13px] font-normal leading-[1.6] text-text-secondary">{body}</p>
+          {action ? (
+            <button
+              type="button"
+              onClick={action.onClick}
+              className="mt-2 text-[11px] font-semibold underline underline-offset-2 opacity-80 transition-opacity hover:opacity-100"
+            >
+              {action.label}
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

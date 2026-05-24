@@ -84,6 +84,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
     return parseJsonSafe(SAMPLE_JSON);
   });
   const [isParsing, setIsParsing] = useState(false);
+  const [workerParseMs, setWorkerParseMs] = useState<number | null>(null);
   const workerRef = useRef<Worker | null>(null);
   const activeRequestIdRef = useRef<string | null>(null);
 
@@ -147,7 +148,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
     const worker = new Worker(new URL("../../../../../workers/json-worker.ts", import.meta.url));
 
     worker.onmessage = (event: MessageEvent<JsonWorkerResponse>) => {
-      const { id, valid, data, error, line, column } = event.data;
+      const { id, valid, data, error, line, column, parseDurationMs } = event.data;
       if (id === activeRequestIdRef.current) {
         if (valid) {
           setParseResult({ valid: true, data: data as JsonValue });
@@ -160,6 +161,9 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
           });
         }
         setIsParsing(false);
+        if (parseDurationMs !== undefined) {
+          setWorkerParseMs(parseDurationMs);
+        }
       }
     };
 
@@ -680,6 +684,7 @@ export function useLiveJsonWorkspace(options: UseLiveJsonWorkspaceOptions = {}) 
       converterTab,
       jwtInput,
       isParsing,
+      workerParseMs,
     },
     derived: {
       parseResult,

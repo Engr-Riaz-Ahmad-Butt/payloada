@@ -34,7 +34,7 @@ export default function ContactPage() {
     <ContentPage
       eyebrow="Contact"
       title="Talk to the team"
-      intro="If you are testing Payloada, launching it internally, or just want to share feedback, these are the best channels to reach us."
+      intro="If you are testing Payloada, evaluating it for your team, or reporting bugs from beta, these are the best channels to reach us. Include enough context so we can reproduce the issue or answer the question quickly."
     >
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {contacts.map((contact) => (
@@ -49,6 +49,24 @@ export default function ContactPage() {
           </a>
         ))}
       </div>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold text-text-primary">What to include in a bug report</h2>
+        <p>
+          The fastest reports include the route you were on, the action you took, the expected
+          result, the actual result, and whether the issue involved a local-only feature or a
+          network-backed feature like AI or sharing.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold text-text-primary">Privacy and support expectations</h2>
+        <p>
+          Do not email production secrets, private keys, raw customer data, or unredacted tokens.
+          If your question is privacy-sensitive, describe the situation at a high level first and
+          we can guide you on the safest next step.
+        </p>
+      </section>
     </ContentPage>
   );
 }

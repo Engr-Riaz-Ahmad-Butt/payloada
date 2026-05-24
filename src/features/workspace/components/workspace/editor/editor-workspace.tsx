@@ -33,6 +33,7 @@ import {
   StatsGrid,
   TreeNode,
 } from "../shared";
+import { maskSensitiveValues } from "../shared/utils";
 import type { EditorInstance, InspectorView, SearchMatch, SelectedNode } from "../core/types";
 import { evaluateJsonPathQuery, findSearchMatches, renderJsonValue } from "../shared/utils";
 import { ColumnView } from "./column-view";
@@ -63,6 +64,7 @@ export function EditorWorkspace({
   onLoadSample,
   onFetchFromUrl,
   isParsing,
+  workerParseMs,
 }: {
   source: string;
   setSource: React.Dispatch<React.SetStateAction<string>>;
@@ -88,11 +90,34 @@ export function EditorWorkspace({
   onLoadSample: () => void;
   onFetchFromUrl: () => void;
   isParsing?: boolean;
+  workerParseMs?: number | null;
 }) {
   const { monacoTheme } = useTheme();
   const hasDesktopInspectorLayout = useMediaQuery("(min-width: 1280px)");
+
+  const handleRedactSensitive = () => {
+    if (!parseResult?.valid) return;
+    const masked = maskSensitiveValues(parseResult.data);
+    setSource(JSON.stringify(masked, null, 2));
+  };
+
+  const handleAutoFix = () => {
+    if (!parseResult?.valid) return;
+    const fixed = JSON.stringify(
+      parseResult.data,
+      (_key, value) => {
+        if (typeof value === "string" && /^\d+(\.\d+)?$/.test(value)) {
+          return parseFloat(value);
+        }
+        return value as unknown;
+      },
+      2,
+    );
+    setSource(fixed);
+  };
   const showMobileGraphPanel = (inspectorView === "graph" || inspectorView === "columns") && !hasDesktopInspectorLayout;
   const [treeContainerElement, setTreeContainerElement] = useState<HTMLDivElement | null>(null);
+  const [showStats, setShowStats] = useState(false);
   const [jsonPathQuery, setJsonPathQuery] = useState("");
   const jsonPathState = useMemo(
     () =>
@@ -226,7 +251,7 @@ export function EditorWorkspace({
             fontSize: 13,
             lineHeight: 28,
             tabSize: 2,
-            fontFamily: "var(--font-geist-mono)",
+            fontFamily: "var(--font-mono)",
           }}
         />
       </div>
@@ -236,6 +261,11 @@ export function EditorWorkspace({
           <span>UTF-8</span>
           <span>JSON</span>
           <span>2 spaces</span>
+          {workerParseMs != null ? (
+            <span title="Parsed by background Web Worker" style={{ color: "#C07040" }}>
+              ⚡ Worker {workerParseMs}ms
+            </span>
+          ) : null}
         </div>
         <span>
           Line {linePosition.line}, Column {linePosition.column}
@@ -362,6 +392,7 @@ export function EditorWorkspace({
                     icon={<ShieldAlert className="size-4" />}
                     title="Sensitive fields detected"
                     body={intelligentIssues.sensitive.path}
+                    action={{ label: "Redact sensitive fields", onClick: handleRedactSensitive }}
                   />
                 ) : null}
                 {intelligentIssues.warning ? (
@@ -370,6 +401,7 @@ export function EditorWorkspace({
                     icon={<Info className="size-4" />}
                     title="Type mismatch suggestion"
                     body={intelligentIssues.warning}
+                    action={{ label: "Auto-fix type mismatch", onClick: handleAutoFix }}
                   />
                 ) : null}
                 {!intelligentIssues.sensitive && !intelligentIssues.warning ? (
@@ -383,9 +415,25 @@ export function EditorWorkspace({
               </div>
             </SidebarSection>
 
-            <SidebarSection title="Document Stats">
-              <StatsGrid stats={stats} />
-            </SidebarSection>
+            <div className="border-b-[0.5px] border-ui-border p-5">
+              <button
+                type="button"
+                onClick={() => setShowStats(!showStats)}
+                className="flex w-full items-center justify-between text-left focus-visible:outline-none"
+              >
+                <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary/80">
+                  Document Stats
+                </h3>
+                <span className="text-[11px] font-semibold text-copper-accent hover:text-copper-accent/80 transition-colors">
+                  {showStats ? "Collapse" : "Expand"}
+                </span>
+              </button>
+              {showStats ? (
+                <div className="mt-4">
+                  <StatsGrid stats={stats} />
+                </div>
+              ) : null}
+            </div>
           </>
         ) : null}
 

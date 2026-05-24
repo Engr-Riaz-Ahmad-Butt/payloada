@@ -58,6 +58,7 @@ export function LiveJsonWorkspace({
     converterTab,
     jwtInput,
     isParsing,
+    workerParseMs,
   } = state;
   const {
     parseResult,
@@ -209,6 +210,7 @@ export function LiveJsonWorkspace({
                   onLoadSample={loadSampleJson}
                   onFetchFromUrl={() => setShowUrlInput(true)}
                   isParsing={isParsing}
+                  workerParseMs={workerParseMs}
                 />
               ) : null}
 

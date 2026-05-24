@@ -10,14 +10,16 @@ export type JsonWorkerResponse = {
   error?: string;
   line?: number;
   column?: number;
+  parseDurationMs?: number;
 };
 
 self.addEventListener("message", (event: MessageEvent<JsonWorkerRequest>) => {
   const { id, source } = event.data;
+  const start = Date.now();
 
   try {
     const data = JSON.parse(source);
-    self.postMessage({ id, valid: true, data } satisfies JsonWorkerResponse);
+    self.postMessage({ id, valid: true, data, parseDurationMs: Date.now() - start } satisfies JsonWorkerResponse);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to parse JSON input.";
     const positionMatch = message.match(/position (\d+)/i);
@@ -39,6 +41,7 @@ self.addEventListener("message", (event: MessageEvent<JsonWorkerRequest>) => {
       error: message,
       line,
       column,
+      parseDurationMs: Date.now() - start,
     } satisfies JsonWorkerResponse);
   }
 });

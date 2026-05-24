@@ -327,7 +327,7 @@ export function MockWorkspace({
               fontSize: 14,
               lineHeight: 26,
               tabSize: 2,
-              fontFamily: "var(--font-geist-mono)",
+              fontFamily: "var(--font-mono)",
             }}
           />
         </div>
