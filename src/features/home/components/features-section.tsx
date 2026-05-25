@@ -109,7 +109,7 @@ export default function FeaturesSection() {
             </div>
 
             <div
-              className="relative mt-3 flex h-11 w-11 items-center justify-center rounded-[10px] border-[0.5px] transition-colors"
+              className="relative mt-3 flex h-11 w-11 items-center justify-center rounded-[10px] border-[0.5px] transition-all duration-300 group-hover:scale-105 group-hover:border-[#C07040]/40 group-hover:bg-[#C07040]/5"
               style={{
                 backgroundColor: "var(--color-surface-container)",
                 borderColor: "var(--color-ui-border)",
@@ -133,12 +133,12 @@ export default function FeaturesSection() {
             </h3>
 
             <p
-              className="relative mt-3 max-w-[26ch]"
+              className="relative mt-3 max-w-[36ch]"
               style={{
                 color: "var(--color-text-secondary)",
                 fontFamily: "Inter, sans-serif",
                 fontSize: "13px",
-                lineHeight: "1.5",
+                lineHeight: "1.6",
                 fontWeight: 400,
               }}
             >

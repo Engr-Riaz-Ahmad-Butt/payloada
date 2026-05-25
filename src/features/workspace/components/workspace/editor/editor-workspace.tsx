@@ -11,6 +11,8 @@ import {
   FileJson2,
   Info,
   Loader2,
+  Maximize2,
+  Minimize2,
   Search,
   ShieldAlert,
   X,
@@ -118,6 +120,7 @@ export function EditorWorkspace({
   const showMobileGraphPanel = (inspectorView === "graph" || inspectorView === "columns") && !hasDesktopInspectorLayout;
   const [treeContainerElement, setTreeContainerElement] = useState<HTMLDivElement | null>(null);
   const [showStats, setShowStats] = useState(false);
+  const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
   const [jsonPathQuery, setJsonPathQuery] = useState("");
   const jsonPathState = useMemo(
     () =>
@@ -178,16 +181,42 @@ export function EditorWorkspace({
     setSelectedPath(treeSearchMatches[nextIndex]?.path ?? null);
   };
 
+  useEffect(() => {
+    if (!isEditorFullscreen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const layoutTimeout = window.setTimeout(() => {
+      (editorRef.current as { layout?: () => void } | null)?.layout?.();
+      editorRef.current?.focus?.();
+    }, 50);
+
+    return () => {
+      window.clearTimeout(layoutTimeout);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [editorRef, isEditorFullscreen]);
+
   const editorPane = (
     <div
       className={cn(
-        "flex min-h-0 flex-col",
+        "flex h-full min-h-0 flex-1 flex-col",
         inspectorView === "none" ? "" : "border-r-[0.5px] border-ui-border",
       )}
     >
       <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 sm:px-5">
         <span className="font-mono text-[13px] font-normal text-on-surface-variant">input.json</span>
         <div className="flex items-center gap-2 text-on-surface-variant">
+          <button
+            type="button"
+            onClick={() => setIsEditorFullscreen((current) => !current)}
+            title={isEditorFullscreen ? "Exit fullscreen" : "Fullscreen editor"}
+            className="transition-colors hover:text-text-primary"
+          >
+            {isEditorFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
+          </button>
           <button type="button" onClick={() => onCopy(source, "Copied editor content")}>
             <Copy className="size-4" />
           </button>
@@ -197,7 +226,12 @@ export function EditorWorkspace({
         </div>
       </div>
 
-      <div className="relative min-h-[360px] flex-1 bg-obsidian-base md:min-h-[460px] xl:min-h-0">
+      <div
+        className={cn(
+          "relative flex-1 bg-obsidian-base",
+          isEditorFullscreen ? "min-h-0" : "min-h-[520px] md:min-h-[620px] xl:min-h-0",
+        )}
+      >
         {!source.trim() ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-obsidian-base/90 p-6">
             <div className="space-y-4 text-center">
@@ -694,24 +728,34 @@ export function EditorWorkspace({
     ) : null;
 
   return (
-    <div
-      className={cn(
-        "grid h-full min-h-0",
-        inspectorView === "none"
-          ? "grid-cols-1"
-          : (inspectorView === "graph" || inspectorView === "columns")
-          ? "grid-cols-1 xl:grid-cols-2"
-          : "grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px]",
-      )}
-    >
-      {showMobileGraphPanel ? (
-        inspectorPane
-      ) : (
-        <>
-          {editorPane}
-          {inspectorPane}
-        </>
-      )}
-    </div>
+    <>
+      <div
+        className={cn(
+          "grid h-full min-h-0",
+          inspectorView === "none"
+            ? "grid-cols-1"
+            : (inspectorView === "graph" || inspectorView === "columns")
+            ? "grid-cols-1 xl:grid-cols-2"
+            : "grid-cols-1 xl:grid-cols-[minmax(0,1fr)_320px]",
+        )}
+      >
+        {showMobileGraphPanel ? (
+          inspectorPane
+        ) : (
+          <>
+            {!isEditorFullscreen ? editorPane : null}
+            {!isEditorFullscreen ? inspectorPane : null}
+          </>
+        )}
+      </div>
+
+      {isEditorFullscreen ? (
+        <div className="fixed inset-0 z-[70] bg-obsidian-base/98 p-4 sm:p-5 lg:p-6">
+          <div className="mx-auto flex h-full w-full max-w-[1800px] flex-col overflow-hidden rounded-[12px] border-[0.5px] border-ui-border bg-obsidian-base shadow-2xl">
+            {editorPane}
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }

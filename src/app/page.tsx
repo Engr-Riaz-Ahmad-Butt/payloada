@@ -99,50 +99,30 @@ export default function Home() {
             }}
           />
 
-          <div className="relative mb-5 max-w-[760px] sm:mb-6">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 -z-10 scale-[1.02] blur-[18px] opacity-45"
+          <h1
+            className="mb-5 max-w-[760px] leading-tight sm:mb-6"
+            style={{
+              fontFamily: "Inter, sans-serif",
+              fontSize: "clamp(36px, 7vw, 64px)",
+              lineHeight: "1.05",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              color: "var(--color-on-surface)",
+            }}
+          >
+            The modern JSON workspace for{" "}
+            <span
               style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "clamp(36px, 7vw, 64px)",
-                lineHeight: "1.05",
-                fontWeight: 800,
-                letterSpacing: "-0.03em",
-                color: "rgba(232, 234, 240, 0.28)",
-                textShadow: "0 0 36px rgba(232, 234, 240, 0.18), 0 0 70px rgba(192, 112, 64, 0.14)",
+                background: "linear-gradient(135deg, #C97A3D 0%, #E89A3D 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: 900,
               }}
             >
-              The modern JSON workspace for serious developers.
-            </div>
-
-            <h1
-              className="relative leading-tight"
-              style={{
-                fontFamily: "Inter, sans-serif",
-                fontSize: "clamp(36px, 7vw, 64px)",
-                lineHeight: "1.05",
-                fontWeight: 800,
-                letterSpacing: "-0.03em",
-                color: "var(--color-on-surface)",
-                textShadow: "0 0 18px rgba(255, 255, 255, 0.04)",
-              }}
-            >
-              The modern JSON workspace for{" "}
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #C97A3D 0%, #E89A3D 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  fontWeight: 900,
-                  filter: "drop-shadow(0 0 18px rgba(192, 112, 64, 0.28))",
-                }}
-              >
-                serious
-              </span>{" "}
-              developers.
-            </h1>
-          </div>
+              serious
+            </span>{" "}
+            developers.
+          </h1>
 
           <p
             className="mb-8 max-w-[560px] px-1 sm:px-0"
