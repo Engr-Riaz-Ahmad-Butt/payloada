@@ -1,7 +1,20 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { ArrowDownToLine, Copy, FileUp, RotateCcw, Send, Sparkles } from "lucide-react";
+import {
+  ArrowDownToLine,
+  Braces,
+  Copy,
+  Eye,
+  FileUp,
+  RotateCcw,
+  Search,
+  Send,
+  Shield,
+  Sparkles,
+  WandSparkles,
+  Wrench,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -33,6 +46,13 @@ type AiApiResponse = {
   upstreamMessage?: string;
 };
 
+type Suggestion = {
+  task: AiTask;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  q?: string;
+};
+
 let _uid = 0;
 const uid = () => String(++_uid);
 const getNow = () => Date.now();
@@ -51,19 +71,26 @@ const PLACEHOLDERS: Record<AiTask, string> = {
   explain: "Ask anything about this JSON...",
   fix: "Describe what to fix, or press send...",
   query: "e.g. Find all users where active is true",
-  generate: "e.g. 10 records with varied statuses",
+  generate: "e.g. Generate 5 realistic records from this schema",
 };
 
-const SUGGESTIONS = [
-  { task: "explain" as AiTask, label: "Explain this JSON", icon: "📖", q: undefined as string | undefined },
-  { task: "fix" as AiTask, label: "Fix all errors", icon: "🔧", q: undefined as string | undefined },
+const SUGGESTIONS: Suggestion[] = [
+  { task: "explain", label: "Explain JSON", icon: Sparkles },
+  { task: "fix", label: "Fix errors", icon: Wrench },
+  { task: "query", label: "Query data", icon: Search, q: "Find the most important fields in this JSON" },
+  { task: "generate", label: "Generate sample", icon: WandSparkles, q: "Generate 5 realistic records" },
   {
-    task: "query" as AiTask,
+    task: "query",
     label: "Find sensitive fields",
-    icon: "🔍",
-    q: "Find all fields that look like passwords, tokens, API keys, or secrets",
+    icon: Shield,
+    q: "Find all fields that look like passwords, tokens, API keys, authorization headers, or secrets",
   },
-  { task: "generate" as AiTask, label: "Generate 5 similar records", icon: "✨", q: "5 realistic records" },
+  {
+    task: "generate",
+    label: "Generate TypeScript types",
+    icon: Braces,
+    q: "Generate TypeScript types for this JSON",
+  },
 ];
 
 export function AiWorkspace({
@@ -71,11 +98,13 @@ export function AiWorkspace({
   onSendToEditor,
   onSetSource,
   onCopy,
+  onViewJson,
 }: {
   source: string;
   onSendToEditor: (json: string) => void;
   onSetSource?: (json: string) => void;
   onCopy: (value: string, message?: string) => Promise<void>;
+  onViewJson?: () => void;
 }) {
   const [msgs, setMsgs] = useState<ChatMsg[]>([]);
   const [task, setTask] = useState<AiTask>("explain");
@@ -84,10 +113,13 @@ export function AiWorkspace({
   const [remaining, setRemaining] = useState<number | null>(null);
   const [countdown, setCountdown] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const hasRestoredSessionRef = useRef(false);
   const hasJson = source.trim().length > 0;
+  const jsonSizeKb = hasJson ? (new TextEncoder().encode(source).length / 1024).toFixed(1) : null;
+  const lastAssistant = [...msgs].reverse().find((message): message is Extract<ChatMsg, { role: "assistant" }> => message.role === "assistant");
+  const lastUser = [...msgs].reverse().find((message): message is Extract<ChatMsg, { role: "user" }> => message.role === "user");
 
   useEffect(() => {
     try {
@@ -145,114 +177,125 @@ export function AiWorkspace({
     }
   }, [countdown, input, msgs, remaining, task]);
 
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.name.endsWith(".json") && file.type !== "application/json") {
-      toast.error("Please select a JSON file");
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result;
-      if (typeof text !== "string") return;
-      try {
-        JSON.parse(text);
-        onSetSource?.(text);
-        toast.success(`Loaded ${file.name}`);
-      } catch {
-        toast.error("Invalid JSON file — could not parse");
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  }
-
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [msgs]);
 
   useEffect(() => {
     if (countdown <= 0) return;
-    const t = setInterval(() => setCountdown((c) => (c > 1 ? c - 1 : 0)), 1000);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setCountdown((current) => (current > 1 ? current - 1 : 0)), 1000);
+    return () => clearInterval(timer);
   }, [countdown]);
 
-  async function send(t: AiTask, q?: string) {
+  function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!file.name.endsWith(".json") && file.type !== "application/json") {
+      toast.error("Please select a JSON file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (loadEvent) => {
+      const text = loadEvent.target?.result;
+      if (typeof text !== "string") return;
+
+      try {
+        JSON.parse(text);
+        onSetSource?.(text);
+        toast.success(`Loaded ${file.name}`);
+      } catch {
+        toast.error("Invalid JSON file - could not parse");
+      }
+    };
+
+    reader.readAsText(file);
+    event.target.value = "";
+  }
+
+  async function send(nextTask: AiTask, question?: string) {
     if (!hasJson) {
       toast.error("Paste JSON in the Editor first");
       return;
     }
 
-    const content = q ?? input.trim();
+    const content = question ?? input.trim();
     const createdAt = getNow();
     setInput("");
     setLoading(true);
 
-    const loadId = uid();
-    setMsgs((p) => [
-      ...p,
-      { id: uid(), role: "user", content: content || getFallbackUserMessage(t), task: t, createdAt },
-      { id: loadId, role: "loading" },
+    const loadingId = uid();
+    setMsgs((previous) => [
+      ...previous,
+      {
+        id: uid(),
+        role: "user",
+        content: content || getFallbackUserMessage(nextTask),
+        task: nextTask,
+        createdAt,
+      },
+      { id: loadingId, role: "loading" },
     ]);
 
     try {
       const res = await fetch("/api/ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task: t, json: source, question: content || undefined }),
+        body: JSON.stringify({ task: nextTask, json: source, question: content || undefined }),
       });
 
       const data = (await res.json()) as AiApiResponse;
-      if (data.remaining !== undefined) setRemaining(data.remaining);
+      if (data.remaining !== undefined) {
+        setRemaining(data.remaining);
+      }
 
       if (!res.ok) {
         setCountdown(data.retryAfter ?? 0);
-        setMsgs((p) =>
-          p.map((m) =>
-            m.id === loadId
+        setMsgs((previous) =>
+          previous.map((message) =>
+            message.id === loadingId
               ? {
-                  id: loadId,
+                  id: loadingId,
                   role: "error" as const,
                   message: data.error ?? "Something went wrong",
                   code: data.code,
                   retryAfter: data.retryAfter,
                   createdAt: getNow(),
                 }
-              : m,
+              : message,
           ),
         );
         return;
       }
 
       const result = data.result ?? "";
-      setMsgs((p) =>
-        p.map((m) =>
-          m.id === loadId
+      setMsgs((previous) =>
+        previous.map((message) =>
+          message.id === loadingId
             ? {
-                id: loadId,
+                id: loadingId,
                 role: "assistant" as const,
                 content: result,
-                task: t,
+                task: nextTask,
                 json: extractFirstJsonBlock(result),
                 jsonPath: extractJsonPath(result),
                 createdAt: getNow(),
               }
-            : m,
+            : message,
         ),
       );
       setCountdown(0);
     } catch {
-      setMsgs((p) =>
-        p.map((m) =>
-          m.id === loadId
+      setMsgs((previous) =>
+        previous.map((message) =>
+          message.id === loadingId
             ? {
-                id: loadId,
+                id: loadingId,
                 role: "error" as const,
                 message: "Could not reach the AI service.",
                 createdAt: getNow(),
               }
-            : m,
+            : message,
         ),
       );
     } finally {
@@ -266,6 +309,7 @@ export function AiWorkspace({
     setLoading(false);
     setRemaining(null);
     setInput("");
+
     try {
       window.sessionStorage.removeItem(AI_WORKSPACE_SESSION_KEY);
     } catch {
@@ -273,43 +317,97 @@ export function AiWorkspace({
     }
   }
 
+  function handleComposerKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      if (!loading && countdown <= 0 && hasJson) {
+        void send(task);
+      }
+    }
+  }
+
+  async function handleCopyLast() {
+    if (!lastAssistant) {
+      return;
+    }
+
+    await onCopy(lastAssistant.content, "Copied last response");
+  }
+
+  function handleRegenerate() {
+    if (!lastUser || loading || countdown > 0) {
+      return;
+    }
+
+    void send(lastUser.task, lastUser.content);
+  }
+
   return (
     <div className="flex h-full flex-col bg-obsidian-base">
-      <div className="flex shrink-0 items-center justify-between border-b-[0.5px] border-ui-border bg-surface/60 px-4 py-3 sm:px-5">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-copper-accent/15">
+      <div className="flex shrink-0 items-center justify-between border-b-[0.5px] border-ui-border bg-[#0F1117] px-4 py-2 sm:px-5">
+        <div className="flex items-center gap-3">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg border-[0.5px] border-copper-accent bg-copper-accent/10">
             <Sparkles className="size-3.5 text-copper-accent" />
           </div>
-          <span className="text-[14px] font-semibold text-text-primary">AI Assistant</span>
-          <span className="rounded-full border-[0.5px] border-copper-accent/30 bg-copper-accent/10 px-2 py-0.5 text-[10px] font-medium text-copper-accent">
-            Beta
-          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-[13px] font-semibold tracking-[-0.01em] text-text-primary">AI Assistant</span>
+              <span className="rounded-sm border-[0.5px] border-copper-accent/30 bg-copper-accent/10 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.08em] text-copper-accent">
+                Beta
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          {remaining !== null && remaining <= 10 && (
-            <span className="text-[11px] text-text-secondary">{remaining}/10 today</span>
-          )}
-          {msgs.length > 0 && (
+
+        <div className="flex items-center gap-2">
+          {onSetSource ? (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="flex h-7 items-center gap-1.5 rounded-lg border-[0.5px] border-ui-border bg-transparent px-2.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:bg-surface-elevated/50 hover:text-text-primary"
+              >
+                <FileUp className="size-3.5" />
+                Upload JSON
+              </button>
+            </>
+          ) : null}
+          {(msgs.length > 0 || input.trim()) && (
             <button
               type="button"
               onClick={clearChat}
-              className="flex items-center gap-1 text-[11px] text-text-secondary transition-colors hover:text-text-primary"
+              className="flex h-7 items-center gap-1.5 rounded-lg border-[0.5px] border-ui-border bg-transparent px-2.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:bg-surface-elevated/50 hover:text-text-primary"
             >
-              <RotateCcw className="size-3" />
+              <RotateCcw className="size-3.5" />
               Clear
             </button>
           )}
+          {onViewJson ? (
+            <button
+              type="button"
+              onClick={onViewJson}
+              className="flex h-7 items-center gap-1.5 rounded-lg border-[0.5px] border-ui-border bg-transparent px-2.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:bg-surface-elevated/50 hover:text-text-primary"
+            >
+              <Eye className="size-3.5" />
+              View JSON
+            </button>
+          ) : null}
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center justify-between border-b-[0.5px] border-ui-border bg-surface-elevated/60 px-4 py-2 sm:px-5">
+      <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1.5 border-b-[0.5px] border-ui-border bg-[#0F1117] px-4 py-1.5 sm:px-5">
         {hasJson ? (
           <span className="flex items-center gap-2 font-mono text-[11px] text-text-secondary">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500" />
             Using editor JSON
-            <span style={{ color: "var(--color-text-secondary)" }}>
-              · {(new TextEncoder().encode(source).length / 1024).toFixed(1)} KB
-            </span>
+            <span className="text-[#5A6070]">- {jsonSizeKb} KB</span>
           </span>
         ) : (
           <span className="flex items-center gap-2 font-mono text-[11px] text-text-secondary">
@@ -317,59 +415,88 @@ export function AiWorkspace({
             No JSON loaded
           </span>
         )}
-        {onSetSource ? (
+
+        <span className="hidden h-3.5 w-px bg-ui-border sm:block" />
+        <span className="font-mono text-[11px] text-text-secondary">
+          Mode <span className="text-[#8B92A8]">{TASK_LABEL[task]}</span>
+        </span>
+        <span className="hidden h-3.5 w-px bg-ui-border sm:block" />
+        <span className="font-mono text-[11px] text-text-secondary">
+          Model <span className="text-[#8B92A8]">Gemini</span>
+        </span>
+
+        {remaining !== null && remaining <= 10 ? (
           <>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".json,application/json"
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-            <button
-              type="button"
-              title="Load a JSON file directly into this workspace"
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-md border-[0.5px] border-ui-border bg-obsidian-base px-2.5 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:text-text-primary"
-            >
-              <FileUp className="size-3" />
-              Upload JSON
-            </button>
+            <span className="hidden h-3.5 w-px bg-ui-border sm:block" />
+            <span className="font-mono text-[11px] text-text-secondary">
+              Uses left <span className="text-[#F5A623]">{remaining}</span>
+            </span>
           </>
         ) : null}
+
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="flex shrink-0 gap-2 overflow-x-auto border-b-[0.5px] border-ui-border px-4 py-2 sm:px-5">
+        {SUGGESTIONS.map((suggestion) => {
+          const Icon = suggestion.icon;
+          return (
+            <button
+              key={suggestion.label}
+              type="button"
+              onClick={() => {
+                setTask(suggestion.task);
+                void send(suggestion.task, suggestion.q);
+              }}
+              className={cn(
+                "flex h-7 shrink-0 items-center gap-1.5 rounded-full border-[0.5px] px-3 text-[10px] font-medium transition-colors",
+                task === suggestion.task
+                  ? "border-copper-accent bg-copper-accent/12 text-copper-accent shadow-[0_0_0_1px_rgba(192,112,64,0.12)]"
+                  : "border-ui-border bg-[#0F1117] text-text-secondary hover:border-copper-accent/40 hover:bg-surface-elevated/40 hover:text-copper-accent",
+              )}
+            >
+              <Icon className="size-3.5" />
+              {suggestion.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-4 py-3 sm:px-5">
         {!hasJson ? (
           <EmptyNoJson />
         ) : msgs.length === 0 ? (
-          <WelcomeScreen onSuggest={(s) => void send(s.task, s.q)} />
+          <WelcomeScreen
+            onSuggest={(suggestion) => {
+              setTask(suggestion.task);
+              void send(suggestion.task, suggestion.q);
+            }}
+          />
         ) : (
-          <div className="flex flex-col gap-5 px-4 py-5 sm:px-5">
-            {msgs.map((m) => {
-              if (m.role === "user") {
+          <div className="flex flex-col gap-4">
+            {msgs.map((message) => {
+              if (message.role === "user") {
                 return (
-                  <div key={m.id} className="flex justify-end">
-                    <div className="max-w-[82%] rounded-2xl rounded-tr-sm border-[0.5px] border-ui-border bg-surface-container-high px-4 py-3">
-                      <p className="text-[13px] leading-relaxed text-text-primary">{m.content}</p>
-                      <p className="mt-1.5 text-right text-[10px] text-text-secondary/70">
-                        {formatMessageTime(m.createdAt)}
+                  <div key={message.id} className="flex justify-end">
+                    <div className="max-w-[78%] rounded-2xl rounded-tr-sm border-[0.5px] border-[#3A2218] bg-[#1F140C] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                      <p className="text-[12px] leading-relaxed text-text-primary">{message.content}</p>
+                      <p className="mt-1.5 text-right text-[10px] text-[#5A6070]">
+                        {formatMessageTime(message.createdAt)}
                       </p>
                     </div>
                   </div>
                 );
               }
 
-              if (m.role === "loading") {
+              if (message.role === "loading") {
                 return (
-                  <div key={m.id} className="flex items-start gap-2.5">
+                  <div key={message.id} className="flex items-start gap-2.5">
                     <AiAvatar />
-                    <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border-[0.5px] border-ui-border bg-surface-elevated px-4 py-4">
-                      {[0, 1, 2].map((i) => (
+                    <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border-[0.5px] border-ui-border bg-[#0F1117] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                      {[0, 1, 2].map((index) => (
                         <span
-                          key={i}
+                          key={index}
                           className="h-1.5 w-1.5 rounded-full bg-copper-accent"
-                          style={{ animation: `dot-b 1.2s ease-in-out ${i * 0.15}s infinite` }}
+                          style={{ animation: `dot-b 1.2s ease-in-out ${index * 0.15}s infinite` }}
                         />
                       ))}
                       <style>{`@keyframes dot-b{0%,80%,100%{opacity:.2;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}`}</style>
@@ -378,14 +505,14 @@ export function AiWorkspace({
                 );
               }
 
-              if (m.role === "error") {
+              if (message.role === "error") {
                 return (
-                  <div key={m.id} className="flex items-start gap-2.5">
+                  <div key={message.id} className="flex items-start gap-2.5">
                     <AiAvatar error />
-                    <div className="max-w-[82%] rounded-2xl rounded-tl-sm border-[0.5px] border-red-500/20 bg-red-500/5 px-4 py-3">
+                    <div className="max-w-[85%] rounded-2xl rounded-tl-sm border-[0.5px] border-red-500/20 bg-red-500/5 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
                       <p className="text-[12px] font-semibold text-red-500 dark:text-red-400">Error</p>
-                      <p className="mt-1 text-[12px] leading-relaxed text-text-secondary">{m.message}</p>
-                      <p className="mt-1.5 text-[10px] text-text-secondary/70">{formatMessageTime(m.createdAt)}</p>
+                      <p className="mt-1 text-[12px] leading-relaxed text-text-secondary">{message.message}</p>
+                      <p className="mt-1.5 text-[10px] text-[#5A6070]">{formatMessageTime(message.createdAt)}</p>
                       {countdown > 0 ? (
                         <p className="mt-2 text-[11px] text-text-secondary">Retry in {countdown}s</p>
                       ) : (
@@ -394,7 +521,7 @@ export function AiWorkspace({
                           onClick={() => void send(task)}
                           className="mt-2 text-[11px] font-medium text-copper-accent transition-opacity hover:opacity-75"
                         >
-                          Try again →
+                          Try again {"->"}
                         </button>
                       )}
                     </div>
@@ -402,28 +529,36 @@ export function AiWorkspace({
                 );
               }
 
-              if (m.role === "assistant") {
+              if (message.role === "assistant") {
                 return (
-                  <div key={m.id} className="flex items-start gap-2.5">
+                  <div key={message.id} className="flex items-start gap-2.5">
                     <AiAvatar />
                     <div className="min-w-0 flex-1">
-                      <div className="rounded-2xl rounded-tl-sm border-[0.5px] border-ui-border bg-surface-elevated px-4 py-4">
-                        <RenderedResponse text={m.content} />
+                      <div className="mb-2 flex items-center gap-2">
+                        <span className="text-[11px] font-medium text-copper-accent">Payloada AI</span>
+                        <span className="rounded-md border-[0.5px] border-ui-border bg-surface-elevated px-1.5 py-0.5 text-[9px] uppercase tracking-[0.06em] text-text-secondary">
+                          {TASK_LABEL[message.task]}
+                        </span>
                       </div>
-                      <p className="mt-1.5 pl-0.5 text-[10px] text-text-secondary/70">{formatMessageTime(m.createdAt)}</p>
+                      <div className="rounded-2xl rounded-tl-sm border-[0.5px] border-ui-border bg-[#0F1117] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                        <RenderedResponse text={message.content} />
+                      </div>
+                      <p className="mt-1.5 pl-0.5 text-[10px] text-[#5A6070]">
+                        {formatMessageTime(message.createdAt)}
+                      </p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5 pl-0.5">
-                        <MsgBtn onClick={() => void onCopy(m.content, "Copied response")}>
+                        <MsgBtn onClick={() => void onCopy(message.content, "Copied response")}>
                           <Copy className="size-3" /> Copy
                         </MsgBtn>
-                        {m.jsonPath && m.task === "query" && (
-                          <MsgBtn onClick={() => void onCopy(m.jsonPath!, "Copied JSONPath")} accent>
+                        {message.jsonPath && message.task === "query" && (
+                          <MsgBtn onClick={() => void onCopy(message.jsonPath!, "Copied JSONPath")} accent>
                             <Copy className="size-3" /> Copy JSONPath
                           </MsgBtn>
                         )}
-                        {m.json && (m.task === "fix" || m.task === "generate") && (
-                          <MsgBtn onClick={() => onSendToEditor(m.json!)} green>
+                        {message.json && (message.task === "fix" || message.task === "generate") && (
+                          <MsgBtn onClick={() => onSendToEditor(message.json!)} green>
                             <ArrowDownToLine className="size-3" />
-                            {m.task === "generate" ? "Use in editor" : "Send to editor"}
+                            {message.task === "generate" ? "Use in editor" : "Send to editor"}
                           </MsgBtn>
                         )}
                       </div>
@@ -434,45 +569,81 @@ export function AiWorkspace({
 
               return null;
             })}
+
             <div ref={bottomRef} />
           </div>
         )}
       </div>
 
-      <div className="shrink-0 border-t-[0.5px] border-ui-border bg-surface px-4 py-3 sm:px-5">
-        <div className="mb-2.5 flex gap-1.5 overflow-x-auto pb-0.5">
-          {TASKS.map((t) => (
+      <div className="shrink-0 border-t-[0.5px] border-ui-border bg-obsidian-base px-4 py-2 sm:px-5">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex gap-1 overflow-x-auto pb-0.5">
+            {TASKS.map((nextTask) => (
+              <button
+                key={nextTask}
+                type="button"
+                onClick={() => setTask(nextTask)}
+                className={cn(
+                  "shrink-0 rounded-md border-[0.5px] px-2.5 py-1 text-[10px] font-medium transition-colors",
+                  task === nextTask
+                    ? "border-copper-accent bg-copper-accent/12 text-copper-accent"
+                    : "border-ui-border bg-transparent text-text-secondary hover:border-ui-border-hover hover:bg-surface-elevated/40 hover:text-text-primary",
+                )}
+              >
+                {TASK_LABEL[nextTask]}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
             <button
-              key={t}
               type="button"
-              onClick={() => setTask(t)}
-              className={cn(
-                "shrink-0 rounded-full border-[0.5px] px-3 py-1 text-[11px] font-medium transition-colors",
-                task === t
-                  ? "border-copper-accent bg-copper-accent/15 text-copper-accent"
-                  : "border-ui-border bg-surface-elevated text-text-secondary hover:border-ui-border-hover hover:text-text-primary",
-              )}
+              onClick={() => void handleCopyLast()}
+              disabled={!lastAssistant}
+              className="flex h-7 items-center gap-1.5 rounded-md border-[0.5px] border-ui-border bg-transparent px-2.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:bg-surface-elevated/40 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {TASK_LABEL[t]}
+              <Copy className="size-3.5" />
+              Copy last
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={handleRegenerate}
+              disabled={!lastUser || loading || countdown > 0 || !hasJson}
+              className="flex h-7 items-center gap-1.5 rounded-md border-[0.5px] border-ui-border bg-transparent px-2.5 text-[10px] font-medium text-text-secondary transition-colors hover:border-ui-border-hover hover:bg-surface-elevated/40 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <RotateCcw className="size-3.5" />
+              Regenerate
+            </button>
+            <span className="flex h-7 items-center rounded-md border-[0.5px] border-ui-border bg-transparent px-2.5 text-[10px] font-medium text-text-secondary">
+              JSON context: {hasJson ? "ON" : "OFF"}
+            </span>
+          </div>
         </div>
 
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
+          onSubmit={(event) => {
+            event.preventDefault();
             void send(task);
           }}
-          className="flex gap-2"
+          className="flex items-end gap-2"
         >
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={PLACEHOLDERS[task]}
-            disabled={loading || countdown > 0 || !hasJson}
-            className="h-10 min-w-0 flex-1 rounded-xl border-[0.5px] border-ui-border bg-obsidian-base px-4 text-[13px] text-text-primary outline-none placeholder:text-text-secondary/50 transition-colors focus-visible:border-copper-accent disabled:opacity-50"
-          />
+          <div className="flex-1 rounded-xl border-[0.5px] border-ui-border bg-[#0F1117] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={(event) => setInput(event.target.value)}
+              onKeyDown={handleComposerKeyDown}
+              placeholder={PLACEHOLDERS[task]}
+              disabled={loading || countdown > 0 || !hasJson}
+              rows={2}
+              className="min-h-[36px] w-full resize-none bg-transparent text-[13px] leading-relaxed text-text-primary outline-none placeholder:text-text-secondary/50 disabled:opacity-50"
+            />
+            <div className="mt-1.5 flex items-center justify-between">
+              <p className="text-[10px] text-[#5A6070]">Shift+Enter new line - Enter to send</p>
+              <p className="text-[10px] text-[#5A6070]">{input.length} / 2000</p>
+            </div>
+          </div>
+
           <button
             type="submit"
             disabled={loading || !hasJson || countdown > 0}
@@ -482,8 +653,8 @@ export function AiWorkspace({
           </button>
         </form>
 
-        <p className="mt-2 text-[10px] text-text-secondary/60">
-          Powered by Gemini · Don&apos;t share passwords or private keys
+        <p className="mt-1.5 text-center text-[10px] text-text-secondary/60">
+          JSON is only sent when you use AI actions.
         </p>
       </div>
     </div>
@@ -494,8 +665,10 @@ function AiAvatar({ error = false }: { error?: boolean }) {
   return (
     <div
       className={cn(
-        "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full",
-        error ? "bg-red-500/15" : "bg-copper-accent/15",
+        "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-[0.5px]",
+        error
+          ? "border-red-500/30 bg-red-500/10"
+          : "border-copper-accent/30 bg-copper-accent/10",
       )}
     >
       <Sparkles className={cn("size-3.5", error ? "text-red-500 dark:text-red-400" : "text-copper-accent")} />
@@ -535,44 +708,47 @@ function MsgBtn({
 function EmptyNoJson() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-elevated">
-        <Sparkles className="size-6 text-text-secondary" />
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-[0.5px] border-copper-accent/30 bg-copper-accent/10">
+        <Sparkles className="size-6 text-copper-accent" />
       </div>
       <div>
-        <p className="text-[15px] font-semibold text-text-primary">No JSON loaded</p>
+        <p className="text-[15px] font-semibold text-text-primary">Load JSON to start a conversation</p>
         <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary">
-          Paste or upload JSON in the Editor first.
+          Paste or upload JSON in the Editor, then ask Payloada AI to explain, fix, query, or generate output from it.
         </p>
       </div>
     </div>
   );
 }
 
-function WelcomeScreen({ onSuggest }: { onSuggest: (s: (typeof SUGGESTIONS)[number]) => void }) {
+function WelcomeScreen({ onSuggest }: { onSuggest: (suggestion: Suggestion) => void }) {
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
       <div className="text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-copper-accent/15">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border-[0.5px] border-copper-accent/30 bg-copper-accent/10">
           <Sparkles className="size-5 text-copper-accent" />
         </div>
         <p className="text-[16px] font-semibold text-text-primary">How can I help with this JSON?</p>
         <p className="mt-1.5 text-[13px] leading-relaxed text-text-secondary">
-          Ask a question, inspect the payload, or generate mock data.
+          Ask a question, inspect the payload, or generate JSON-aware output from the current editor context.
         </p>
       </div>
 
-      <div className="grid w-full max-w-xs gap-2">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s.label}
-            type="button"
-            onClick={() => onSuggest(s)}
-            className="flex items-center gap-3 rounded-xl border-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 text-left transition-all hover:border-copper-accent/30 hover:bg-copper-accent/5"
-          >
-            <span className="text-base leading-none">{s.icon}</span>
-            <span className="text-[13px] font-medium text-text-secondary">{s.label}</span>
-          </button>
-        ))}
+      <div className="grid w-full max-w-md gap-2 sm:grid-cols-2">
+        {SUGGESTIONS.map((suggestion) => {
+          const Icon = suggestion.icon;
+          return (
+            <button
+              key={suggestion.label}
+              type="button"
+              onClick={() => onSuggest(suggestion)}
+              className="flex items-center gap-3 rounded-xl border-[0.5px] border-ui-border bg-surface-elevated px-4 py-3 text-left transition-all hover:border-copper-accent/30 hover:bg-copper-accent/5"
+            >
+              <Icon className="size-4 shrink-0 text-copper-accent" />
+              <span className="text-[13px] font-medium text-text-secondary">{suggestion.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -580,6 +756,7 @@ function WelcomeScreen({ onSuggest }: { onSuggest: (s: (typeof SUGGESTIONS)[numb
 
 function RenderedResponse({ text }: { text: string }) {
   const parts = splitOnCodeBlocks(text);
+
   return (
     <div className="space-y-3 text-[13px] leading-[1.7] text-text-secondary">
       {parts.map((part, index) =>
@@ -602,22 +779,22 @@ function InlineText({ text }: { text: string }) {
   return (
     <div className="space-y-1.5">
       {text.split("\n").map((line, index) => {
-        const t = line.trim();
-        if (!t) return null;
+        const trimmed = line.trim();
+        if (!trimmed) return null;
 
-        if (/^\*\*JSONPath:\*\*/.test(t)) {
+        if (/^\*\*JSONPath:\*\*/.test(trimmed)) {
           return (
             <div
               key={index}
               className="rounded-md border-[0.5px] border-ui-border bg-surface-container px-3 py-2 font-mono text-[11px] text-copper-accent"
             >
-              {renderInlineMarkup(t)}
+              {renderInlineMarkup(trimmed)}
             </div>
           );
         }
 
-        if (isSectionHeading(t)) {
-          const tone = getHeadingTone(t);
+        if (isSectionHeading(trimmed)) {
+          const tone = getHeadingTone(trimmed);
           return (
             <p
               key={index}
@@ -630,30 +807,30 @@ function InlineText({ text }: { text: string }) {
                     : "text-text-primary",
               )}
             >
-              {renderInlineMarkup(t)}
+              {renderInlineMarkup(trimmed)}
             </p>
           );
         }
 
-        if (/^[-*]\s/.test(t)) {
+        if (/^[-*]\s/.test(trimmed)) {
           return (
             <div key={index} className="flex gap-2">
               <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-copper-accent" />
-              <span>{renderInlineMarkup(t.replace(/^[-*]\s/, ""))}</span>
+              <span>{renderInlineMarkup(trimmed.replace(/^[-*]\s/, ""))}</span>
             </div>
           );
         }
 
-        if (/^\d+\.\s/.test(t)) {
+        if (/^\d+\.\s/.test(trimmed)) {
           return (
             <div key={index} className="flex gap-2">
-              <span className="min-w-5 font-mono text-[11px] text-text-secondary">{t.match(/^\d+\./)?.[0]}</span>
-              <span>{renderInlineMarkup(t.replace(/^\d+\.\s/, ""))}</span>
+              <span className="min-w-5 font-mono text-[11px] text-text-secondary">{trimmed.match(/^\d+\./)?.[0]}</span>
+              <span>{renderInlineMarkup(trimmed.replace(/^\d+\.\s/, ""))}</span>
             </div>
           );
         }
 
-        return <p key={index}>{renderInlineMarkup(t)}</p>;
+        return <p key={index}>{renderInlineMarkup(trimmed)}</p>;
       })}
     </div>
   );
@@ -668,6 +845,7 @@ function renderInlineMarkup(text: string): React.ReactNode {
         </strong>
       );
     }
+
     if (/^`[^`]+`$/.test(part)) {
       return (
         <code
@@ -678,6 +856,7 @@ function renderInlineMarkup(text: string): React.ReactNode {
         </code>
       );
     }
+
     return part;
   });
 }
@@ -691,18 +870,25 @@ function splitOnCodeBlocks(text: string): TextPart[] {
   let match: RegExpExecArray | null;
 
   while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
+    if (match.index > lastIndex) {
+      parts.push({ type: "text", content: text.slice(lastIndex, match.index) });
+    }
+
     parts.push({ type: "code", content: match[1].trim() });
     lastIndex = match.index + match[0].length;
   }
 
-  if (lastIndex < text.length) parts.push({ type: "text", content: text.slice(lastIndex) });
+  if (lastIndex < text.length) {
+    parts.push({ type: "text", content: text.slice(lastIndex) });
+  }
+
   return parts;
 }
 
 function extractFirstJsonBlock(text: string): string | null {
   const match = /```(?:json)?\n?([\s\S]*?)```/.exec(text);
   if (!match) return null;
+
   try {
     JSON.parse(match[1].trim());
     return match[1].trim();
@@ -716,12 +902,13 @@ function extractJsonPath(text: string): string | null {
 }
 
 function isSectionHeading(line: string) {
-  return /^\*\*[^*]+\*\*$/.test(line) || /^(Key fields|Watchouts|What changed|Issues found)$/i.test(line);
+  return /^\*\*[^*]+\*\*$/.test(line) || /^(Overview|Key fields|Watchouts|What changed|Issues found)$/i.test(line);
 }
 
 function getHeadingTone(line: string) {
-  if (/^(Watchouts|Issues found)$/i.test(line.replace(/\*/g, ""))) return "alert" as const;
-  if (/^What changed$/i.test(line.replace(/\*/g, ""))) return "success" as const;
+  const normalized = line.replace(/\*/g, "");
+  if (/^(Watchouts|Issues found)$/i.test(normalized)) return "alert" as const;
+  if (/^What changed$/i.test(normalized)) return "success" as const;
   return "default" as const;
 }
 
@@ -734,7 +921,7 @@ function getFallbackUserMessage(task: AiTask) {
     case "query":
       return "Query this JSON";
     case "generate":
-      return "Generate mock data from this JSON";
+      return "Generate output from this JSON";
   }
 }
 

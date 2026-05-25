@@ -249,7 +249,13 @@ export function LiveJsonWorkspace({
               ) : null}
 
               <div className={workspaceView === "ai" ? "h-full" : "hidden"}>
-                <AiWorkspace source={source} onSendToEditor={setSource} onSetSource={setSource} onCopy={handleCopy} />
+                <AiWorkspace
+                  source={source}
+                  onSendToEditor={setSource}
+                  onSetSource={setSource}
+                  onCopy={handleCopy}
+                  onViewJson={() => openWorkspace("editor")}
+                />
               </div>
 
               {workspaceView === "table" ? (
