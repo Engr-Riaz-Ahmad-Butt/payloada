@@ -11,6 +11,7 @@ import {
   ClipboardPaste,
   Columns,
   Copy,
+  Eye,
   FileJson2,
   GitBranch,
   Info,
@@ -38,7 +39,6 @@ import {
   CodePreview,
   EditorControlButton,
   EditorFileTab,
-  IconButton,
   IssueCard,
   JsonGraphView,
   SidebarEmpty,
@@ -164,6 +164,7 @@ export function EditorWorkspace({
   const [showStats, setShowStats] = useState(false);
   const [isEditorFullscreen, setIsEditorFullscreen] = useState(false);
   const [showModeMenu, setShowModeMenu] = useState(false);
+  const [showMoreViews, setShowMoreViews] = useState(false);
   const modeMenuRef = useRef<HTMLDivElement | null>(null);
   const [jsonPathQuery, setJsonPathQuery] = useState("");
   const jsonPathState = useMemo(
@@ -497,9 +498,9 @@ export function EditorWorkspace({
 
   const inspectorPane =
     inspectorView !== "none" ? (
-      <aside className="flex min-h-[320px] flex-col overflow-y-auto border-t-[0.5px] border-ui-border bg-surface xl:min-h-0 xl:border-t-0">
+      <aside className="flex min-h-[320px] flex-col overflow-x-hidden overflow-y-auto border-t-[0.5px] border-ui-border bg-surface xl:min-h-0 xl:border-t-0">
         <div className="border-b-[0.5px] border-ui-border bg-surface-elevated">
-          <div className="flex items-center border-b-[0.5px] border-ui-border px-4">
+          <div className="flex items-center border-b-[0.5px] border-ui-border pl-3 pr-2">
             <button
               type="button"
               onClick={() => {
@@ -507,7 +508,7 @@ export function EditorWorkspace({
                 setShowStats(false);
               }}
               className={cn(
-                "border-b-2 px-5 py-3 text-[13px] font-medium transition-colors",
+                "border-b-2 px-2.5 py-2.5 text-[12px] font-semibold transition-colors",
                 inspectorView === "status" && !showStats
                   ? "border-copper-accent text-copper-accent"
                   : "border-transparent text-text-secondary hover:text-text-primary",
@@ -519,7 +520,7 @@ export function EditorWorkspace({
               type="button"
               onClick={() => setInspectorView("tree")}
               className={cn(
-                "border-b-2 px-5 py-3 text-[13px] font-medium transition-colors",
+                "border-b-2 px-2.5 py-2.5 text-[12px] font-semibold transition-colors",
                 inspectorView === "tree"
                   ? "border-copper-accent text-copper-accent"
                   : "border-transparent text-text-secondary hover:text-text-primary",
@@ -534,7 +535,7 @@ export function EditorWorkspace({
                 setShowStats(true);
               }}
               className={cn(
-                "border-b-2 px-5 py-3 text-[13px] font-medium transition-colors",
+                "border-b-2 px-2.5 py-2.5 text-[12px] font-semibold transition-colors",
                 inspectorView === "status" && showStats
                   ? "border-copper-accent text-copper-accent"
                   : "border-transparent text-text-secondary hover:text-text-primary",
@@ -542,43 +543,81 @@ export function EditorWorkspace({
             >
               Stats
             </button>
-            <div className="ml-auto flex items-center gap-1 py-2">
-              <IconButton
-                active={inspectorView === "formatted"}
-                icon={<List className="size-4" />}
-                onClick={() => setInspectorView("formatted")}
-                title="Formatted view"
-              />
-              <IconButton
-                active={inspectorView === "search"}
-                icon={<Search className="size-4" />}
-                onClick={() => setInspectorView("search")}
-                title="Search inspector"
-              />
-              <IconButton
-                active={inspectorView === "graph"}
-                icon={<GitBranch className="size-4" />}
-                onClick={() => setInspectorView("graph")}
-                title="Graph view"
-              />
-              <IconButton
-                active={inspectorView === "columns"}
-                icon={<Columns className="size-4" />}
-                onClick={() => setInspectorView("columns")}
-                title="Column finder"
-              />
-              <IconButton
-                active={inspectorView === "jsonpath"}
-                icon={<Waypoints className="size-4" />}
-                onClick={() => setInspectorView("jsonpath")}
-                title="JSONPath"
-              />
-              <IconButton
-                active={false}
-                icon={<X className="size-4" />}
+
+            {/* Smart View Dropdown Selector */}
+            <div className="ml-auto flex items-center gap-1 py-1.5">
+              <div className="relative">
+                <button
+                  type="button"
+                  title="Select inspector view"
+                  onClick={() => setShowMoreViews((current) => !current)}
+                  className={cn(
+                    "inline-flex h-8 items-center gap-1 rounded-[6px] border-[0.5px] px-2 text-[11px] font-bold transition-all focus:outline-none active:scale-95",
+                    ["formatted", "search", "graph", "columns", "jsonpath"].includes(inspectorView)
+                      ? "border-[#C07040]/40 bg-[#C07040]/10 text-[#C07040] hover:border-[#C07040]/60"
+                      : "border-ui-border bg-surface-elevated/40 text-text-secondary hover:border-ui-border-hover hover:text-text-primary"
+                  )}
+                >
+                  {inspectorView === "formatted" ? (
+                    <List className="size-3.5" />
+                  ) : inspectorView === "search" ? (
+                    <Search className="size-3.5" />
+                  ) : inspectorView === "graph" ? (
+                    <GitBranch className="size-3.5" />
+                  ) : inspectorView === "columns" ? (
+                    <Columns className="size-3.5" />
+                  ) : inspectorView === "jsonpath" ? (
+                    <Waypoints className="size-3.5" />
+                  ) : (
+                    <Eye className="size-3.5" />
+                  )}
+                  <span className="hidden min-[380px]:inline xl:hidden">Views</span>
+                  <ChevronDown className="size-3 text-text-tertiary/70" />
+                </button>
+
+                {showMoreViews ? (
+                  <div className="absolute right-0 top-[calc(100%+6px)] z-20 w-[180px] overflow-hidden rounded-[8px] border-[0.5px] border-ui-border bg-surface shadow-xl animate-in fade-in slide-in-from-top-2 duration-150 p-1">
+                    {[
+                      { view: "formatted", label: "Formatted View", icon: <List className="size-3.5" /> },
+                      { view: "search", label: "Search Inspector", icon: <Search className="size-3.5" /> },
+                      { view: "graph", label: "Graph View", icon: <GitBranch className="size-3.5" /> },
+                      { view: "columns", label: "Column Finder", icon: <Columns className="size-3.5" /> },
+                      { view: "jsonpath", label: "JSONPath Finder", icon: <Waypoints className="size-3.5" /> },
+                    ].map((item) => {
+                      const isActive = inspectorView === item.view;
+                      return (
+                        <button
+                          key={item.view}
+                          type="button"
+                          onClick={() => {
+                            setInspectorView(item.view as InspectorView);
+                            setShowMoreViews(false);
+                          }}
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-[6px] px-2.5 py-2 text-left text-[12px] font-semibold transition-colors",
+                            isActive
+                              ? "bg-[#C07040]/10 text-[#C07040]"
+                              : "text-text-secondary hover:bg-surface-container-low hover:text-text-primary"
+                          )}
+                        >
+                          {item.icon}
+                          <span>{item.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+
+              {/* Close Inspector Button */}
+              <button
+                type="button"
+                title="Close inspector panel"
                 onClick={() => setInspectorView("none")}
-                title="Close inspector"
-              />
+                className="inline-flex h-8 w-8 items-center justify-center rounded-[6px] border-[0.5px] border-ui-border bg-surface-elevated/40 text-text-secondary transition-all hover:border-ui-border-hover hover:text-text-primary active:scale-95"
+              >
+                <X className="size-3.5" />
+              </button>
             </div>
           </div>
           <div className="flex items-center justify-between px-4 py-3">
