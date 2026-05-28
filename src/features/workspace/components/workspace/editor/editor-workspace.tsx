@@ -166,6 +166,7 @@ export function EditorWorkspace({
   const [showModeMenu, setShowModeMenu] = useState(false);
   const [showMoreViews, setShowMoreViews] = useState(false);
   const modeMenuRef = useRef<HTMLDivElement | null>(null);
+  const viewsMenuRef = useRef<HTMLDivElement | null>(null);
   const [jsonPathQuery, setJsonPathQuery] = useState("");
   const jsonPathState = useMemo(
     () =>
@@ -230,6 +231,9 @@ export function EditorWorkspace({
     const handlePointerDown = (event: MouseEvent) => {
       if (!modeMenuRef.current?.contains(event.target as Node)) {
         setShowModeMenu(false);
+      }
+      if (!viewsMenuRef.current?.contains(event.target as Node)) {
+        setShowMoreViews(false);
       }
     };
 
@@ -546,7 +550,7 @@ export function EditorWorkspace({
 
             {/* Smart View Dropdown Selector */}
             <div className="ml-auto flex items-center gap-1 py-1.5">
-              <div className="relative">
+              <div ref={viewsMenuRef} className="relative">
                 <button
                   type="button"
                   title="Select inspector view"

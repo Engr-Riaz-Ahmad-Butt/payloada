@@ -121,10 +121,23 @@ export function IconButton({
   );
 }
 
-export function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+export function SidebarSection({
+  title,
+  action,
+  children,
+}: {
+  title: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <div className="border-b-[0.5px] border-ui-border p-5">
-      <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary/80">{title}</h3>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary/80">
+          {title}
+        </h3>
+        {action ? <div className="flex items-center gap-1.5">{action}</div> : null}
+      </div>
       {children}
     </div>
   );
