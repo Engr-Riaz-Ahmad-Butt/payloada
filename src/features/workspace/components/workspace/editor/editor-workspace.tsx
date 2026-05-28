@@ -167,6 +167,7 @@ export function EditorWorkspace({
   const [showMoreViews, setShowMoreViews] = useState(false);
   const modeMenuRef = useRef<HTMLDivElement | null>(null);
   const viewsMenuRef = useRef<HTMLDivElement | null>(null);
+  const [isGraphFullscreen, setIsGraphFullscreen] = useState(false);
   const [jsonPathQuery, setJsonPathQuery] = useState("");
   const jsonPathState = useMemo(
     () =>
@@ -892,7 +893,31 @@ export function EditorWorkspace({
         ) : null}
 
         {inspectorView === "graph" ? (
-          <SidebarSection title="Graph View">
+          <SidebarSection
+            title="Graph View"
+            action={
+              <div className="flex items-center gap-1.5">
+                {parseResult?.valid ? (
+                  <button
+                    type="button"
+                    title="Fullscreen graph"
+                    onClick={() => setIsGraphFullscreen(true)}
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border-[0.5px] border-ui-border bg-surface-elevated/40 text-text-secondary transition-all hover:border-ui-border-hover hover:text-text-primary active:scale-95"
+                  >
+                    <Maximize2 className="size-3.5" />
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  title="Close graph view"
+                  onClick={() => setInspectorView("none")}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-[6px] border-[0.5px] border-ui-border bg-surface-elevated/40 text-text-secondary transition-all hover:border-ui-border-hover hover:text-text-primary active:scale-95"
+                >
+                  <X className="size-3.5" />
+                </button>
+              </div>
+            }
+          >
             {parseResult?.valid ? (
               <div className="space-y-3">
                 <p className="text-[13px] font-normal leading-[1.6] text-text-secondary">
@@ -1036,6 +1061,51 @@ export function EditorWorkspace({
         <div className="fixed inset-0 z-[70] bg-obsidian-base/98 p-4 sm:p-5 lg:p-6">
           <div className="mx-auto flex h-full w-full max-w-[1800px] flex-col overflow-hidden rounded-[12px] border-[0.5px] border-ui-border bg-obsidian-base shadow-2xl">
             {editorPane}
+          </div>
+        </div>
+      ) : null}
+
+      {isGraphFullscreen && parseResult?.valid ? (
+        <div className="fixed inset-0 z-[75] bg-obsidian-base/98 p-4 sm:p-5 lg:p-6 animate-in fade-in zoom-in-95 duration-200">
+          <div className="mx-auto flex h-full w-full max-w-[1800px] flex-col overflow-hidden rounded-[12px] border-[0.5px] border-ui-border bg-obsidian-base shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b-[0.5px] border-ui-border bg-surface-elevated px-5 py-4">
+              <div>
+                <h2 className="text-[14px] font-bold text-text-primary uppercase tracking-[0.08em] flex items-center gap-2">
+                  <GitBranch className="size-4 text-copper-accent animate-pulse" />
+                  Graph View (Fullscreen Mode)
+                </h2>
+                <p className="mt-1 text-[11.5px] text-text-secondary">
+                  Explore relationships, pan, zoom, and collapse/expand nodes.
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  title="Exit Fullscreen"
+                  onClick={() => setIsGraphFullscreen(false)}
+                  className="inline-flex h-9 items-center gap-1.5 rounded-[6px] border-[0.5px] border-ui-border bg-surface px-3.5 text-[12px] font-semibold text-text-primary transition-all hover:border-ui-border-hover hover:text-text-primary active:scale-95"
+                >
+                  <Minimize2 className="size-4" />
+                  <span>Exit Fullscreen</span>
+                </button>
+                <button
+                  type="button"
+                  title="Close Graph View"
+                  onClick={() => {
+                    setIsGraphFullscreen(false);
+                    setInspectorView("none");
+                  }}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-[6px] border-[0.5px] border-ui-border bg-surface text-text-secondary transition-all hover:border-ui-border-hover hover:text-text-primary active:scale-95"
+                >
+                  <X className="size-4.5" />
+                </button>
+              </div>
+            </div>
+            {/* Inner Content */}
+            <div className="flex-1 min-h-0 relative [&>div]:h-full [&>div]:max-h-none [&>div]:rounded-none [&>div]:border-0 [&>div]:xl:h-full [&>div]:sm:h-full">
+              <JsonGraphView value={parseResult.data} />
+            </div>
           </div>
         </div>
       ) : null}
